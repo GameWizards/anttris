@@ -1,0 +1,6 @@
+compiler:
+  -clang
+  -gcc
+
+notifications:
+  slack: 0culus:BgVYOhO9TQOEym5UP25ZtsYW
