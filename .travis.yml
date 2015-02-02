@@ -4,4 +4,5 @@ compiler:
   -gcc
 
 notifications:
+  email: false
   slack: 0culus:BgVYOhO9TQOEym5UP25ZtsYW
