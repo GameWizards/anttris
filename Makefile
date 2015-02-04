@@ -5,7 +5,10 @@ DEBUG=-g -Wall
 # CPP14=-std=c++1y
 OBJ=-c
 
-all: main
+all: prep main
+
+prep:
+	mkdir bin
 
 main:
 	$(CC) $(CPP14) src/hello.cc -o bin/hello
