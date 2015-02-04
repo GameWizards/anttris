@@ -8,7 +8,7 @@ OBJ=-c
 all: prep main
 
 prep:
-	mkdir bin
+	mkdir -p bin
 
 main:
 	$(CC) $(CPP14) src/hello.cc -o bin/hello
