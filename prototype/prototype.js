@@ -6,12 +6,13 @@ var mouse;
 
 var n = 5;
 var box_size = 100;
+var nice_shading = false;
 
-init(n, box_size);
+init(n, nice_shading, box_size);
 animate();
 
 
-function init(n, box_size) {
+function init(n, nice_shading, box_size) {
     var clear_color = "white";
 
     // META
@@ -26,7 +27,8 @@ function init(n, box_size) {
     info.innerHTML = '<a href="http://threejs.org" target="_blank">three.js</a> - patchwork prototype';
     container.appendChild( info );
 
-    renderer = new THREE.WebGLRenderer( {antialias: true } ); // THREE.CanvasRenderer();
+    renderer = new THREE.WebGLRenderer( {antialias: true } );
+//    renderer = new THREE.CanvasRenderer();
     renderer.setClearColor( clear_color );
     renderer.setPixelRatio( window.devicePixelRatio );
     renderer.setSize( window.innerWidth, window.innerHeight );
@@ -40,6 +42,19 @@ function init(n, box_size) {
     scene = new THREE.Scene();
     scene.fog = new THREE.Fog( clear_color, 1000, 3000 );
 
+    var lights = [];
+    if (nice_shading) {
+        var hemi = new THREE.HemisphereLight(
+            0xffffff, 0xffffff, 1.2
+        );
+        hemi.color.setHSL( 0.6, 1, 0.75 );
+        hemi.groundColor.setHSL( 0.1, 0.8, 0.7 );
+        hemi.position.y = 2000;
+
+        lights.push( hemi );
+    }
+    lights.forEach(function(l) { scene.add(l); });
+
     var geometry = new THREE.BoxGeometry( box_size, box_size, box_size );
     var texture = THREE.ImageUtils.loadTexture( 'textures/crate.gif' );
     texture.anisotropy = renderer.getMaxAnisotropy();
@@ -47,9 +62,16 @@ function init(n, box_size) {
     for ( var x = 0; x < n; x ++ ) {
     for ( var y = 0; y < n; y ++ ) {
     for ( var z = 0; z < n; z ++ ) {
-        var material = new THREE.MeshBasicMaterial(
-                { map: texture
-                 ,color: new THREE.Color(0.1 + x/n, 0.1 + y/n, 0.1 + z/n)} );
+        var material;
+        var col = new THREE.Color( x/n, y/n, z/n );
+
+        if (nice_shading) {
+            material = new THREE.MeshPhongMaterial(
+                    { map: texture, shininess: 1, color: col });
+        } else {
+            material = new THREE.MeshBasicMaterial(
+                    { map: texture, color: col });
+        }
 
         var object = new THREE.Mesh( geometry, material );
         var cs = grid_coords(x, y, z);
@@ -131,7 +153,7 @@ function onDocumentMouseDown( event ) {
                 , 20000 )
             .easing( TWEEN.Easing.Elastic.Out).start();
         }
-        obj.material.color = 0xffffff;
+        obj.material.color = new THREE.Color(1,1,1);
     }
 }
 
@@ -165,5 +187,3 @@ function grid_coords(x, y, z) {
         y: y * box_size - n * box_size / 2,
         z: z * box_size - n * box_size / 2 };
 }
-
-
