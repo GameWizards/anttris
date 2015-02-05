@@ -11,7 +11,6 @@ var nice_shading = false;
 init(n, nice_shading, box_size);
 animate();
 
-
 function init(n, nice_shading, box_size) {
     var clear_color = "white";
 
@@ -59,6 +58,8 @@ function init(n, nice_shading, box_size) {
     var texture = THREE.ImageUtils.loadTexture( 'textures/crate.gif' );
     texture.anisotropy = renderer.getMaxAnisotropy();
 
+    var dirs = ["top", ""]
+
     for ( var x = 0; x < n; x ++ ) {
     for ( var y = 0; y < n; y ++ ) {
     for ( var z = 0; z < n; z ++ ) {
@@ -67,10 +68,12 @@ function init(n, nice_shading, box_size) {
 
         if (nice_shading) {
             material = new THREE.MeshPhongMaterial(
-                    { map: texture, shininess: 1, color: col });
+                    { //map: texture,
+                      shininess: 1, color: col });
         } else {
             material = new THREE.MeshBasicMaterial(
-                    { map: texture, color: col });
+                    { //map: texture,
+                      color: col });
         }
 
         var object = new THREE.Mesh( geometry, material );
@@ -81,6 +84,7 @@ function init(n, nice_shading, box_size) {
 
         if (x === 0) {
             object.solid = true;
+            object.laser = Math.floor(Math.random() * 6);
         } else {
             object.solid = false;
         }
@@ -152,8 +156,11 @@ function onDocumentMouseDown( event ) {
                 z: 3100}
                 , 20000 )
             .easing( TWEEN.Easing.Elastic.Out).start();
+        } else {
+            obj.laser = false;
         }
         obj.material.color = new THREE.Color(1,1,1);
+
     }
 }
 
