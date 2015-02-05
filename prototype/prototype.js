@@ -113,15 +113,20 @@ function init_level(config) {
             // explode
             object.hp = 3;
             object.onclick = [block_actions("boom")];
-            object.solid = true;
 
         } else {
 
             // pick a random action
             object.hp = 1;
             object.solid = false;
-            object.onclick = Math.random() > 0.5 ? [block_actions()] : [];
+            object.onclick = [fly_away]
 
+            if (Math.random() > 0.5) {
+
+                // pick a random action
+                object.onclick.push(block_actions());
+
+            }
         }
 
         scene.add( object );
@@ -169,15 +174,22 @@ function onDocumentMouseUp( event ) {
     if ( intersects.length > 0 ) {
 
         var obj = intersects[ 0 ].object;
+
+        // invert color
         obj.material.color.multiplyScalar(-1);
         obj.material.color.addScalar(1);
 
         var coords = to_grid(obj.position);
+
+        // corner = winner
         if (coords.x == 0 && coords.y == 0 && coords.z == 0) {
+
             win(obj);
+
         } else {
 
-        obj.onclick.forEach(function (f) { f(obj); });
+            // run each action
+            obj.onclick.forEach(function (f) { f(obj); });
 
         }
 
@@ -287,16 +299,21 @@ function win(obj) {
 }
 
 function boom(obj) {
-    var cs = from_grid(obj.position);
+    var cs = to_grid(obj.position);
 
-    cs.x += 1;
+    // clear out a 3x3 cube
+    for (var xoff = -1; xoff <= 1; xoff++ ) {
+    for (var yoff = -1; yoff <= 1; yoff++ ) {
+    for (var zoff = -1; zoff <= 1; zoff++ ) {
 
-    neighbor = retrieve_object(cs);
-    console.log(neighbor);
-    if (neighbor !== undefined) {
-        fly_away(neighbor);
+        neighbor = retrieve_object({ x: cs.x + xoff, y: cs.y + yoff, z: cs.z + zoff });
+
+        if (neighbor !== undefined) {
+            fly_away(neighbor);
+        }
     }
-    fly_away(obj);
+    }
+    }
 }
 
 function block_actions() {
