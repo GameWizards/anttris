@@ -13,7 +13,7 @@ var config =
     box_size: 30,
     quit: false,
     clear_color: "white",
-    nice_shading: true
+    nice_shading: false
   };
 
 init();
@@ -112,19 +112,21 @@ function init_level(config) {
 
             // explode
             object.hp = 3;
-            object.onclick = [block_actions("boom")];
+            object.onclick = [block_action("boom")];
 
         } else {
 
             // pick a random action
             object.hp = 1;
             object.solid = false;
-            object.onclick = [fly_away]
-
             if (Math.random() > 0.5) {
 
                 // pick a random action
-                object.onclick.push(block_actions());
+                object.onclick = [block_action()];
+
+            } else {
+
+                object.onclick = [fly_away]
 
             }
         }
@@ -314,9 +316,10 @@ function boom(obj) {
     }
     }
     }
+    fly_away(obj);
 }
 
-function block_actions() {
+function block_action() {
     // each of these takes a THREE.js mesh object as the first argument
     var actions = { boom: boom, shrink: function(b) { scale_to(b, 0.1); }
     };
