@@ -4,14 +4,16 @@ var camera, scene, renderer;
 var raycaster;
 var mouse;
 
-var n = 5;
-var box_size = 100;
-var nice_shading = false;
+var config =
+  { n: 8,
+    box_size: 30,
+    nice_shading: false
+  };
 
-init(n, nice_shading, box_size);
+init(config);
 animate();
 
-function init(n, nice_shading, box_size) {
+function init(config) {
     var clear_color = "white";
 
     // META
@@ -42,7 +44,7 @@ function init(n, nice_shading, box_size) {
     scene.fog = new THREE.Fog( clear_color, 1000, 3000 );
 
     var lights = [];
-    if (nice_shading) {
+    if (config.nice_shading) {
         var hemi = new THREE.HemisphereLight(
             0xffffff, 0xffffff, 1.2
         );
@@ -54,19 +56,18 @@ function init(n, nice_shading, box_size) {
     }
     lights.forEach(function(l) { scene.add(l); });
 
-    var geometry = new THREE.BoxGeometry( box_size, box_size, box_size );
+    var geometry = new THREE.BoxGeometry(
+            0.9 * config.box_size, 0.9 * config.box_size, 0.9 * config.box_size );
     var texture = THREE.ImageUtils.loadTexture( 'textures/crate.gif' );
     texture.anisotropy = renderer.getMaxAnisotropy();
 
-    var dirs = ["top", ""]
-
-    for ( var x = 0; x < n; x ++ ) {
-    for ( var y = 0; y < n; y ++ ) {
-    for ( var z = 0; z < n; z ++ ) {
+    for ( var x = 0; x < config.n; x ++ ) {
+    for ( var y = 0; y < config.n; y ++ ) {
+    for ( var z = 0; z < config.n; z ++ ) {
         var material;
-        var col = new THREE.Color( x/n, y/n, z/n );
+        var col = new THREE.Color( x/config.n, y/config.n, z/config.n );
 
-        if (nice_shading) {
+        if (config.nice_shading) {
             material = new THREE.MeshPhongMaterial(
                     { //map: texture,
                       shininess: 1, color: col });
@@ -77,7 +78,7 @@ function init(n, nice_shading, box_size) {
         }
 
         var object = new THREE.Mesh( geometry, material );
-        var cs = grid_coords(x, y, z);
+        var cs = from_grid( {x: x, y: y, z: z} );
         object.position.x = cs.x;
         object.position.y = cs.y;
         object.position.z = cs.z;
@@ -107,8 +108,8 @@ function init(n, nice_shading, box_size) {
     stats.domElement.style.top = '0px';
     container.appendChild( stats.domElement );
 
-    document.addEventListener( 'mousedown', onDocumentMouseDown, false );
-    document.addEventListener( 'touchstart', onDocumentTouchStart, false );
+    document.addEventListener( 'mouseup', onDocumentMouseUp, false );
+    document.addEventListener( 'touchend', onDocumentTouchEnd, false );
 
     //
 
@@ -125,7 +126,7 @@ function onWindowResize() {
 
 }
 
-function onDocumentTouchStart( event ) {
+function onDocumentTouchEnd( event ) {
 
     event.preventDefault();
 
@@ -135,7 +136,7 @@ function onDocumentTouchStart( event ) {
 
 }
 
-function onDocumentMouseDown( event ) {
+function onDocumentMouseUp( event ) {
 
     event.preventDefault();
 
@@ -149,17 +150,27 @@ function onDocumentMouseDown( event ) {
     if ( intersects.length > 0 ) {
 
         var obj = intersects[ 0 ].object;
+        obj.material.color = new THREE.Color("red");
+
         if (!obj.solid) {
             new TWEEN.Tween( obj.position ).to( {
-                x: 3100,
-                y: 3100,
-                z: 3100}
+                x: 3100 * Math.sign(obj.position.x),
+                y: 3100 * Math.sign(obj.position.y),
+                z: 3100 * Math.sign(obj.position.z)}
                 , 20000 )
             .easing( TWEEN.Easing.Elastic.Out).start();
         } else {
-            obj.laser = false;
+            var coords = to_grid(obj.position);
+            if (coords.y == 0 && coords.z == 0) {
+                new TWEEN.Tween( obj.scale ).to( {
+                    x: config.n * 2 + 1,
+                    y: config.n * 2 + 1,
+                    z: config.n * 2 + 1
+                    } , 1000 )
+                .easing( TWEEN.Easing.Elastic.Out).start();
+                obj.material.color = new THREE.Color("gold");
+            }
         }
-        obj.material.color = new THREE.Color(1,1,1);
 
     }
 }
@@ -188,9 +199,23 @@ function render() {
 
 }
 
-function grid_coords(x, y, z) {
+function to_grid(position) {
+    var box_size = config.box_size;
+    var n = config.n;
+
+    return {
+        x: (position.x + n * box_size / 2) / box_size,
+        y: (position.y + n * box_size / 2) / box_size,
+        z: (position.z + n * box_size / 2) / box_size
+    }
+}
+
+function from_grid(position) {
+        var box_size = config.box_size;
+        var n = config.n;
         return {
-        x: x * box_size - n * box_size / 2,
-        y: y * box_size - n * box_size / 2,
-        z: z * box_size - n * box_size / 2 };
+            x: position.x * box_size - n * box_size / 2,
+            y: position.y * box_size - n * box_size / 2,
+            z: position.z * box_size - n * box_size / 2
+        };
 }
