@@ -1,26 +1,30 @@
-var container, stats;
+var container, stats, controls;
 var camera, scene, renderer;
 
 var raycaster;
 var mouse;
 
+var info;
+
+var grid_objects = [];
+
 var config =
   { n: 8,
     box_size: 30,
-    nice_shading: false
+    quit: false,
+    clear_color: "white",
+    nice_shading: true
   };
 
-init(config);
+init();
+init_level(config);
 animate();
 
-function init(config) {
-    var clear_color = "white";
-
-    // META
+function init() {
     container = document.createElement( 'div' );
     document.body.appendChild( container );
 
-    var info = document.createElement( 'div' );
+    info = document.createElement( 'div' );
     info.style.position = 'absolute';
     info.style.top = '10px';
     info.style.width = '100%';
@@ -29,8 +33,7 @@ function init(config) {
     container.appendChild( info );
 
     renderer = new THREE.WebGLRenderer( {antialias: true } );
-//    renderer = new THREE.CanvasRenderer();
-    renderer.setClearColor( clear_color );
+    renderer.setClearColor( config.clear_color );
     renderer.setPixelRatio( window.devicePixelRatio );
     renderer.setSize( window.innerWidth, window.innerHeight );
     container.appendChild(renderer.domElement);
@@ -40,10 +43,33 @@ function init(config) {
     camera.position.y = 300;
     camera.position.z = 500;
 
-    scene = new THREE.Scene();
-    scene.fog = new THREE.Fog( clear_color, 1000, 3000 );
+    raycaster = new THREE.Raycaster();
+    mouse = new THREE.Vector2();
 
-    var lights = [];
+    controls = new THREE.OrbitControls( camera, renderer.domElement );
+    controls.target.set( 0, 0, 0 );
+
+    stats = new Stats();
+    stats.domElement.style.position = 'absolute';
+    stats.domElement.style.top = '0px';
+    container.appendChild( stats.domElement );
+
+    document.addEventListener( 'mouseup', onDocumentMouseUp, false );
+    document.addEventListener( 'touchend', onDocumentTouchEnd, false );
+    document.addEventListener( 'touchstart', onDocumentTouchStart, false );
+
+    window.addEventListener( 'resize', onWindowResize, false );
+
+
+}
+
+function init_level(config) {
+    config.quit = false;
+    grid_objects = [];
+
+    scene = new THREE.Scene();
+    scene.fog = new THREE.Fog( config.clear_color, 1000, 3000 );
+
     if (config.nice_shading) {
         var hemi = new THREE.HemisphereLight(
             0xffffff, 0xffffff, 1.2
@@ -52,12 +78,13 @@ function init(config) {
         hemi.groundColor.setHSL( 0.1, 0.8, 0.7 );
         hemi.position.y = 2000;
 
-        lights.push( hemi );
+        scene.add( hemi );
     }
-    lights.forEach(function(l) { scene.add(l); });
 
+    var c = 0.95;
     var geometry = new THREE.BoxGeometry(
-            0.9 * config.box_size, 0.9 * config.box_size, 0.9 * config.box_size );
+            c * config.box_size, c * config.box_size, c * config.box_size );
+
     var texture = THREE.ImageUtils.loadTexture( 'textures/crate.gif' );
     texture.anisotropy = renderer.getMaxAnisotropy();
 
@@ -78,43 +105,29 @@ function init(config) {
         }
 
         var object = new THREE.Mesh( geometry, material );
-        var cs = from_grid( {x: x, y: y, z: z} );
-        object.position.x = cs.x;
-        object.position.y = cs.y;
-        object.position.z = cs.z;
+
+        place_object(object, x, y, z);
 
         if (x === 0) {
+
+            // explode
+            object.hp = 3;
+            object.onclick = [block_actions("boom")];
             object.solid = true;
-            object.laser = Math.floor(Math.random() * 6);
+
         } else {
+
+            // pick a random action
+            object.hp = 1;
             object.solid = false;
+            object.onclick = Math.random() > 0.5 ? [block_actions()] : [];
+
         }
 
         scene.add( object );
     }
     }
     }
-
-    //
-
-    raycaster = new THREE.Raycaster();
-    mouse = new THREE.Vector2();
-
-    controls = new THREE.OrbitControls( camera, renderer.domElement );
-    controls.target.set( 0, 0, 0 );
-
-    stats = new Stats();
-    stats.domElement.style.position = 'absolute';
-    stats.domElement.style.top = '0px';
-    container.appendChild( stats.domElement );
-
-    document.addEventListener( 'mouseup', onDocumentMouseUp, false );
-    document.addEventListener( 'touchend', onDocumentTouchEnd, false );
-
-    //
-
-    window.addEventListener( 'resize', onWindowResize, false );
-
 }
 
 function onWindowResize() {
@@ -124,6 +137,10 @@ function onWindowResize() {
 
     renderer.setSize( window.innerWidth, window.innerHeight );
 
+}
+
+function onDocumentTouchStart( e ) {
+    onDocumentTouchEnd( e );
 }
 
 function onDocumentTouchEnd( event ) {
@@ -138,6 +155,8 @@ function onDocumentTouchEnd( event ) {
 
 function onDocumentMouseUp( event ) {
 
+    if (config.quit) { return; }
+
     event.preventDefault();
 
     mouse.x = ( event.clientX / renderer.domElement.width ) * 2 - 1;
@@ -150,26 +169,16 @@ function onDocumentMouseUp( event ) {
     if ( intersects.length > 0 ) {
 
         var obj = intersects[ 0 ].object;
-        obj.material.color = new THREE.Color("red");
+        obj.material.color.multiplyScalar(-1);
+        obj.material.color.addScalar(1);
 
-        if (!obj.solid) {
-            new TWEEN.Tween( obj.position ).to( {
-                x: 3100 * Math.sign(obj.position.x),
-                y: 3100 * Math.sign(obj.position.y),
-                z: 3100 * Math.sign(obj.position.z)}
-                , 20000 )
-            .easing( TWEEN.Easing.Elastic.Out).start();
+        var coords = to_grid(obj.position);
+        if (coords.x == 0 && coords.y == 0 && coords.z == 0) {
+            win(obj);
         } else {
-            var coords = to_grid(obj.position);
-            if (coords.y == 0 && coords.z == 0) {
-                new TWEEN.Tween( obj.scale ).to( {
-                    x: config.n * 2 + 1,
-                    y: config.n * 2 + 1,
-                    z: config.n * 2 + 1
-                    } , 1000 )
-                .easing( TWEEN.Easing.Elastic.Out).start();
-                obj.material.color = new THREE.Color("gold");
-            }
+
+        obj.onclick.forEach(function (f) { f(obj); });
+
         }
 
     }
@@ -199,6 +208,7 @@ function render() {
 
 }
 
+// returns grid points of a "real-world" object
 function to_grid(position) {
     var box_size = config.box_size;
     var n = config.n;
@@ -210,12 +220,100 @@ function to_grid(position) {
     }
 }
 
+// converts real coordinates into a gridded system
 function from_grid(position) {
         var box_size = config.box_size;
         var n = config.n;
+
         return {
             x: position.x * box_size - n * box_size / 2,
             y: position.y * box_size - n * box_size / 2,
             z: position.z * box_size - n * box_size / 2
         };
+}
+
+function place_object(object, x, y, z) {
+
+        var cs = from_grid({ x: x, y: y, z: z });
+
+        object.position.x = cs.x;
+        object.position.y = cs.y;
+        object.position.z = cs.z;
+
+        grid_objects[x + config.n * y + config.n * config.n * z] = object;
+
+}
+
+// p = position
+function retrieve_object(p) {
+    return grid_objects[p.x + config.n * p.y + config.n * config.n * p.z];
+}
+
+function fly_away(obj) {
+    new TWEEN.Tween( obj.position ).to( {
+        x: 3100 * Math.sign(obj.position.x),
+        y: 3100 * Math.sign(obj.position.y),
+        z: 3100 * Math.sign(obj.position.z)}
+        , 20000 )
+    .easing( TWEEN.Easing.Elastic.Out).start();
+}
+
+function scale_to(obj, scale) {
+    new TWEEN.Tween( obj.scale ).to( {
+        x: scale,
+        y: scale,
+        z: scale
+        } , 1000 )
+    .easing( TWEEN.Easing.Elastic.Out).start();
+}
+
+function win(obj) {
+    scale_to(obj, config.n * 2);
+
+    obj.material.color = new THREE.Color("gold");
+
+    info.innerHTML =
+        "YOU WIN! <a href=\"javascript:window.location.reload(false);\">PLAY AGAIN?</a>";
+
+    // zoom out
+    new TWEEN.Tween( camera.position ).to( {
+        x: camera.position.x * 3,
+        y: camera.position.y * 3,
+        z: camera.position.z * 3}
+        , 300 )
+    .easing( TWEEN.Easing.Elastic.Out).start();
+
+    config.quit = true;
+}
+
+function boom(obj) {
+    var cs = from_grid(obj.position);
+
+    cs.x += 1;
+
+    neighbor = retrieve_object(cs);
+    console.log(neighbor);
+    if (neighbor !== undefined) {
+        fly_away(neighbor);
+    }
+    fly_away(obj);
+}
+
+function block_actions() {
+    // each of these takes a THREE.js mesh object as the first argument
+    var actions = { boom: boom, shrink: function(b) { scale_to(b, 0.1); }
+    };
+
+    if (arguments.length === 1) {
+
+        return actions[arguments[0]];
+
+    } else {
+
+        // http://stackoverflow.com/questions/2532218/pick-random-property-from-a-javascript-object
+
+        var keys = Object.keys(actions);
+
+        return actions[keys[ keys.length * Math.random() << 0]];
+    }
 }

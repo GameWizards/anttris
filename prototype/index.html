@@ -3,43 +3,11 @@
     <meta charset="utf-8">
     </meta>
 <body>
-<script type="x-shader/x-vertex" id="vertexShader">
-
-    varying vec3 vWorldPosition;
-
-    void main() {
-
-        vec4 worldPosition = modelMatrix * vec4( position, 1.0 );
-        vWorldPosition = worldPosition.xyz;
-
-        gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
-
-    }
-
-</script>
-
-<script type="x-shader/x-fragment" id="fragmentShader">
-
-    uniform vec3 topColor;
-    uniform vec3 bottomColor;
-    uniform float offset;
-    uniform float exponent;
-
-    varying vec3 vWorldPosition;
-
-    void main() {
-
-        float h = normalize( vWorldPosition + offset ).y;
-        gl_FragColor = vec4( mix( bottomColor, topColor, max( pow( max( h, 0.0 ), exponent ), 0.0 ) ), 1.0 );
-    }
-</script>
-
     <script src="three.js"></script>
     <script src="js/libs/tween.min.js"></script>
     <script src="js/libs/stats.min.js"></script>
     <script src="js/controls/OrbitControls.js"></script>
     <script src="js/renderers/CanvasRenderer.js"></script>
     <script src="prototype.js"></script>
-    <p>Put together using various parts off the THREE.js examples.</p>
 </body>
 </html>
