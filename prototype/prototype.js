@@ -96,11 +96,11 @@ function init_level(config) {
 
         if (config.nice_shading) {
             material = new THREE.MeshPhongMaterial(
-                    { //map: texture,
+                    { map: texture,
                       shininess: 1, color: col });
         } else {
             material = new THREE.MeshBasicMaterial(
-                    { //map: texture,
+                    { map: texture,
                       color: col });
         }
 
@@ -113,10 +113,10 @@ function init_level(config) {
             // explode
             object.hp = 3;
             object.onclick = [block_action("boom")];
+            object.winner = false;
 
         } else {
 
-            // pick a random action
             object.hp = 1;
             object.solid = false;
             if (Math.random() > 0.5) {
@@ -126,6 +126,7 @@ function init_level(config) {
 
             } else {
 
+                // be a normal block
                 object.onclick = [fly_away]
 
             }
@@ -135,6 +136,9 @@ function init_level(config) {
     }
     }
     }
+
+    retrieve_object({x:0, y:0, z:0}).winner = true;
+    retrieve_object({x:0, y:0, z:0}).onclick = [win];
 }
 
 function onWindowResize() {
@@ -183,16 +187,15 @@ function onDocumentMouseUp( event ) {
 
         var coords = to_grid(obj.position);
 
-        // corner = winner
-        if (coords.x == 0 && coords.y == 0 && coords.z == 0) {
-
+        if (obj.winner) {
             win(obj);
-
         } else {
 
-            // run each action
-            obj.onclick.forEach(function (f) { f(obj); });
-
+            // run each action if HP < 1
+            obj.hp -= 1;
+            if (obj.hp === 0) {
+                obj.onclick.forEach(function (f) { f(obj); });
+            }
         }
 
     }
@@ -260,7 +263,8 @@ function place_object(object, x, y, z) {
 
 // p = position
 function retrieve_object(p) {
-    return grid_objects[p.x + config.n * p.y + config.n * config.n * p.z];
+    return grid_objects
+        [p.x + config.n * p.y + config.n * config.n * p.z];
 }
 
 function fly_away(obj) {
@@ -311,7 +315,9 @@ function boom(obj) {
         neighbor = retrieve_object({ x: cs.x + xoff, y: cs.y + yoff, z: cs.z + zoff });
 
         if (neighbor !== undefined) {
-            fly_away(neighbor);
+            if (neighbor.winner === false) {
+                fly_away(neighbor);
+            }
         }
     }
     }
