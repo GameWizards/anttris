@@ -8,4 +8,4 @@ OBJ=-c
 all: main
 
 main:
-	$(CC) $(CPP14) src/hello.cc -o bin/hello
+	$(CC) $(CPP11) src/hello.cc -o bin/hello
