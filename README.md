@@ -1,4 +1,4 @@
-CSE326 Project [![Build Status](https://magnum.travis-ci.com/0culus/cse326-project.svg?token=Qhgw4fsryZKyx4ysqgVE)](https://magnum.travis-ci.com/0culus/cse326-project)
+CSE326 Project [![Build Status](https://travis-ci.org/GameWizards/anttris.svg?branch=requirements)](https://travis-ci.org/GameWizards/anttris)
 =======
 
 # anttris
