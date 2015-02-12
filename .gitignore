@@ -1,1 +1,8 @@
 bin/
+
+# LaTeX
+*.aux
+*.log
+*.out
+*.synctex.gz
+*.bak
