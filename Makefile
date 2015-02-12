@@ -8,4 +8,9 @@ OBJ=-c
 all: main
 
 main:
+	mkdir -p bin
 	$(CC) $(CPP11) src/hello.cc -o bin/hello
+
+clean:
+	rm -rf bin
+	mkdir bin
