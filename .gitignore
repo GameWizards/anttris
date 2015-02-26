@@ -1,5 +1,7 @@
 bin/
 
+.fscache
+
 # LaTeX
 *.aux
 *.log
