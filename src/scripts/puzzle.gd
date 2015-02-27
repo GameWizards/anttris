@@ -24,15 +24,16 @@ func _ready():
 				var block = block_scn.instance()
 				var block_name = "block" + str(unique_id)
 				block.set_name(block_name)
-				add_child(block)
+				get_node("GridMan").add_child(block)
 				
 				# Prepare for next block
 				unique_id += 1
 				
 				# Configure block
+				# Godot uses the forward slashes (/) on all platforms
 				var pos = Vector3(x * 2.1, y * 2.1, z * 2.1)
-				var node = get_node(block_name)
-				var mesh = get_node(block_name + "/MeshInstance")
+				var node = get_node("GridMan/" + block_name)
+				var mesh = node.get_node("MeshInstance")
 				var mat = FixedMaterial.new()
 				pos += offset
 				node.set_translation(pos)
