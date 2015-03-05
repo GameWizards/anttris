@@ -9,8 +9,10 @@ const ACTION_FLY_AWAY = 1
 const ALLACTIONS = [ACTION_SCALE, ACTION_FLY_AWAY]
 
 func _input_event( camera, ev, click_pos, click_normal, shape_idx ):
-	if (ev.type==InputEvent.MOUSE_BUTTON and ev.button_index==BUTTON_LEFT):
+	if ((ev.type==InputEvent.MOUSE_BUTTON and ev.button_index==BUTTON_LEFT)
+	or (ev.type==InputEvent.SCREEN_TOUCH)):
 		activate(ev, click_pos, click_normal)	
+	print(str(ev.type==InputEvent.SCREEN_TOUCH))
 		
 func activate(ev, click_pos, click_normal):
 	var tween = Tween.new()
