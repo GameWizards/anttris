@@ -43,9 +43,11 @@ func _ready():
 # credit to Stephen Tierney (Game Development Discussions website)
 func recalculate_camera():
       # calculate the camera position as it orbits a sphere about the target
-	pos.x = distance * -sin(turn.x) * cos(turn.y)
-	pos.y = distance * -sin(turn.y)
-	pos.z = -distance * cos(turn.x) * cos(turn.y)
+	#pos.x = distance * -sin(turn.x) * cos(turn.y)
+	#pos.y = distance * -sin(turn.y)
+	#pos.z = -distance * cos(turn.x) * cos(turn.y)
+	pos = get_translation();
+	pos.z = distance;
       # set the position of the camera in its orbit and point it at the target
 	look_at_from_pos(pos, target, up)
 
@@ -53,15 +55,15 @@ func recalculate_camera():
 # called to handle a user input event
 func _input(ev):
 	# If the mouse has been moved
-	if (ev.type==InputEvent.MOUSE_MOTION and ev.button_mask == 1):
+	#if (ev.type==InputEvent.MOUSE_MOTION and ev.button_mask == 1):
       # calculate the delta change from the last mouse movement
-		var mousedelta = (mouseposlast - ev.pos)
+		#var mousedelta = (mouseposlast - ev.pos)
       # scale the mouse delta to a useful value
-		turn += mousedelta / orbitrate
+		#turn += mousedelta / orbitrate
       # record the last position of the mousedelta
-		mouseposlast = ev.pos
+		#mouseposlast = ev.pos
    # if the user spins the mouse wheel up move the camera closer
-	elif (ev.type==InputEvent.MOUSE_BUTTON and ev.button_index==BUTTON_WHEEL_UP):
+	if (ev.type==InputEvent.MOUSE_BUTTON and ev.button_index==BUTTON_WHEEL_UP):
 		distance -= 0.1
    # if the user spins the mouse wheel down move the camera farther away
 	elif (ev.type==InputEvent.MOUSE_BUTTON and ev.button_index==BUTTON_WHEEL_DOWN):
