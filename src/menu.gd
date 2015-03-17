@@ -10,4 +10,4 @@ func _ready():
 	pass
 
 func _start_pressed():
-	get_node("/node/global").goto_scene("res://puzzle.scn")
+	get_node("/root/global").goto_scene("res://puzzle.scn")
