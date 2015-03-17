@@ -7,7 +7,11 @@ extends TextureFrame
 
 func _ready():
 	get_node("StartButton").connect("pressed", self, "_start_pressed")
+	get_node("QuitButton").connect("pressed", self, "_quit_pressed")
 	pass
 
 func _start_pressed():
 	get_node("/root/global").goto_scene("res://puzzle.scn")
+
+func _quit_pressed():
+	get_tree().quit()
