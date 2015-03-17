@@ -18,4 +18,7 @@ func get_time_elpased():
 
 func _process(delta):
 	time_elapsed += delta
-	get_node("TimeLabel").set_text(str(time_elapsed))
+	var mins = floor(time_elapsed / 60)
+	var secs = fmod(floor(time_elapsed), 60)
+	var millis = floor((time_elapsed - floor(time_elapsed)) * 1000)
+	get_node("TimeLabel").set_text(str(mins) + ":" + str(secs).pad_zeros(2) + ":" + str(millis).pad_zeros(3))
