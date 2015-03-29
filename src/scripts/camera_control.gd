@@ -28,7 +28,7 @@ var target = Vector3(0.0,0.0,0.0)         # the look at target
 
 # global tweakable parameters
 var distance = 30.0            # starting distance of the camera from the target
-var zoom_rate = 8            # the rate at which the camera zooms in and out of the target
+var zoom_rate = 100            # the rate at which the camera zooms in and out of the target
 var orbitrate = 20        # the rate the camera orbits the target when the mouse is moved
 var target_move_rate = 1.0      # the rate the target look at point moves
 
@@ -64,10 +64,10 @@ func _input(ev):
 		#mouseposlast = ev.pos
    # if the user spins the mouse wheel up move the camera closer
 	if (ev.type==InputEvent.MOUSE_BUTTON and ev.button_index==BUTTON_WHEEL_UP):
-		distance -= 0.1
+		distance -= zoom_rate * get_process_delta_time()
    # if the user spins the mouse wheel down move the camera farther away
 	elif (ev.type==InputEvent.MOUSE_BUTTON and ev.button_index==BUTTON_WHEEL_DOWN):
-		distance += 0.1
+		distance += zoom_rate * get_process_delta_time()
    # if a cancel action is input close the application
 	elif (ev.is_action("ui_cancel")):
 		OS.get_main_loop().quit()
