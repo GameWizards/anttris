@@ -1,13 +1,21 @@
+# This script manages all of the GUI elements.
+# It switches between the states of the GUI allowing
+# the user to start games, edit the options or connect
+# to a multiplayer game.
+
 extends Node
 
+# State variables.
 var menuOn
-var timer
 var splashTween
 
+# Timers.
+var timer
 var initialWait = .5
 var splashTimer = 2.0
 var warningTimer = 5.0
 
+# GUI pieces.
 var Splash_Team5
 var Splash_Warning
 var Menu_Main
@@ -17,6 +25,7 @@ var Menu_HostGame
 var Menu_JoinGame
 var Menu_Options
 
+# Menu state values. Used to switch between them.
 var MENU_INIT			= 0
 var MENU_SPLASHTEAM5	= 1
 var MENU_SPLASHWARNING	= 2
@@ -27,6 +36,7 @@ var MENU_HOSTGAME		= 6
 var MENU_JOINGAME		= 7
 var MENU_OPTIONS		= 8
 
+# Function to be called once for setup.
 func _ready():
 	# Initial setup.
 	menuOn = MENU_INIT
@@ -49,6 +59,7 @@ func _ready():
 	Menu_JoinGame = get_node( "JoinGame" )
 	Menu_Options = get_node( "OptionsMenu" )
 
+# Function to update the GUI.
 func _process( delta ):
 	# Handle the initial wait.
 	if( menuOn == MENU_INIT ):
@@ -77,7 +88,13 @@ func _process( delta ):
 	# Increase the timer each frame.
 	timer += delta
 
+# Handle the input events.
 func _input( ev ):
+	# Handle skip splash screens.
+	if( !ev.is_pressed() and ev.type==InputEvent.MOUSE_BUTTON and ev.button_index==BUTTON_LEFT ):
+		if( menuOn == MENU_SPLASHTEAM5 || menuOn == MENU_SPLASHWARNING ):
+			timer = 999.0;
+
 	# Handle exit.
 	if( ev.is_action( "ui_cancel" ) ):
 		exit()
@@ -153,8 +170,8 @@ func _on_MainMenuJG_pressed():
 	timer = 0.0
 	menuOn = MENU_MAIN
 
-
 func _on_RandomPuzzle_pressed():
 	var root = get_tree().get_root()
 	root.get_child( root.get_child_count() - 1 ).queue_free()
 	root.add_child( ResourceLoader.load( "res://puzzle.scn" ).instance() )
+	
