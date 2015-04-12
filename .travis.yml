@@ -1,8 +1,3 @@
-language: cpp
-compiler:
-  -clang
-  -gcc
-
 notifications:
   email: false
   slack: 0culus:BgVYOhO9TQOEym5UP25ZtsYW
@@ -11,4 +6,6 @@ branches:
   except:
     -requirements
 
+before-script: ./get_godot.sh
 script: make
+
