@@ -2,7 +2,8 @@
 extends Spatial
 
 # Cache the block scene
-var block_scn = preload("res://block.scn")
+var blocks = []
+
 
 # Unique names are needed for every node added to the
 # tree.
@@ -10,6 +11,14 @@ var unique_id = 0
 
 # Called for initialization
 func _ready():
+	# Load the blocks.
+	blocks.append( preload("res://blocks/block_red.scn") )
+	blocks.append( preload("res://blocks/block_green.scn") )
+	blocks.append( preload("res://blocks/block_blue.scn") )
+	blocks.append( preload("res://blocks/block_yellow.scn") )
+	blocks.append( preload("res://blocks/block_orange.scn") )
+	blocks.append( preload("res://blocks/block_purple.scn") )
+
 	var n = 5
 	var block_size = 1
 	var offset = Vector3(0, (n * block_size)/2.0, 0)
@@ -21,7 +30,7 @@ func _ready():
 		for y in _range:
 			for z in _range:
 				# Create a block, name it and add it to the tree
-				var block = block_scn.instance()
+				var block = blocks[randi() % 6].instance()
 				var block_name = "block" + str(unique_id)
 				block.set_name(block_name)
 				get_node("GridView/GridMan").add_child(block)
@@ -34,13 +43,13 @@ func _ready():
 				var pos = Vector3(x * 2, y * 2, z * 2)
 				var node = get_node("GridView/GridMan/" + block_name)
 				var mesh = node.get_node("MeshInstance")
-				var mat = FixedMaterial.new()
+				#var mat = FixedMaterial.new()
 				# pos += offset
 				node.set_translation(pos)
-				mat.set_parameter(FixedMaterial.PARAM_DIFFUSE, Color( \
-					(x - min_) / (max_ - min_), \
-					(y - min_) / (max_ - min_), \
-					(z - min_) / (max_ - min_)  ))
-				mesh.set_material_override(mat)
+				#mat.set_parameter(FixedMaterial.PARAM_DIFFUSE, Color( \
+				#	(x - min_) / (max_ - min_), \
+				#	(y - min_) / (max_ - min_), \
+				#	(z - min_) / (max_ - min_)  ))
+				#mesh.set_material_override(mat)
 
 
