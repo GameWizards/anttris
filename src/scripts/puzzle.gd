@@ -18,38 +18,33 @@ func _ready():
 	blocks.append( preload("res://blocks/block_yellow.scn") )
 	blocks.append( preload("res://blocks/block_orange.scn") )
 	blocks.append( preload("res://blocks/block_purple.scn") )
-
-	var n = 5
-	var block_size = 1
-	var offset = Vector3(0, (n * block_size)/2.0, 0)
-	var min_ = float(-n * block_size / 2)
-	var max_ = float(n * block_size / 2)
-	var _range = range(min_, max_ + 1, block_size);
 	
-	for x in _range:
-		for y in _range:
-			for z in _range:
-				# Create a block, name it and add it to the tree
-				var block = blocks[randi() % 6].instance()
-				var block_name = "block" + str(unique_id)
-				block.set_name(block_name)
-				get_node("GridView/GridMan").add_child(block)
-				
-				# Prepare for next block
-				unique_id += 1
-				
-				# Configure block
-				# Godot uses the forward slashes (/) on all platforms
-				var pos = Vector3(x * 2, y * 2, z * 2)
-				var node = get_node("GridView/GridMan/" + block_name)
-				var mesh = node.get_node("MeshInstance")
-				#var mat = FixedMaterial.new()
-				# pos += offset
-				node.set_translation(pos)
-				#mat.set_parameter(FixedMaterial.PARAM_DIFFUSE, Color( \
-				#	(x - min_) / (max_ - min_), \
-				#	(y - min_) / (max_ - min_), \
-				#	(z - min_) / (max_ - min_)  ))
-				#mesh.set_material_override(mat)
+	# Generate the puzzle.
+	var PuzzleManScript = load( "res://scripts/PuzzleManager.gd" )
+	var puzzleMan = PuzzleManScript.new()
+	var puzzle = puzzleMan.generatePuzzle( puzzleMan.PUZZLE_5x5 )
+	var n = puzzle.puzzleSize
+	
+	# Compute the offset.
+	var offset = Vector3( float( -n * 2.0 / 2.0 ) + .5, float( -n * 2.0 ) / 2.0 + .5, float( -n * 2.0 / 2.0 ) + .5 )
+	
+	print( puzzle.blocks.size() )
+	
+	# Place the blocks in the puzzle.
+	for i in range( puzzle.blocks.size() ):
+		# Create a block, name it and add it to the tree
+		var block = blocks[puzzle.blocks[i].blockType].instance()
+		var block_name = "block" + str( unique_id )
+		block.set_name( block_name )
+		get_node( "GridView/GridMan" ).add_child( block )
+		
+		# Prepare for next block
+		unique_id += 1
+		
+		# Configure block
+		# Godot uses the forward slashes (/) on all platforms
+		var pos = puzzle.blocks[i].blockPos * 2 + offset
+		var node = get_node( "GridView/GridMan/" + block_name )
+		node.set_translation( pos )
 
 
