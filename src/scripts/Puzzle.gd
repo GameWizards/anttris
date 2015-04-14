@@ -25,6 +25,7 @@ func _ready():
 		# Create a block node, add it to the tree
 		var node = block.toNode(self)
 		get_node( "GridView/GridMan" ).add_child( node )
-		node.set_translation(block.blockPos * 2 + offset )
+		get_node( "GridView/GridMan/" + block.name ) \
+			.set_translation(block.blockPos * 2 + offset )
 
 
