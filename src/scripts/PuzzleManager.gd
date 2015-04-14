@@ -34,16 +34,47 @@ func generatePuzzle( type ):
 	
 	var middle = type / 2
 	
-	# Collect all of the block positions.
+	# create all possible positions
+	var shape = []
 	for x in range( type ):
 		for y in range( type ):
 			for z in range( type ):
-				if !(x == middle && y == middle && z == middle):
-					var tb = PickledBlock.new()
-					tb.name = "block" + str(blockID)
-					blockID += 1
-					tb.blockPos = Vector3( x, y, z )
-					puzzle.blocks.append( tb )
+				shape.append(Vector3(x,y,z))
+	
+	# assign blocks to positions
+	var prevBlock = null
+	var even = false
+	for pos in shape:
+		var x = pos.x
+		var y = pos.y
+		var z = pos.z
+		if (x == middle && y == middle && z == middle):
+			continue
+		var b = PickledBlock.new()
+		b.blockPos = pos
+		b.name = "block" + str(blockID)
+		
+		blockID += 1
+		puzzle.blocks.append( b )
+			
+		if (x == y and y == z):
+			b.setBlockClass("LaserBlock")
+		else:
+			if even:
+				var randColor = blockColors[randi() % blockColors.size()]
+				b.setBlockClass("PairedBlock") \
+					.setPairName(prevBlock.name) \
+					.setTextureName(randColor)
+	
+				prevBlock.setBlockClass("PairedBlock") \
+					.setPairName(b.name) \
+					.setTextureName(randColor)
+			even = not even
+			prevBlock = b
+		
+		print(b.toString())
+				
+
 	
 	# TODO, proposed algorithm:
 	# make blocks, pairs are adjacent
@@ -54,15 +85,15 @@ func generatePuzzle( type ):
 	#self.shuffleArray( puzzle.blocks )
 	
 	# Assign block types in pairs.
-	for i in range( 0, puzzle.blocks.size(), 2 ):
-		var randColor = blockColors[randi() % blockColors.size()]
-		puzzle.blocks[i].setBlockClass("PairedBlock") \
-			.setPairName(puzzle.blocks[i+1].name) \
-			.setTextureName(randColor)
-			
-		puzzle.blocks[i+1].setBlockClass("PairedBlock") \
-			.setPairName(puzzle.blocks[i].name) \
-			.setTextureName(randColor)
+#	for i in range( 0, puzzle.blocks.size(), 2 ):
+#		var randColor = blockColors[randi() % blockColors.size()]
+#		puzzle.blocks[i].setBlockClass("PairedBlock") \
+#			.setPairName(puzzle.blocks[i+1].name) \
+#			.setTextureName(randColor)
+#			
+#		puzzle.blocks[i+1].setBlockClass("PairedBlock") \
+#			.setPairName(puzzle.blocks[i].name) \
+#			.setTextureName(randColor)
 	
 	return puzzle
 	
@@ -104,6 +135,9 @@ class PickledBlock:
 	func setTextureName(t):
 		textureName = t
 		return self
+		
+	func toString():
+		return str(name) + ": " + str(blockClass)
 
 	func toNode(gen):
 		# instantiate a block scene, assign the appropriate script to it
@@ -111,7 +145,8 @@ class PickledBlock:
 		n.set_script(load("res://scripts/Blocks/" + blockClass + ".gd"))
 		
 		# configure block node
-		n.setName(name)
+		print(n)
+		n.setName(name).setTexture()
 
 		if blockClass == "PairedBlock":
 			n.setPairName(pairName).setTexture(textureName)

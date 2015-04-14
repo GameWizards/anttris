@@ -3,7 +3,7 @@ extends "AbstractBlock.gd"
 var pairName = null
 var selected = false
 
-func setTexture(textureName):
+func setTexture(textureName="Red"):
 	var img = Image()
 	var mat = FixedMaterial.new()
 	var text = ImageTexture.new()
@@ -11,13 +11,13 @@ func setTexture(textureName):
 	img.load("res://textures/Block_" + textureName + ".png")
 	text.create_from_image(img)
 	mat.set_texture(FixedMaterial.PARAM_DIFFUSE, text)
+	# TODO color the texture: mat.set_parameter(FixedMaterial.PARAM_DIFFUSE, Color(0.5, 0.5, 0))
 
 	self.get_node("MeshInstance").set_material_override(mat)
 	return self
 
 func setPairName(other):
 	pairName = other
-	print(other)
 	return self
 
 # fly away only if self.pairName is selected
@@ -34,12 +34,7 @@ func activate(ev, click_pos, click_normal, justFly=false):
 		if not justFly:
 			pairNode.activate(ev, click_pos, click_normal, true)
 	else:
-		var shrinktweenNode = newTweenNode()
-		var s = 0.5
-		shrinktweenNode.interpolate_method( self, "set_scale", \
-			self.get_scale(), Vector3(s, s, s), \
-			1, Tween.TRANS_BOUNCE, Tween.EASE_OUT )
-		shrinktweenNode.start()
+		scaleTweenNode(0.6).start()
 
 func _ready():
 	set_ray_pickable(true)
