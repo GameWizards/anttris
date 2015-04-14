@@ -23,18 +23,19 @@ func setPairName(other):
 # fly away only if self.pairName is selected
 func activate(ev, click_pos, click_normal, justFly=false):
 	selected = true
+	# get my pair
 	var pairNode = get_node("../" + pairName)
+	
 	if pairNode.selected:
+		# fly away
 		var tweenNode = newTweenNode()
 		tweenNode.interpolate_method( self, "set_translation", \
 			self.get_translation(), self.get_translation().normalized() * far_away_corner, \
 			1, Tween.TRANS_CIRC, Tween.EASE_IN_OUT )
 
 		tweenNode.start()
+		# just one call to activate...
 		if not justFly:
 			pairNode.activate(ev, click_pos, click_normal, true)
 	else:
-		scaleTweenNode(0.6).start()
-
-func _ready():
-	set_ray_pickable(true)
+		scaleTweenNode(1.1, 0.2, Tween.TRANS_EXPO).start()

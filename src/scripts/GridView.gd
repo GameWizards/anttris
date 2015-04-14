@@ -30,6 +30,3 @@ func _input(ev):
 		
 	# record the last position of the mousedelta
 	mouseposlast = Input.get_mouse_pos()
-
-
-

@@ -23,9 +23,8 @@ func _ready():
 	# Place the blocks in the puzzle.
 	for block in puzzle.blocks:
 		# Create a block node, add it to the tree
-		get_node( "GridView/GridMan" ).add_child( block.toNode(self) )
-
-		var node = get_node( "GridView/GridMan/" + block.name )
+		var node = block.toNode(self)
+		get_node( "GridView/GridMan" ).add_child( node )
 		node.set_translation(block.blockPos * 2 + offset )
 
 

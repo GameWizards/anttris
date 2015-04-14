@@ -71,8 +71,6 @@ func generatePuzzle( type ):
 					.setTextureName(randColor)
 			even = not even
 			prevBlock = b
-		
-		print(b.toString())
 				
 
 	
@@ -145,7 +143,6 @@ class PickledBlock:
 		n.set_script(load("res://scripts/Blocks/" + blockClass + ".gd"))
 		
 		# configure block node
-		print(n)
 		n.setName(name).setTexture()
 
 		if blockClass == "PairedBlock":
