@@ -16,8 +16,14 @@ func _ready():
 func set_host(isHost):
 	is_host = isHost
 
-func connnect(address):
-	server = TCP_Server.new()
+func connnect(ip. port):
+	stream = StreamPeerTCP.new()
+	stream.connect(ip, port);
+	
+	if stream.get_status() == stream.STATUS_CONNECTED or stream.get_status() == stream.STATUS_CONNECTING:
+		print("Connecting to " + ip + ":" + str(port));
+		set_process(true)
+		#leave is_network as false to indicate we're still waiting for connection
 	
 	
 func host(port):
@@ -52,4 +58,16 @@ func _process(delta):
 				
 	else:
 		#client processing stuff
-		print("stuff")
+		if !is_network:
+			#Still waiting for connection confirmed
+			if stream.get_status() == stream.STATUS_CONNECTED:
+				print("Connection established!")
+				is_network = true
+				return
+			if stream.get_status() == stream.STATUS_NONE or connection.get_status() == stream.STATUS_ERROR:
+				print("Error establishing connection!")
+				set_process(false)
+				#stop running process loop, cause we have no connection
+			
+		else:
+			#connecton established and confirmed. Do regular data processioin
