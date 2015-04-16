@@ -9,14 +9,12 @@ var puzzleMan
 # Called for initialization
 func _ready():
 	# Generate the puzzle.
+	load('res://scripts/gut.gd').new().test_script('res://scripts/sample_tests.gd')
+	
 	puzzleMan = PuzzleManScript.new()
 	var puzzle = puzzleMan.generatePuzzle( puzzleMan.PUZZLE_5x5 )
 	var n = puzzle.puzzleType
 	
-	var server = PacketPeerUDP()
-	server.connect("127.0.0.1", 666)
-	print(server.get_status())
-
 	# Compute the offset for centering the cubes.
 	var offset = Vector3( float( -n * 2.0 / 2.0 ) + .5, float( -n * 2.0 ) / 2.0 + .5, float( -n * 2.0 / 2.0 ) + .5 )
 
