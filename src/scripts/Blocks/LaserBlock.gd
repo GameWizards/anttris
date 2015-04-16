@@ -47,7 +47,6 @@ func activate(ev, click_pos, click_normal):
 	# fire laser beam
 	var beam = beamScn.instance()
 	beam.set_scale(Vector3(1, 0.9, 0.9))
-	beam.set_translation(Vector3(0.1, 0, 0))
 	beam.set_name(name + "_beam")
 	beam.set_script(Beam)
 
