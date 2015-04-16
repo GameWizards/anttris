@@ -1,3 +1,4 @@
+const PUZZLE_3x3		= 3
 const PUZZLE_5x5		= 5
 const PUZZLE_7x7		= 7
 const blockColors = ["Blue", "Orange", "Red", "Yellow", "Purple", "Green"]

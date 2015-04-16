@@ -9,10 +9,8 @@ var puzzleMan
 # Called for initialization
 func _ready():
 	# Generate the puzzle.
-	load('res://scripts/gut.gd').new().test_script('res://scripts/sample_tests.gd')
-	
 	puzzleMan = PuzzleManScript.new()
-	var puzzle = puzzleMan.generatePuzzle( puzzleMan.PUZZLE_5x5 )
+	var puzzle = puzzleMan.generatePuzzle( puzzleMan.PUZZLE_3x3 )
 	var n = puzzle.puzzleType
 	
 	# Compute the offset for centering the cubes.

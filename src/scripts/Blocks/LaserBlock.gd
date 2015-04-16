@@ -28,6 +28,7 @@ func setColor(col):
 
 # create a beam and activate it
 func activate(ev, click_pos, click_normal):
+	print(click_normal, " POS: ", click_pos)
 	if fired:
 		return
 	fired = true
