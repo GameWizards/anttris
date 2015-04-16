@@ -10,6 +10,8 @@ const blocks = { PairedBlock = preload("Blocks/PairedBlock.gd")
 			   , blockScn    = preload( "res://blocks/block.scn" )
 			   }
 
+var shape = {}
+
 # Stores a puzzle in a convenient class.
 class Puzzle:
 	var puzzleType
@@ -36,22 +38,29 @@ func generatePuzzle( type ):
 
 	var middle = type / 2
 
-	# create all possible positions
-	var shape = []
+	# add all possible positions to a dictionary
 	for x in range( type ):
 		for y in range( type ):
 			for z in range( type ):
-				shape.append(Vector3(x,y,z))
+				shape[Vector3(x,y,z)] = null
 
+	# for testing new lasers
+	var prevLaser = null
+	var laserEven = false
+	###########
+	
 	# assign blocks to positions
 	var prevBlock = null
 	var even = false
 	for pos in shape:
+		# convenience
 		var x = pos.x
 		var y = pos.y
 		var z = pos.z
+		
 		if (x == middle && y == middle && z == middle):
 			continue
+			
 		var b = PickledBlock.new()
 		b.blockPos = pos
 		b.name = "block" + str(blockID)
@@ -59,8 +68,21 @@ func generatePuzzle( type ):
 		blockID += 1
 		puzzle.blocks.append( b )
 
-		if (x == y and y == z):
+		# for testing new lasers
+		if ((y == 0 or y == type-1) and (z == 0 or z == type-1)):
 			b.setBlockClass("LaserBlock")
+			laserEven = not laserEven
+			if prevLaser == null and laserEven:
+				prevLaser = b
+			else:
+				b.setPairName(prevLaser.name).setLaserExtent(prevLaser.blockPos - b.blockPos)
+				prevLaser.setPairName(b.name).setLaserExtent(b.blockPos - prevLaser.blockPos)
+				prevLaser = null
+
+		##########
+			
+			
+			
 		else:
 			if even:
 				var randColor = blockColors[randi() % blockColors.size()]
@@ -73,6 +95,8 @@ func generatePuzzle( type ):
 					.setTextureName(randColor)
 			even = not even
 			prevBlock = b
+		
+		
 
 
 
@@ -145,13 +169,14 @@ class PickledBlock:
 	func toString():
 		return str(name) + ": " + str(blockClass)
 
-	func toNode(gen):
+	func toNode():
 		# instantiate a block scene, assign the appropriate script to it
 		var n = blocks["blockScn"].instance()
 		n.set_script(blocks[blockClass])
 
 		# configure block node
 		n.setName(name).setTexture()
+		n.blockPos = blockPos
 
 		if blockClass == "PairedBlock":
 			n.setPairName(pairName).setTexture(textureName)

@@ -19,19 +19,42 @@ func fire(extent):
 	tweenNodeScale = Tween.new()
 	add_child(tweenNodeScale)
 	
-	# round to whole numbers
-	var extentScale = extent.snapped(1.0) 
+	var gridMan = get_tree().get_root().get_node( "Spatial/GridView/GridMan" )
 
 	# shrink, expand along one axis
-	var scale = 0.5
+	# assumes blocks are 1 unit
+	var timeToFade = 0.5
+	extent = extent + extent.normalized()
+	
 	tweenNodeScale.interpolate_method( self, "set_scale", \
-		self.get_scale(), extentScale, \
-		0.5, Tween.TRANS_BOUNCE, Tween.EASE_OUT )
+		self.get_scale(), extent, \
+		timeToFade, Tween.TRANS_BOUNCE, Tween.EASE_OUT )
 
+	# destroy blocks between the two lasers
+	var alongAxis = extent.abs().max_axis()
+	var r
+	if extent[alongAxis] < 0:
+		r = range(extent[alongAxis] + 2, 0)
+	else:
+		r = range(1, extent[alongAxis] - 1)
+		
+	var pt = get_parent().blockPos
+	for i in r:
+		pt += extent.normalized()
+		var pn = gridMan.get_block(pt)
+		var pn_go_away = pn.scaleTweenNode(0, timeToFade*randf() + 0.1, Tween.TRANS_EXPO)
+		pn_go_away.start()
+		pn_go_away.connect("tween_complete", pn, "removeQ")
+	
+	# connect to the tween_complete signal.
+	# delete the beam on completion, add its children to this node.
+	tweenNodeScale.connect("tween_complete", self, "remove")
+		
 	# keep one end on parent. without this, the beam will be centered
 	tweenNode.interpolate_method( self, "set_translation", \
 			self.get_translation(), extent, \
-			0.2, Tween.TRANS_CIRC, Tween.EASE_IN_OUT )
+			timeToFade, Tween.TRANS_CIRC, Tween.EASE_IN_OUT )
 
 	tweenNode.start()
 	tweenNodeScale.start()
+	

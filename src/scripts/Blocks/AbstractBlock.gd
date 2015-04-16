@@ -1,6 +1,7 @@
 extends RigidBody
 
 var name
+var blockPos
 const far_away_corner = Vector3(80, 80, 80)
 
 func setName(n):
@@ -29,6 +30,10 @@ func newTweenNode():
 	var tween = Tween.new()
 	add_child(tween)
 	return tween
+
+func removeQ(node, key):
+	get_parent().samplePlayer.play("deraj_pop_sound")
+	remove_and_skip()
 
 func setTexture():
 	pass

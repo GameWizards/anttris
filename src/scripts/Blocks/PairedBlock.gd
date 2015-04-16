@@ -25,11 +25,17 @@ func setPairName(other):
 # fly away only if self.pairName is selected
 func activate(ev, click_pos, click_normal, justFly=false):
 	selected = true
+
 	# get my pair sibling
 	# TODO get a pair sibling. have a PairedBlockTracker keeping tabs of which types are selected
-	var pairNode = get_node("../" + pairName)
+	var pairNode = get_parent().get_node(pairName)
+	if not get_parent().has_node(pairName):
+		scaleTweenNode(0.9, 0.2, Tween.TRANS_EXPO).start()
+		return
+
 
 	if pairNode.selected:
+		get_parent().samplePlayer.play("deraj_pop_sound_low")
 		# fly away
 		var tweenNode = newTweenNode()
 		tweenNode.interpolate_method( self, "set_translation", \

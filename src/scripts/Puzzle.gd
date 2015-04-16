@@ -10,7 +10,7 @@ var puzzleMan
 func _ready():
 	# Generate the puzzle.
 	puzzleMan = PuzzleManScript.new()
-	var puzzle = puzzleMan.generatePuzzle( puzzleMan.PUZZLE_3x3 )
+	var puzzle = puzzleMan.generatePuzzle( puzzleMan.PUZZLE_5x5 )
 	var n = puzzle.puzzleType
 	
 	# Compute the offset for centering the cubes.
@@ -19,11 +19,15 @@ func _ready():
 	print("Generated ", puzzle.blocks.size(), " blocks." )
 
 	# Place the blocks in the puzzle.
+	var gridMan = get_node( "GridView/GridMan" )
+	gridMan.shape = puzzleMan.shape
+	gridMan.set_puzzle(puzzle)
 	for block in puzzle.blocks:
 		# Create a block node, add it to the tree
-		var node = block.toNode(self)
-		get_node( "GridView/GridMan" ).add_child( node )
-		get_node( "GridView/GridMan/" + block.name ) \
+		var b = block.toNode()
+		gridMan.shape[b.blockPos] = b
+		gridMan.add_block(b)
+		gridMan.get_child(block.name) \
 			.set_translation(block.blockPos * 2 + offset )
 
 
