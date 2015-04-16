@@ -59,6 +59,12 @@ func activate(ev, click_pos, click_normal):
 	if pairName == null:
 		return
 	var pairNode = get_node("../" + pairName)
+	
+	# break self
+	pairNode.pairName = null
+	pairName = null
+	pairNode.activate(ev, click_pos, click_normal)
+	
 
 	# fire laser beam
 	var beam = beamScn.instance()
@@ -67,9 +73,5 @@ func activate(ev, click_pos, click_normal):
 
 	add_child( beam )
 	beam.fire( vectToPair )
-
-	# connect to the tween_complete signal.
-	# delete the beam on completion, add its children to this node.
-	scaleTween.connect("tween_complete", beam, "remove")
 	
-	get_parent().samplePlayer.play("deraj_pop_sound")
+	get_parent().samplePlayer.play("soundslikewillem_hitting_slinky")
