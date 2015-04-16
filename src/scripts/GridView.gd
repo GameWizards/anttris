@@ -1,4 +1,4 @@
-extends Spatial
+
 
 # global working variables
 var turn = Vector2( 0.0, 0.0 )            # the amount the mouse has turned
@@ -27,6 +27,8 @@ func _input(ev):
 		currentTransform = Matrix3( Vector3(1, 0, 0), PI * turn.y * dtime ) * currentTransform
 		set_transform( Transform( currentTransform ) )
 		
-	# record the last position of the mousedelta
-	mouseposlast = ev.pos 
+		# record the last position of the mousedelta
+	
+	if (ev.type==InputEvent.SCREEN_DRAG or ev.type==InputEvent.MOUSE_MOTION or ev.type==InputEvent.JOYSTICK_MOTION or ev.type==InputEvent.SCREEN_TOUCH):
+		mouseposlast = ev.pos
 	# Android does not like this: Input.get_mouse_pos()

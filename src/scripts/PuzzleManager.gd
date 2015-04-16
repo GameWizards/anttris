@@ -120,6 +120,7 @@ class PickledBlock:
 	var pairName
 	var textureName
 	var blockPos
+	var laserExtent
 
 	func setName(n):
 		name = n
@@ -127,6 +128,10 @@ class PickledBlock:
 
 	func setPairName(n):
 		pairName = n
+		return self
+	
+	func setLaserExtent(n):
+		laserExtent = n
 		return self
 
 	func setBlockClass(c):
@@ -150,4 +155,6 @@ class PickledBlock:
 
 		if blockClass == "PairedBlock":
 			n.setPairName(pairName).setTexture(textureName)
+		if blockClass == "LaserBlock":
+			n.setPairName(pairName).setExtent(laserExtent)
 		return n

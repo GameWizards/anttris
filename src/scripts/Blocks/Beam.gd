@@ -18,16 +18,19 @@ func fire(extent):
 	add_child(tweenNode)
 	tweenNodeScale = Tween.new()
 	add_child(tweenNodeScale)
+	
+	# round to whole numbers
+	var extentScale = extent.snapped(1.0) 
 
 	# shrink, expand along one axis
 	var scale = 0.5
 	tweenNodeScale.interpolate_method( self, "set_scale", \
-		self.get_scale(), Vector3(extent, scale, scale), \
+		self.get_scale(), extentScale, \
 		0.5, Tween.TRANS_BOUNCE, Tween.EASE_OUT )
 
 	# keep one end on parent. without this, the beam will be centered
 	tweenNode.interpolate_method( self, "set_translation", \
-			self.get_translation(), Vector3(extent, 0, 0), \
+			self.get_translation(), extent, \
 			0.2, Tween.TRANS_CIRC, Tween.EASE_IN_OUT )
 
 	tweenNode.start()
