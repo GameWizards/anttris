@@ -1,13 +1,13 @@
 const PUZZLE_5x5		= 5
 const PUZZLE_7x7		= 7
-const blockColors = ["Blue", "Orange", "Red", "Yellow"]
+const blockColors = ["Blue", "Orange", "Red", "Yellow", "Purple", "Green"]
 
 # Preload paired blocks
-const pairedBlock = preload("Blocks/PairedBlock.gd")
-const flyBlock = preload("Blocks/FlyawayTestBlock.gd")
-const blockScn = preload( "res://blocks/block.scn" )
-
-
+const blocks = { PairedBlock = preload("Blocks/PairedBlock.gd")
+			   , LaserBlock  = preload("Blocks/LaserBlock.gd")
+			   , FlyBlock    = preload("Blocks/FlyawayTestBlock.gd")
+			   , blockScn    = preload( "res://blocks/block.scn" )
+			   }
 
 # Stores a puzzle in a convenient class.
 class Puzzle:
@@ -112,6 +112,7 @@ func solvePuzzleSteps( puzzle ):
 	return puzzleSteps
 
 
+# efficient representation of blocks. toNode() generates an actual game object
 class PickledBlock:
 	var name
 	var blockClass
@@ -140,8 +141,8 @@ class PickledBlock:
 
 	func toNode(gen):
 		# instantiate a block scene, assign the appropriate script to it
-		var n = blockScn.instance()
-		n.set_script(load("res://scripts/Blocks/" + blockClass + ".gd"))
+		var n = blocks["blockScn"].instance()
+		n.set_script(blocks[blockClass])
 
 		# configure block node
 		n.setName(name).setTexture()

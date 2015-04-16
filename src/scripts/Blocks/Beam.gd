@@ -18,13 +18,13 @@ func fire(extent):
 	add_child(tweenNode)
 	tweenNodeScale = Tween.new()
 	add_child(tweenNodeScale)
-	
+
 	# shrink, expand along one axis
 	var scale = 0.5
 	tweenNodeScale.interpolate_method( self, "set_scale", \
 		self.get_scale(), Vector3(extent, scale, scale), \
 		0.5, Tween.TRANS_BOUNCE, Tween.EASE_OUT )
-		
+
 	# keep one end on parent. without this, the beam will be centered
 	tweenNode.interpolate_method( self, "set_translation", \
 			self.get_translation(), Vector3(extent, 0, 0), \
