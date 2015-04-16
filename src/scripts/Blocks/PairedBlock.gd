@@ -34,7 +34,9 @@ func activate(ev, click_pos, click_normal, justFly=false):
 		return
 
 
-	if pairNode.selected:
+	if not pairNode.selected:
+		scaleTweenNode(1.1, 0.2, Tween.TRANS_EXPO).start()
+	else:
 		get_parent().samplePlayer.play("deraj_pop_sound_low")
 		# fly away
 		var tweenNode = newTweenNode()
@@ -46,5 +48,3 @@ func activate(ev, click_pos, click_normal, justFly=false):
 		# just one call to activate...
 		if not justFly:
 			pairNode.activate(ev, click_pos, click_normal, true)
-	else:
-		scaleTweenNode(1.1, 0.2, Tween.TRANS_EXPO).start()

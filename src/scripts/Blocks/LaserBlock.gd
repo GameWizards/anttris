@@ -5,6 +5,7 @@ var fired = false
 
 var vectToPair = Vector3()
 var pairName = null
+var selected = false
 
 const beamScn = preload( "res://blocks/block.scn" )
 const Beam = preload("res://scripts/Blocks/Beam.gd")
@@ -40,6 +41,21 @@ func setExtent(laserExtent):
 
 # create a beam and activate it
 func activate(ev, click_pos, click_normal):
+	selected = true
+
+	# get my pair sibling
+	# TODO get a pair sibling. have a PairedBlockTracker keeping tabs of which types are selected
+	var pairNode = get_parent().get_node(pairName)
+	if not get_parent().has_node(pairName):
+		scaleTweenNode(0.9, 0.2, Tween.TRANS_EXPO).start()
+		return
+
+
+	if not pairNode.selected:
+		scaleTweenNode(1.1, 0.2, Tween.TRANS_EXPO).start()
+		return
+		
+
 	if fired:
 		return
 	fired = true
@@ -56,16 +72,9 @@ func activate(ev, click_pos, click_normal):
 		0.5, Tween.TRANS_ELASTIC, Tween.EASE_IN_OUT )
 	tweenNode.start()
 
-	if pairName == null:
-		return
-	var pairNode = get_node("../" + pairName)
-	
 	# break self
-	pairNode.pairName = null
-	pairName = null
 	pairNode.activate(ev, click_pos, click_normal)
 	
-
 	# fire laser beam
 	var beam = beamScn.instance()
 	beam.set_name(name + "_beam")
