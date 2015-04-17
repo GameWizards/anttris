@@ -18,6 +18,7 @@ func _ready():
 	add_child( tween_out )
 	tween_out.interpolate_method( self, "set_pos", Vector2( 0.0, 0.0 ), Vector2( -OS.get_video_mode_size().x, 0 ), 1.0, Tween.TRANS_CUBIC, Tween.EASE_IN_OUT )
 	tween_out.interpolate_method( self, "set_opacity", 1.0, 0.0, 0.75, Tween.TRANS_CUBIC, Tween.EASE_IN_OUT )
+	
 
 # Fades the whole GUI in. This is the same for all GUI elements.
 func guiIn():

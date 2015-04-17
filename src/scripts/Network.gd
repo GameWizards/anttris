@@ -23,12 +23,12 @@ func _ready():
 func set_host(isHost):
 	is_host = isHost
 
-func connnect(ip. port):
+func connect_to(ip, port):
+	print("Connecting to " + ip + ":" + str(port));
 	stream = StreamPeerTCP.new()
 	stream.connect(ip, port);
 	
 	if stream.get_status() == stream.STATUS_CONNECTED or stream.get_status() == stream.STATUS_CONNECTING:
-		print("Connecting to " + ip + ":" + str(port));
 		set_process(true)
 		#leave is_network as false to indicate we're still waiting for connection
 	
@@ -79,7 +79,7 @@ func _process(delta):
 				print("Connection established!")
 				is_network = true
 				return
-			if stream.get_status() == stream.STATUS_NONE or connection.get_status() == stream.STATUS_ERROR:
+			if stream.get_status() == stream.STATUS_NONE or stream.get_status() == stream.STATUS_ERROR:
 				print("Error establishing connection!")
 				set_process(false)
 				#stop running process loop, cause we have no connection
@@ -89,7 +89,7 @@ func _process(delta):
 			#check if we have any data
 			if stream.get_available_packet_count() > 0:
 				for i in range(stream.get_available_packet_count()):
-					var data_array = straem.get_var()
+					var data_array = stream.get_var()
 					process_server_data(data_array)
 					#Call the server process script cuase it's peer to peer and we have the same functions!
 
@@ -105,13 +105,19 @@ func process_server_data(data_array):
 	#no swithc statement. I'm crying right now while i type this. My fingers are bleeding
 	if ID == REMOTE_START:
 		#do start something or something whut
+		print()
 	elif ID == REMOTE_FINISH:
 		#again, do ending stuff
+		print()
 	elif ID == REMOTE_QUIT:
 		#omg those jerks!
+		print()
 	elif ID == REMOTE_SCORE:
 		#what was their score?
+		print()
 	elif ID == REMOTE_BLOCK:
 		#get their block ifnormation!
+		print()
 	elif ID == REMOTE_MSG:
 		#sent some sort of message?
+		print()
