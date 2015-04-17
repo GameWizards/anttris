@@ -2,7 +2,6 @@ extends Button
 
 var IPPanel
 
-const port=30041
 
 func _ready():
 	connect("pressed", self, "pressed")
@@ -14,6 +13,6 @@ function pressed():
 	if (ip.empty()):
 		return
 	
-	get_node("/root/Network").connect_to(ip, port)
+	get_node("/root/Network").connect_to(ip, get_node("/root/Network").port)
 
 

@@ -8,6 +8,8 @@ const REMOTE_SCORE = 3
 const REMOTE_BLOCK = 4
 const REMOTE_MSG = 5
 
+var port=31111
+
 var is_network
 var is_host
 var server
@@ -17,11 +19,15 @@ var connections
 var stream
 
 func _ready():
+	print("Network ready!")
 	is_network = false
 	is_host = false
 
 func set_host(isHost):
 	is_host = isHost
+	
+func set_port(pt):
+	port = pt
 
 func connect_to(ip, port):
 	print("Connecting to " + ip + ":" + str(port));
@@ -34,6 +40,7 @@ func connect_to(ip, port):
 	
 	
 func host(port):
+	print("Starting Server")
 	server = TCP_Server.new()
 	is_host = true
 	if server.listen(port) == 0:
