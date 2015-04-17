@@ -60,7 +60,7 @@ func _process(delta):
 				return
 			
 			#check if we have any data
-			if stream.get_available_packet_count():
+			if stream.get_available_packet_count() > 0:
 				#have to be careful about more than 1 packet per frame
 				for i in range(stream.get_available_packet_count()):
 					var data_array = stream.get_var()
@@ -81,8 +81,12 @@ func _process(delta):
 			
 		else:
 			#connecton established and confirmed. Do regular data processing
-			
-
+			#check if we have any data
+			if stream.get_available_packet_count() > 0:
+				for i in range(stream.get_available_packet_count()):
+					var data_array = straem.get_var()
+					process_server_data(data_array)
+					#Call the server process script cuase it's peer to peer and we have the same functions!
 
 
 
