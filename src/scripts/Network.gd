@@ -46,17 +46,22 @@ func _process(delta):
 		#server processing stuff
 		
 	#use isNetwork to determine if we're still listening
-		if is_network:
+		if !is_network:
 			if server.is_connection_available():
 				client = server.take_connection()
 				stream = PacketPeerStream.new()
 				stream.set_stream_peer(client)
 				print("Connecting with player...")
+				is_network = true
+				#MAKE CALL TO PUZZLE SELECTER
 		else: #not listening anymore, have a client
 			#do quick check to make sure we're still
 			#connected
 			if !client.is_connected():
 				print("Lost Connection!");
+				is_network = false
+				set_process(false)
+				#QUIT GAME
 				return
 			
 			#check if we have any data
