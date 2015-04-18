@@ -8,6 +8,7 @@ const BLOCK_PAIR	= 2
 const BLOCK_GOAL	= 3
 
 const blockColors = ["Blue", "Orange", "Red", "Yellow", "Purple", "Green"]
+const wildColors = ["WildBlue", "WildOrange", "WildRed", "WildYellow", "WildPurple", "WildGreen"]
 
 # Preload paired blocks
 const blocks = { PairedBlock = preload("Blocks/PairedBlock.gd")
@@ -112,7 +113,7 @@ func generatePuzzle( layers, difficulty ):
 
 		var t = getBlockType( difficulty, x, y, z )
 		
-		if t == BLOCK_GOAL or t == BLOCK_WILD:
+		if t == BLOCK_GOAL:
 			continue
 
 		var b = PickledBlock.new()
@@ -124,6 +125,11 @@ func generatePuzzle( layers, difficulty ):
 
 		if t == BLOCK_LASER:
 			b.setBlockClass("LaserBlock")
+			continue
+		
+		if t == BLOCK_WILD:
+			b.setBlockClass("PairedBlock") \
+				.setTextureName(wildColors[randi() % wildColors.size()])
 			continue
 
 		if even:

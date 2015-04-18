@@ -10,7 +10,7 @@ var puzzleMan
 func _ready():
 	# Generate the puzzle.
 	puzzleMan = PuzzleManScript.new()
-	var puzzle = puzzleMan.generatePuzzle( 2, puzzleMan.DIFF_HARD )
+	var puzzle = puzzleMan.generatePuzzle( 2, puzzleMan.DIFF_EASY )
 	#var n = puzzle.puzzleType
 	
 	# Compute the offset for centering the cubes.
