@@ -64,6 +64,9 @@ func _ready():
 	
 	Globals.set("Network", load("res://scripts/Network.gd").new())
 	network = Globals.get("Network")
+	
+	#get_tree().get_root().add_child(network)
+	network.root = get_tree().get_root()
 
 # Function to update the GUI.
 func _process( delta ):
@@ -118,6 +121,7 @@ func _on_Options_pressed():
 	Menu_Options.guiIn()
 	timer = 0.0
 	menuOn = MENU_OPTIONS
+	get_tree().get_root().get_node("GUIManager/OptionsMenu/Panel/PortField/LineEdit").set_text(str(network.port))
 
 func _on_Cancel_pressed():
 	Menu_Options.guiOut()
