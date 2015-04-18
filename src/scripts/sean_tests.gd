@@ -1,4 +1,4 @@
-extends "res://scripts/gut.gd".TestCube
+extends "res://scripts/gut.gd".Test
 
 func setup():
 	gut.p("ran setup", 2)
