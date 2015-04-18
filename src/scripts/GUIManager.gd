@@ -5,6 +5,9 @@
 
 extends Node
 
+# network variables
+var network
+
 # State variables.
 var menuOn
 var splashTween
@@ -58,6 +61,9 @@ func _ready():
 	Menu_HostGame = get_node( "HostGame" )
 	Menu_JoinGame = get_node( "JoinGame" )
 	Menu_Options = get_node( "OptionsMenu" )
+	
+	Globals.set("Network", load("res://scripts/Network.gd").new())
+	network = Globals.get("Network")
 
 # Function to update the GUI.
 func _process( delta ):
