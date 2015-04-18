@@ -134,6 +134,7 @@ func _on_MainMenuHG_pressed():
 	Menu_Main.guiIn()
 	timer = 0.0
 	menuOn = MENU_MAIN
+	get_node("/root/Network").disconnect()
 
 func _on_HostGame_pressed():
 	Menu_MP.guiOut()

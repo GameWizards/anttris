@@ -13,6 +13,8 @@ function pressed():
 	if (ip.empty()):
 		return
 	
-	get_node("/root/Network").connect_to(ip, get_node("/root/Network").port)
+	var network = get_node("/root/Network")
+	if !network.is_client:
+		network.connect_to(ip, network.port)
 
 

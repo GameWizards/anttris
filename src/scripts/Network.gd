@@ -12,9 +12,10 @@ var port = 54321
 
 var is_network
 var is_host
+var is_client
 var server
 var client
-var connections
+var connection
 #Store the peer stream used by both the lcient and server
 var stream
 
@@ -29,8 +30,11 @@ func set_host(isHost):
 func set_port(pt):
 	port = pt;
 
-func connect(ip, pt):
+func connect_to(ip, pt):
+	is_client = true #just to tell if it's doing something :S
+	connection = PacketPeerStream.new()
 	stream = StreamPeerTCP.new()
+	connection.set_stream_peer(stream)
 	stream.connect(ip, pt);
 	
 	if stream.get_status() == stream.STATUS_CONNECTED or stream.get_status() == stream.STATUS_CONNECTING:
@@ -41,6 +45,7 @@ func connect(ip, pt):
 	
 func host(pt):
 	server = TCP_Server.new()
+	connection = PacketPeerStream.new()
 	is_host = true
 	print("Starting listening server on port " + str(pt))
 	if server.listen(pt) == 0:
@@ -52,15 +57,15 @@ func host(pt):
 func _process(delta):
 	if (is_host):
 		#server processing stuff
-		
-	#use isNetwork to determine if we're still listening
+		#use isNetwork to determine if we're still listening
 		if !is_network:
 			if server.is_connection_available():
-				client = server.take_connection()
-				stream = PacketPeerStream.new()
-				stream.set_stream_peer(client)
+				stream = server.take_connection()
+				connection = PacketPeerStream.new()
+				connection.set_stream_peer(stream)
 				print("Connecting with player...")
 				is_network = true
+				server.close()
 				#MAKE CALL TO PUZZLE SELECTER
 		else: #not listening anymore, have a client
 			#do quick check to make sure we're still
@@ -71,12 +76,11 @@ func _process(delta):
 				set_process(false)
 				#QUIT GAME
 				return
-			
 			#check if we have any data
-			if stream.get_available_packet_count() > 0:
+			if connection.get_available_packet_count() > 0:
 				#have to be careful about more than 1 packet per frame
-				for i in range(stream.get_available_packet_count()):
-					var data_array = stream.get_var()
+				for i in range(connection.get_available_packet_count()):
+					var data_array = connection.get_var()
 					process_server_data(data_array)
 					
 	else:
@@ -90,19 +94,29 @@ func _process(delta):
 			if stream.get_status() == stream.STATUS_NONE or stream.get_status() == stream.STATUS_ERROR:
 				print("Error establishing connection!")
 				set_process(false)
+				return
 				#stop running process loop, cause we have no connection
-			
 		else:
 			#connecton established and confirmed. Do regular data processing
 			#check if we have any data
-			if stream.get_available_packet_count() > 0:
-				for i in range(stream.get_available_packet_count()):
-					var data_array = stream.get_var()
+			if connection.get_available_packet_count() > 0:
+				for i in range(connection.get_available_packet_count()):
+					var data_array = connection.get_var()
 					process_server_data(data_array)
 					#Call the server process script cuase it's peer to peer and we have the same functions!
 
 
-
+func disconnect():
+	#need to do lots of things! If the server is open and listening, but has no connection just stop listening!
+	if is_host and !is_network:
+		#this means we're waiting for connection still
+		server.stop()
+		print("closing server listener!")
+	elif is_host and is_network:
+		#have connections. Need to send them stop packet, and close connection
+		stream.put_data([REMOTE_QUIT])
+		stream.disconnect()
+		print("Closing connection to remote player...")
 
 
 
