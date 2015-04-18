@@ -43,12 +43,12 @@ func _ready():
 	timer = 0.0
 	set_process( true )
 	set_process_input( true )
-	
+
 	# Setup the splash fader tween.
 	splashTween = Tween.new()
 	get_node( "SplashFader" ).add_child( splashTween )
 	splashTween.interpolate_method( get_node( "SplashFader" ), "set_opacity", 1.0, 0.0, 1.0, Tween.TRANS_CUBIC, Tween.EASE_IN_OUT )
-	
+
 	# Gather all of the menus.
 	Splash_Team5 = get_node( "SplashTeam5" )
 	Splash_Warning = get_node( "SplashWarning" )
@@ -67,7 +67,7 @@ func _process( delta ):
 			menuOn = MENU_SPLASHTEAM5
 			timer = 0.0
 			Splash_Team5.guiIn()
-			
+
 	# Handle the Team5 splash screen.
 	if( menuOn == MENU_SPLASHTEAM5 ):
 		if( timer > splashTimer ):
@@ -75,7 +75,7 @@ func _process( delta ):
 			timer = 0.0
 			Splash_Team5.guiOut()
 			Splash_Warning.guiIn()
-			
+
 	# Handle the warning splash screen.
 	if( menuOn == MENU_SPLASHWARNING ):
 		if( timer > warningTimer ):
@@ -84,7 +84,7 @@ func _process( delta ):
 			Splash_Warning.guiOut()
 			Menu_Main.guiIn()
 			splashTween.start()
-			
+
 	# Increase the timer each frame.
 	timer += delta
 
@@ -106,6 +106,7 @@ func exit():
 func _on_Exit_pressed():
 	exit()
 
+# TODO save to ConfigFile, load this on beginning
 func _on_Options_pressed():
 	Menu_Main.guiOut()
 	Menu_Options.guiIn()
@@ -174,4 +175,4 @@ func _on_RandomPuzzle_pressed():
 	var root = get_tree().get_root()
 	root.get_child( root.get_child_count() - 1 ).queue_free()
 	root.add_child( ResourceLoader.load( "res://puzzle.scn" ).instance() )
-	
+

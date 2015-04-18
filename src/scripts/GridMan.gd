@@ -1,17 +1,13 @@
 extends Spatial
 
+# block positions
 var shape
 
-# used for score
-var score = 0
-var undoCount = 0
-
-# used for undo
-var blocksRemoved = []
-
+# sounds
 var samplePlayer = SamplePlayer.new()
 
 func add_block(b):
+	shape[b.blockPos] = b
 	add_child(b)
 
 func get_block(pos):
