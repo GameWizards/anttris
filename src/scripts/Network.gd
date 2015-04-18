@@ -116,7 +116,7 @@ func disconnect():
 		print("closing server listener!")
 	elif is_host and is_network:
 		#have connections. Need to send them stop packet, and close connection
-		stream.put_data([REMOTE_QUIT])
+		connection.put_var([REMOTE_QUIT])
 		stream.disconnect()
 		print("Closing connection to remote player...")
 
@@ -125,14 +125,14 @@ func disconnect():
 func process_server_data(data_array):
 	#have an array of data. First element should be identifying int
 	var ID = data_array[0]
-	
+	print(ID)
 	#no swithc statement. I'm crying right now while i type this. My fingers are bleeding
 	if ID == REMOTE_START:
 		#do start something or something whut
 		print("remote_stuff")
 	elif ID == REMOTE_FINISH:
 		#again, do ending stuff
-		print("remote_finish")
+		print("remote_finish: " + str(data_array[1]))
 	elif ID == REMOTE_QUIT:
 		#omg those jerks!
 		print("remote_quit")
@@ -145,6 +145,21 @@ func process_server_data(data_array):
 	elif ID == REMOTE_MSG:
 		#sent some sort of message?
 		print("remote_msg")
+
+func send_start():
+	if !is_network:
+		print("Error sending start packet: not connected!")
+		return
+	var er = connection.put_var([REMOTE_START])
+	print("Sending start and got [" + str(er) + "]")
+
+func send_finish(score):
+	if !is_network:
+		print("Error sending finish packet: not connected!")
+		return
+	connection.put_var([REMOTE_FINISH, score])
+
+
 
 func change_scene(scene):
 	var root = get_tree().get_root()
