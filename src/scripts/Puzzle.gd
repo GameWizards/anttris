@@ -12,7 +12,7 @@ func _ready():
 	puzzleMan = PuzzleManScript.new()
 	var puzzle = puzzleMan.generatePuzzle( puzzleMan.PUZZLE_5x5 )
 	var n = puzzle.puzzleType
-	
+
 	# Compute the offset for centering the cubes.
 	var offset = Vector3( float( -n * 2.0 / 2.0 ) + .5, float( -n * 2.0 ) / 2.0 + .5, float( -n * 2.0 / 2.0 ) + .5 )
 

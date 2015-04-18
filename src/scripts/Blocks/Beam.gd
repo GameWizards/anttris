@@ -18,14 +18,14 @@ func fire(extent):
 	add_child(tweenNode)
 	tweenNodeScale = Tween.new()
 	add_child(tweenNodeScale)
-	
+
 	var gridMan = get_tree().get_root().get_node( "Spatial/GridView/GridMan" )
 
 	# shrink, expand along one axis
 	# assumes blocks are 1 unit
 	var timeToFade = 0.5
 	extent = extent + extent.normalized()
-	
+
 	tweenNodeScale.interpolate_method( self, "set_scale", \
 		self.get_scale(), extent, \
 		timeToFade, Tween.TRANS_BOUNCE, Tween.EASE_OUT )
@@ -37,7 +37,7 @@ func fire(extent):
 		r = range(extent[alongAxis] + 2, 0)
 	else:
 		r = range(1, extent[alongAxis] - 1)
-		
+
 	var pt = get_parent().blockPos
 	for i in r:
 		pt += extent.normalized()
@@ -45,11 +45,11 @@ func fire(extent):
 		var pn_go_away = pn.scaleTweenNode(0, timeToFade*randf() + 0.1, Tween.TRANS_EXPO)
 		pn_go_away.start()
 		pn_go_away.connect("tween_complete", pn, "removeQ")
-	
+
 	# connect to the tween_complete signal.
 	# delete the beam on completion, add its children to this node.
 	tweenNodeScale.connect("tween_complete", self, "remove")
-		
+
 	# keep one end on parent. without this, the beam will be centered
 	tweenNode.interpolate_method( self, "set_translation", \
 			self.get_translation(), extent, \
@@ -57,4 +57,4 @@ func fire(extent):
 
 	tweenNode.start()
 	tweenNodeScale.start()
-	
+

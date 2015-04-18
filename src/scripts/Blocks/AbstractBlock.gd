@@ -31,7 +31,7 @@ func newTweenNode():
 	add_child(tween)
 	return tween
 
-func removeQ(node, key):
+func remove_with_pop(node, key):
 	get_parent().samplePlayer.play("deraj_pop_sound")
 	remove_and_skip()
 

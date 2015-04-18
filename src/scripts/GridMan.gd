@@ -1,10 +1,5 @@
 extends Spatial
 
-# used for paired selection
-var selectedBlockName = null
-var selectedLaserName = null
-var puzzle = null
-
 var shape
 
 # used for score
@@ -18,7 +13,7 @@ var samplePlayer = SamplePlayer.new()
 
 func add_block(b):
 	add_child(b)
-	
+
 func get_block(pos):
 	if shape.has(pos):
 		return shape[pos]
@@ -31,6 +26,5 @@ func set_puzzle(puzzle):
 	samplePlayer.set_voice_count(puzzle.puzzleType)
 	samplePlayer.set_sample_library(ResourceLoader.load("new_samplelibrary.xml"))
 
-	
 
 

@@ -14,7 +14,6 @@ const laserBlockImg = Image() # TODO preload this somewhere else
 # colorify and
 func setTexture(color=Color(0.5, 0, 0)):
 	var text = ImageTexture.new()
-	
 	mat = FixedMaterial.new()
 
 	laserBlockImg.load("res://textures/Block_Laser.png")
@@ -26,7 +25,6 @@ func setTexture(color=Color(0.5, 0, 0)):
 	self.get_node("MeshInstance").set_material_override(mat)
 
 	return self
-
 
 func setPairName(other):
 	pairName = other
@@ -44,21 +42,23 @@ func activate(ev, click_pos, click_normal):
 	selected = true
 
 	# get my pair sibling
-	# TODO get a pair sibling. have a PairedBlockTracker keeping tabs of which types are selected
 	var pairNode = get_parent().get_node(pairName)
+
+	# is my pair Nil?
 	if not get_parent().has_node(pairName):
 		scaleTweenNode(0.9, 0.2, Tween.TRANS_EXPO).start()
 		return
 
-
 	if not pairNode.selected:
 		scaleTweenNode(1.1, 0.2, Tween.TRANS_EXPO).start()
 		return
-		
 
 	if fired:
 		return
+
 	fired = true
+	pairNode.activate(ev, click_pos, click_normal)
+# BUG: firing two beams, one for each laser in the pair?
 
 	var tweenNode = newTweenNode()
 
@@ -72,15 +72,13 @@ func activate(ev, click_pos, click_normal):
 		0.5, Tween.TRANS_ELASTIC, Tween.EASE_IN_OUT )
 	tweenNode.start()
 
-	# break self
-	pairNode.activate(ev, click_pos, click_normal)
-	
 	# fire laser beam
 	var beam = beamScn.instance()
+
 	beam.set_name(name + "_beam")
 	beam.set_script(Beam)
 
 	add_child( beam )
 	beam.fire( vectToPair )
-	
+
 	get_parent().samplePlayer.play("soundslikewillem_hitting_slinky")

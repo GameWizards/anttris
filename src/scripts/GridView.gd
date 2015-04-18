@@ -11,7 +11,7 @@ var orbitrate = 10        # the rate the camera orbits the target when the mouse
 func _ready():
 	# Initalization here
 	set_process_input(true)      # process user input events here
-	
+
 # called to handle a user input event
 func _input(ev):
 	# If the mouse has been moved
@@ -26,9 +26,9 @@ func _input(ev):
 		currentTransform = Matrix3( Vector3(0, 1, 0), PI * turn.x * dtime ) * currentTransform
 		currentTransform = Matrix3( Vector3(1, 0, 0), PI * turn.y * dtime ) * currentTransform
 		set_transform( Transform( currentTransform ) )
-		
+
 		# record the last position of the mousedelta
-	
+
 	if (ev.type==InputEvent.SCREEN_DRAG or ev.type==InputEvent.MOUSE_MOTION or ev.type==InputEvent.JOYSTICK_MOTION or ev.type==InputEvent.SCREEN_TOUCH):
 		mouseposlast = ev.pos
 	# Android does not like this: Input.get_mouse_pos()
