@@ -6,22 +6,34 @@ const BLOCK_LASER	= 0
 const BLOCK_WILD	= 1
 const BLOCK_PAIR	= 2
 const BLOCK_GOAL	= 3
+const BLOCK_BLOCK   = 4
 
 const blockColors = ["Blue", "Orange", "Red", "Yellow", "Purple", "Green"]
 const wildColors = ["WildBlue", "WildOrange", "WildRed", "WildYellow", "WildPurple", "WildGreen"]
 
 # Preload paired blocks
-const blocks = { PairedBlock = preload("Blocks/PairedBlock.gd")
-			   , LaserBlock  = preload("Blocks/LaserBlock.gd")
-			   , FlyBlock    = preload("Blocks/FlyawayTestBlock.gd")
-			   , blockScn    = preload( "res://blocks/block.scn" )
-			   }
+const blockScn = preload( "res://blocks/block.scn" )
+const blocks = [ preload( "Blocks/LaserBlock.gd" )
+			   , preload( "Blocks/AbstractBlock.gd" )
+			   , preload( "Blocks/PairedBlock.gd" )
+			   , preload( "Blocks/AbstractBlock.gd" )
+			   ]
+
+#const blocks = { PairedBlock = preload("Blocks/PairedBlock.gd")
+#			   , LaserBlock  = preload("Blocks/LaserBlock.gd")
+#			   , FlyBlock    = preload("Blocks/FlyawayTestBlock.gd")
+#			   , blockScn    = preload( "res://blocks/block.scn" )
+#			   }
+
+# Hash map of all possible positions
+var shape = {}
 
 # Hash map of all possible positions
 var shape = {}
 
 # Stores a puzzle in a convenient class.
 class Puzzle:
+	var puzzleName
 	var puzzleLayers
 	var blocks = []
 	
@@ -104,25 +116,27 @@ func generatePuzzle( layers, difficulty ):
 	var puzzle = Puzzle.new()
 	puzzle.puzzleLayers = layers
 
-	# Calculate puzzle size.
-	#var puzzSize = layers + 2
-	#var middle = puzzSize / 2
-
 	# Create all possible positions.
-	var pairblocks = []
-	var lasers = []
-	var wildblocks = []
+	var allblocks = []
 	for x in range( -layers, layers + 1 ):
 		for y in range( -layers, layers + 1 ):
 			for z in range( -layers, layers + 1 ):
+				allblocks.append(Vector3(x,y,z))
+				
+	shuffleArray( allblocks )
+
 				pairblocks.append(Vector3(x,y,z))
 				shape[Vector3(x,y,z)] = null
 
 	# Assign lasers.
 
-	# assign blocks to positions
+	# Assign block types based on position.
 	var prevBlock = null
 	var even = false
+	var prevLaser = null
+	var laserEven = false
+	
+	for pos in allblocks:
 
 	var prevLaser = null
 	var laserEven = false
@@ -130,8 +144,6 @@ func generatePuzzle( layers, difficulty ):
 		var x = pos.x
 		var y = pos.y
 		var z = pos.z
-#		if (x == middle && y == middle && z == middle):
-#			continue
 
 		var t = getBlockType( difficulty, x, y, z )
 
@@ -140,13 +152,13 @@ func generatePuzzle( layers, difficulty ):
 
 		var b = PickledBlock.new()
 		b.blockPos = pos
-		b.name = "block" + str(blockID)
+		b.name = blockID
 
 		blockID += 1
 		puzzle.blocks.append( b )
 
 		if t == BLOCK_LASER:
-			b.setBlockClass("LaserBlock")
+			b.setBlockClass(BLOCK_LASER)
 			if laserEven:
 				b.setPairName(prevLaser.name) \
 				.setLaserExtent(prevLaser.blockPos - b.blockPos)
@@ -158,17 +170,17 @@ func generatePuzzle( layers, difficulty ):
 			continue
 
 		if t == BLOCK_WILD:
-			b.setBlockClass("PairedBlock") \
+			b.setBlockClass(BLOCK_PAIR) \
 				.setTextureName(wildColors[randi() % wildColors.size()])
 			continue
 
 		if even:
 			var randColor = blockColors[randi() % blockColors.size()]
-			b.setBlockClass("PairedBlock") \
+			b.setBlockClass(BLOCK_PAIR) \
 				.setPairName(prevBlock.name) \
 				.setTextureName(randColor)
 
-			prevBlock.setBlockClass("PairedBlock") \
+			prevBlock.setBlockClass(BLOCK_PAIR) \
 				.setPairName(b.name) \
 				.setTextureName(randColor)
 		even = not even
@@ -185,11 +197,11 @@ class PickledBlock:
 	var blockPos
 	var laserExtent
 
-	func setName(n):
+	func setID(n):
 		name = n
 		return self
 
-	func setPairName(n):
+	func setPairID(n):
 		pairName = n
 		return self
 
@@ -210,16 +222,17 @@ class PickledBlock:
 
 	func toNode():
 		# instantiate a block scene, assign the appropriate script to it
-		var n = blocks["blockScn"].instance()
+		var n = blockScn.instance()
 		n.set_script(blocks[blockClass])
 
 		# configure block node
 		n.setName(name).setTexture()
 		n.blockPos = blockPos
 
-		if blockClass == "PairedBlock":
+		if blockClass == BLOCK_PAIR:
 			n.setPairName(pairName).setTexture(textureName)
-		if blockClass == "LaserBlock":
+
+		if blockClass == BLOCK_LASER:
 			n.setPairName(pairName).setExtent(laserExtent)
 		return n
 

@@ -8,9 +8,7 @@ const REMOTE_BLOCK = 4
 const REMOTE_MSG = 5
 
 var port = 54321
-
 var root
-
 var isNetwork
 var isHost
 var isClient
@@ -179,9 +177,6 @@ func sendQuit():
 
 
 func changeScene(scene):
-	
 	root.get_child( root.get_child_count() - 1 ).queue_free()
 	#root.get_child( 0).queue_free()
-	
-	
 	root.add_child( ResourceLoader.load( scene ).instance() )
