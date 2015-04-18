@@ -65,12 +65,13 @@ func _process(delta):
 				connection.set_stream_peer(stream)
 				print("Connecting with player...")
 				is_network = true
-				server.close()
+				server.stop()
+				change_scene("res://network_test.scn")
 				#MAKE CALL TO PUZZLE SELECTER
 		else: #not listening anymore, have a client
 			#do quick check to make sure we're still
 			#connected
-			if !client.is_connected():
+			if !stream.is_connected():
 				print("Lost Connection!");
 				is_network = false
 				set_process(false)
@@ -90,6 +91,7 @@ func _process(delta):
 			if stream.get_status() == stream.STATUS_CONNECTED:
 				print("Connection established!")
 				is_network = true
+				change_scene("res://network_test.scn")
 				return
 			if stream.get_status() == stream.STATUS_NONE or stream.get_status() == stream.STATUS_ERROR:
 				print("Error establishing connection!")
@@ -143,3 +145,8 @@ func process_server_data(data_array):
 	elif ID == REMOTE_MSG:
 		#sent some sort of message?
 		print("remote_msg")
+
+func change_scene(scene):
+	var root = get_tree().get_root()
+	root.get_child( root.get_child_count() - 1 ).queue_free()
+	root.add_child( ResourceLoader.load( scene ).instance() )
