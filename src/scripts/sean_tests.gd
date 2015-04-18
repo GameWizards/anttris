@@ -8,7 +8,9 @@ func setup():
 func teardown():
 	gut.p("ran teardown")
 
-func test_assert_eq_number_is_equal():
+func test_assert_eq_block_name_is_equal():
 	var pMan = puzzleManScript.new()
 	var pickle = pMan.PickledBlock.new()
-	gut.assert_eq('asf', 'asdf', "Should pass")
+	pickle.setName("TestPickledBlock")
+	var node = pickle.toNode()
+	gut.assert_eq(node.name, 'TestPickledBlock', "Should pass")
