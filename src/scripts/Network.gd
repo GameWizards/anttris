@@ -118,6 +118,22 @@ func disconnect():
 		connection.put_var([REMOTE_QUIT])
 		stream.disconnect()
 		print("Closing connection to remote player...")
+	elif !is_host and !is_network:
+		stream.disconnect()
+		print("Halting connection request...")
+	elif !is_host and is_network:
+		#connected to server already
+		stream.disconnect()
+		print("Disconnecting from server...")
+	
+	#no matter where we wre before disconnect, set network to false and return to beginning screen!
+	is_network = false;
+	is_host = false;
+	is_client = false;
+	
+	set_process(false)
+	
+	change_scene("res://menus.scn")
 
 
 
@@ -135,6 +151,7 @@ func process_server_data(data_array):
 	elif ID == REMOTE_QUIT:
 		#omg those jerks!
 		print("remote_quit")
+		disconnect()
 	elif ID == REMOTE_BLOCK:
 		#get their block ifnormation!
 		print("remote_block")
@@ -155,6 +172,11 @@ func send_finish(score):
 		return
 	connection.put_var([REMOTE_FINISH, score])
 
+func send_quit():
+	if !is_network:
+		print("Error sending finish packet: not connected!")
+		return
+	connection.put_var([REMOTE_QUIT])
 
 
 func change_scene(scene):

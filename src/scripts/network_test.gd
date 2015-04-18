@@ -21,6 +21,8 @@ func start_button():
 
 func quit_button():
 	print("quit")
+	network.send_quit()
+	network.disconnect()
 
 func finish_button():
 	print("finish")
