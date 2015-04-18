@@ -1,5 +1,6 @@
 extends "AbstractBlock.gd"
 
+# start a tween from current position to a far away position
 func activate(ev, click_pos, click_normal):
 	var tweenNode = newTweenNode()
 	tweenNode.interpolate_method( self, "set_translation", \

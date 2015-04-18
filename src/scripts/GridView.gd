@@ -1,4 +1,3 @@
-
 extends Spatial
 
 # global working variables
@@ -16,7 +15,7 @@ func _ready():
 # called to handle a user input event
 func _input(ev):
 	# If the mouse has been moved
-	if (ev.type==InputEvent.MOUSE_MOTION and ev.button_mask == 1):
+	if (ev.type==InputEvent.SCREEN_DRAG or (ev.type==InputEvent.MOUSE_MOTION and ev.button_mask == 1)):
 		# calculate the delta change from the last mouse movement
 		var mousedelta = (mouseposlast - ev.pos)
 		# scale the mouse delta to a useful value
@@ -29,7 +28,5 @@ func _input(ev):
 		set_transform( Transform( currentTransform ) )
 		
 	# record the last position of the mousedelta
-	mouseposlast = Input.get_mouse_pos()
-
-
-
+	mouseposlast = ev.pos 
+	# Android does not like this: Input.get_mouse_pos()

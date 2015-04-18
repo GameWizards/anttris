@@ -7,8 +7,10 @@ func setTexture(textureName="Red"):
 	var img = Image()
 	var mat = FixedMaterial.new()
 	var text = ImageTexture.new()
-	
+
+	# TODO preload
 	img.load("res://textures/Block_" + textureName + ".png")
+
 	text.create_from_image(img)
 	mat.set_texture(FixedMaterial.PARAM_DIFFUSE, text)
 	# TODO color the texture: mat.set_parameter(FixedMaterial.PARAM_DIFFUSE, Color(0.5, 0.5, 0))
@@ -23,18 +25,20 @@ func setPairName(other):
 # fly away only if self.pairName is selected
 func activate(ev, click_pos, click_normal, justFly=false):
 	selected = true
+	# get my pair sibling
+	# TODO get a pair sibling. have a PairedBlockTracker keeping tabs of which types are selected
 	var pairNode = get_node("../" + pairName)
+
 	if pairNode.selected:
+		# fly away
 		var tweenNode = newTweenNode()
 		tweenNode.interpolate_method( self, "set_translation", \
 			self.get_translation(), self.get_translation().normalized() * far_away_corner, \
 			1, Tween.TRANS_CIRC, Tween.EASE_IN_OUT )
 
 		tweenNode.start()
+		# just one call to activate...
 		if not justFly:
 			pairNode.activate(ev, click_pos, click_normal, true)
 	else:
-		scaleTweenNode(0.6).start()
-
-func _ready():
-	set_ray_pickable(true)
+		scaleTweenNode(1.1, 0.2, Tween.TRANS_EXPO).start()
