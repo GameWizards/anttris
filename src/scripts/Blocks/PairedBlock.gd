@@ -1,8 +1,5 @@
 extends "AbstractBlock.gd"
 
-var pairName = null
-var selected = false
-
 func setTexture(textureName="Red"):
 	var img = Image()
 	var mat = FixedMaterial.new()
@@ -18,18 +15,13 @@ func setTexture(textureName="Red"):
 	self.get_node("MeshInstance").set_material_override(mat)
 	return self
 
-func setPairName(other):
-	pairName = other
-	return self
-
 # fly away only if self.pairName is selected
 func activate(ev, click_pos, click_normal, justFly=false):
-	selected = true
-	# get my pair sibling
-	# TODO get a pair sibling. have a PairedBlockTracker keeping tabs of which types are selected
-	var pairNode = get_node("../" + pairName)
-
+	var pairNode = pairActivate(ev, click_pos, click_normal)
+	if pairNode == null:
+		return
 	if pairNode.selected:
+		get_parent().samplePlayer.play("deraj_pop_sound_low")
 		# fly away
 		var tweenNode = newTweenNode()
 		tweenNode.interpolate_method( self, "set_translation", \
@@ -40,5 +32,3 @@ func activate(ev, click_pos, click_normal, justFly=false):
 		# just one call to activate...
 		if not justFly:
 			pairNode.activate(ev, click_pos, click_normal, true)
-	else:
-		scaleTweenNode(1.1, 0.2, Tween.TRANS_EXPO).start()

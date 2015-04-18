@@ -5,6 +5,7 @@ func _ready():
 	mP.menuList.append( get_node( "OnlineName" ) )
 	mP.menuList.append( get_node( "SoundVolume" ) )
 	mP.menuList.append( get_node( "MusicVolume" ) )
+	mP.menuList.append( get_node( "PortField" ) )
 	mP.menuList.append( get_node( "SaveQuit" ) )
 	mP.menuList.append( get_node( "Cancel" ) )
 	

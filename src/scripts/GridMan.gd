@@ -1,18 +1,33 @@
 extends Spatial
 
-# used for paired selection
-var selectedBlockName = null
-var selectedLaserName = null
+# block positions
+var shape
 
-# used for score
-var score = 0
-var undoCount = 0
+# sounds
+var samplePlayer = SamplePlayer.new()
 
-# used for undo
-var blocksRemoved = []
+func add_block(b):
+	shape[b.blockPos] = b
+	add_child(b)
 
-func _ready():
+func get_block(pos):
+	if shape.has(pos):
+		return shape[pos]
+	else:
+		return null
+
+func remove_block(block_node):
+	shape[block_node.blockPos] = null
+	# TODO scan_layer, fire lasers if empty
+
+# TODO wild block selected? can click any pair. can deselect wild block.
+var wildBlockSelected = null
+
+func set_puzzle(puzzle):
+	puzzle = puzzle
 	# Initalization here
-	pass
+	samplePlayer.set_voice_count(puzzle.puzzleLayers * 2)
+	samplePlayer.set_sample_library(ResourceLoader.load("new_samplelibrary.xml"))
+
 
 
