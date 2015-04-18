@@ -132,6 +132,7 @@ func _on_Cancel_pressed():
 func _on_SaveQuit_pressed():
 	# Add save options here.
 	var field = get_tree().get_root().get_node("GUIManager/OptionsMenu/Panel/PortField/LineEdit")
+	get_node("/root/Network").setPort(field.get_text())
 	network.setPort(field.get_text())
 	_on_Cancel_pressed()
 
@@ -193,7 +194,6 @@ func _on_RandomPuzzle_pressed():
 	var root = get_tree().get_root()
 	root.get_child( root.get_child_count() - 1 ).queue_free()
 	root.add_child( ResourceLoader.load( "res://puzzle.scn" ).instance() )
-
 
 
 func _on_Join_pressed():
