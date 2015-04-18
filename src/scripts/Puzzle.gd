@@ -4,7 +4,9 @@ extends Spatial
 # var PuzzleManScript = get_node("Globals").get("PuzzleManScript")
 
 var PuzzleManScript = preload( "res://scripts/PuzzleManager.gd" )
+var PuzzleScn = preload("res://puzzle.scn")
 var puzzleMan
+var mainPuzzle = true
 
 # Called for initialization
 func _ready():
@@ -24,6 +26,19 @@ func _ready():
 		gridMan.add_block(b)
 		gridMan.get_child(block.name) \
 			.set_translation(block.blockPos * 2 )
-
-
+	
+	if mainPuzzle:
+		var p = PuzzleScn.instance()
+		p.mainPuzzle = false
+		p.set_scale(Vector3(0.5, 0.5, 0.5))
+		p.set_translation(Vector3(20, 0, 0))
+		
+		var v = Viewport.new()
+		v.set_as_render_target(true)
+		v.set_world(p.get_world())
+		v.set_rect(Rect2(0, 0, 100, 100))
+		v.set_physics_object_picking(false)
+		v.add_child(p)
+		add_child(v)
+		
 
