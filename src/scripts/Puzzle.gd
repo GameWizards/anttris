@@ -8,13 +8,8 @@ var puzzleMan
 
 # Called for initialization
 func _ready():
-	# Generate the puzzle.
 	puzzleMan = PuzzleManScript.new()
-	var puzzle = puzzleMan.generatePuzzle( puzzleMan.PUZZLE_5x5 )
-	var n = puzzle.puzzleType
-
-	# Compute the offset for centering the cubes.
-	var offset = Vector3( float( -n * 2.0 / 2.0 ) + .5, float( -n * 2.0 ) / 2.0 + .5, float( -n * 2.0 / 2.0 ) + .5 )
+	var puzzle = puzzleMan.generatePuzzle( 2, puzzleMan.DIFF_EASY )
 
 	print("Generated ", puzzle.blocks.size(), " blocks." )
 
@@ -28,6 +23,7 @@ func _ready():
 		gridMan.shape[b.blockPos] = b
 		gridMan.add_block(b)
 		gridMan.get_child(block.name) \
-			.set_translation(block.blockPos * 2 + offset )
+			.set_translation(block.blockPos * 2 )
+
 
 

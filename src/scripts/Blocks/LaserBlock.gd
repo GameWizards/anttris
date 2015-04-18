@@ -41,13 +41,14 @@ func setExtent(laserExtent):
 func activate(ev, click_pos, click_normal):
 	selected = true
 
+	# is my pair Nil?
+	if pairName == null or not get_parent().has_node(str(pairName)):
+		scaleTweenNode(0.9, 0.2, Tween.TRANS_EXPO).start()
+		return
+	
 	# get my pair sibling
 	var pairNode = get_parent().get_node(pairName)
 
-	# is my pair Nil?
-	if not get_parent().has_node(pairName):
-		scaleTweenNode(0.9, 0.2, Tween.TRANS_EXPO).start()
-		return
 
 	if not pairNode.selected:
 		scaleTweenNode(1.1, 0.2, Tween.TRANS_EXPO).start()

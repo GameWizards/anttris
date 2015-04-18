@@ -23,7 +23,7 @@ func get_block(pos):
 func set_puzzle(puzzle):
 	puzzle = puzzle
 	# Initalization here
-	samplePlayer.set_voice_count(puzzle.puzzleType)
+	samplePlayer.set_voice_count(puzzle.puzzleLayers * 2)
 	samplePlayer.set_sample_library(ResourceLoader.load("new_samplelibrary.xml"))
 
 

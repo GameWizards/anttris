@@ -1,7 +1,14 @@
-const PUZZLE_3x3		= 3
-const PUZZLE_5x5		= 5
-const PUZZLE_7x7		= 7
+const DIFF_EASY		= 0
+const DIFF_MEDIUM	= 1
+const DIFF_HARD		= 2
+
+const BLOCK_LASER	= 0
+const BLOCK_WILD	= 1
+const BLOCK_PAIR	= 2
+const BLOCK_GOAL	= 3
+
 const blockColors = ["Blue", "Orange", "Red", "Yellow", "Purple", "Green"]
+const wildColors = ["WildBlue", "WildOrange", "WildRed", "WildYellow", "WildPurple", "WildGreen"]
 
 # Preload paired blocks
 const blocks = { PairedBlock = preload("Blocks/PairedBlock.gd")
@@ -10,11 +17,12 @@ const blocks = { PairedBlock = preload("Blocks/PairedBlock.gd")
 			   , blockScn    = preload( "res://blocks/block.scn" )
 			   }
 
+# Hash map of all possible positions
 var shape = {}
 
 # Stores a puzzle in a convenient class.
 class Puzzle:
-	var puzzleType
+	var puzzleLayers
 	var blocks = []
 
 # Holds all of the steps needed to solve a puzzle.
@@ -30,37 +38,88 @@ func shuffleArray( arr ):
 		arr[swapVal] = arr[i]
 		arr[i] = temp
 
+# Determines the block type based on puzzle size and difficulty.
+func getBlockType( difficulty, x, y, z ):
+	# Determine if this is the goal block.
+	if x == 0 and y == 0 and z == 0:
+		return BLOCK_GOAL
+
+	# Determine the layer this block is on.
+	var layer = max( max( abs( x ), abs( y ) ), abs( z ) )
+
+	# Determine how many blocks are on the outer part of the layer.
+	var layerCount = 0
+	if abs( x ) == layer:
+		layerCount += 1
+	if abs( y ) == layer:
+		layerCount += 1
+	if abs( z ) == layer:
+		layerCount += 1
+
+	# Determine if this block is a laser.
+	if difficulty == DIFF_EASY or difficulty == DIFF_MEDIUM:
+		if layerCount == 3:
+			return BLOCK_LASER
+
+	if difficulty == DIFF_HARD:
+		if abs( x ) == abs( z ) and y == 0:
+			return BLOCK_LASER
+
+	# Determine if this block is a wild block.
+	if difficulty == DIFF_EASY:
+		if layerCount == 2:
+			return BLOCK_WILD
+
+	if difficulty == DIFF_MEDIUM:
+		if layerCount == 2:
+			if y == layer || y == -layer:
+				return BLOCK_WILD
+
+	if difficulty == DIFF_HARD:
+		if layerCount == 1:
+			if y == 0:
+				return BLOCK_WILD
+
+	# Otherwise it's a normal block.
+	return BLOCK_PAIR
+
 # Generates a solveable puzzle.
-func generatePuzzle( type ):
+func generatePuzzle( layers, difficulty ):
 	var blockID = 0
 	var puzzle = Puzzle.new()
-	puzzle.puzzleType = type
+	puzzle.puzzleLayers = layers
 
-	var middle = type / 2
+	# Calculate puzzle size.
+	#var puzzSize = layers + 2
+	#var middle = puzzSize / 2
 
-	# add all possible positions to a dictionary
-	for x in range( type ):
-		for y in range( type ):
-			for z in range( type ):
+	# Create all possible positions.
+	var pairblocks = []
+	var lasers = []
+	var wildblocks = []
+	for x in range( -layers, layers + 1 ):
+		for y in range( -layers, layers + 1 ):
+			for z in range( -layers, layers + 1 ):
+				pairblocks.append(Vector3(x,y,z))
 				shape[Vector3(x,y,z)] = null
 
-	# for testing new lasers
-	var prevLaser = null
-	var laserEven = false
-	###########
-	
+	# Assign lasers.
+
 	# assign blocks to positions
 	var prevBlock = null
 	var even = false
-	for pos in shape:
-		# convenience
+	for pos in pairblocks:
 		var x = pos.x
 		var y = pos.y
 		var z = pos.z
-		
-		if (x == middle && y == middle && z == middle):
+#		if (x == middle && y == middle && z == middle):
+#			continue
+
+		var t = getBlockType( difficulty, x, y, z )
+
+		if t == BLOCK_GOAL:
 			continue
-			
+
 		var b = PickledBlock.new()
 		b.blockPos = pos
 		b.name = "block" + str(blockID)
@@ -68,35 +127,26 @@ func generatePuzzle( type ):
 		blockID += 1
 		puzzle.blocks.append( b )
 
-		# for testing new lasers
-		if ((y == 0 or y == type-1) and (z == 0 or z == type-1)):
+		if t == BLOCK_LASER:
 			b.setBlockClass("LaserBlock")
-			laserEven = not laserEven
-			if prevLaser == null and laserEven:
-				prevLaser = b
-			else:
-				b.setPairName(prevLaser.name).setLaserExtent(prevLaser.blockPos - b.blockPos)
-				prevLaser.setPairName(b.name).setLaserExtent(b.blockPos - prevLaser.blockPos)
-				prevLaser = null
+			continue
 
-		##########
-			
-			
-			
-		else:
-			if even:
-				var randColor = blockColors[randi() % blockColors.size()]
-				b.setBlockClass("PairedBlock") \
-					.setPairName(prevBlock.name) \
-					.setTextureName(randColor)
+		if t == BLOCK_WILD:
+			b.setBlockClass("PairedBlock") \
+				.setTextureName(wildColors[randi() % wildColors.size()])
+			continue
 
-				prevBlock.setBlockClass("PairedBlock") \
-					.setPairName(b.name) \
-					.setTextureName(randColor)
-			even = not even
-			prevBlock = b
-		
-		
+		if even:
+			var randColor = blockColors[randi() % blockColors.size()]
+			b.setBlockClass("PairedBlock") \
+				.setPairName(prevBlock.name) \
+				.setTextureName(randColor)
+
+			prevBlock.setBlockClass("PairedBlock") \
+				.setPairName(b.name) \
+				.setTextureName(randColor)
+		even = not even
+		prevBlock = b
 
 
 
@@ -106,7 +156,7 @@ func generatePuzzle( type ):
 	# nearby = same layer, somewhere accessible to the user
 
 	# Randomize the order of the blocks.
-	#self.shuffleArray( puzzle.blocks )
+#	self.shuffleArray( puzzle.blocks )
 
 	# Assign block types in pairs.
 #	for i in range( 0, puzzle.blocks.size(), 2 ):
@@ -123,7 +173,7 @@ func generatePuzzle( type ):
 
 # Determines if a puzzle is solveable.
 func solvePuzzle( puzzle ):
-	# Simply use the SolvePuzzleSteps function and return the solveable part.
+	# Simply use the solvePuzzleSteps function and return the solveable part.
 	var ps = solvePuzzleSteps()
 	return ps.solveable
 
@@ -137,7 +187,6 @@ func solvePuzzleSteps( puzzle ):
 	return puzzleSteps
 
 
-# efficient representation of blocks. toNode() generates an actual game object
 class PickledBlock:
 	var name
 	var blockClass
@@ -153,7 +202,7 @@ class PickledBlock:
 	func setPairName(n):
 		pairName = n
 		return self
-	
+
 	func setLaserExtent(n):
 		laserExtent = n
 		return self
@@ -183,3 +232,4 @@ class PickledBlock:
 		if blockClass == "LaserBlock":
 			n.setPairName(pairName).setExtent(laserExtent)
 		return n
+

@@ -27,12 +27,12 @@ func activate(ev, click_pos, click_normal, justFly=false):
 	selected = true
 
 	# get my pair sibling
-	# TODO get a pair sibling. have a PairedBlockTracker keeping tabs of which types are selected
-	var pairNode = get_parent().get_node(pairName)
-	if not get_parent().has_node(pairName):
+	# TODO merge Laser and Paired into an abstract paired class
+	var pairNode = get_parent().get_node(str(pairName))
+	if pairName == null or not get_parent().has_node(pairName):
 		scaleTweenNode(0.9, 0.2, Tween.TRANS_EXPO).start()
 		return
-
+		
 
 	if not pairNode.selected:
 		scaleTweenNode(1.1, 0.2, Tween.TRANS_EXPO).start()
