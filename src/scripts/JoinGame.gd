@@ -14,7 +14,7 @@ function pressed():
 		return
 	
 	var network = get_node("/root/Network")
-	if !network.is_client:
-		network.connect_to(ip, network.port)
+	if !network.isClient:
+		network.connectTo(ip, network.port)
 
 

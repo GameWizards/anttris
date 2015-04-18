@@ -10,7 +10,7 @@ func _ready():
 func pressed():
 	var network = get_node("/root/Network")
 	
-	if !network.is_host and !network.is_network:
+	if !network.isHost and !network.isNetwork:
 		print("calling!")
 		network.host(network.port)
 		get_tree().get_root().get_node("GUIManager/HostGame/Panel/Waiting").set_text("Waiting for player to join on port " + str(network.port) + "...")

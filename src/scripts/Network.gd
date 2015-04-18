@@ -9,9 +9,9 @@ const REMOTE_MSG = 5
 
 var port = 54321
 
-var is_network
-var is_host
-var is_client
+var isNetwork
+var isHost
+var isClient
 var server
 var client
 var connection
@@ -19,18 +19,15 @@ var connection
 var stream
 
 func _ready():
-	is_network = false
-	is_host = false
+	isNetwork = false
+	isHost = false
 	get_tree().get_root().get_node("GUIManager/OptionsMenu/Panel/PortField/LineEdit").set_text(str(port))
 
-func set_host(isHost):
-	is_host = isHost
-
-func set_port(pt):
+func setPort(pt):
 	port = pt;
 
-func connect_to(ip, pt):
-	is_client = true #just to tell if it's doing something :S
+func connectTo(ip, pt):
+	isClient = true #just to tell if it's doing something :S
 	connection = PacketPeerStream.new()
 	stream = StreamPeerTCP.new()
 	connection.set_stream_peer(stream)
@@ -45,7 +42,7 @@ func connect_to(ip, pt):
 func host(pt):
 	server = TCP_Server.new()
 	connection = PacketPeerStream.new()
-	is_host = true
+	isHost = true
 	print("Starting listening server on port " + str(pt))
 	if server.listen(pt) == 0:
 		set_process(true)
@@ -54,25 +51,25 @@ func host(pt):
 		print("Failed to start server on port " + str(pt));
 	
 func _process(delta):
-	if (is_host):
+	if (isHost):
 		#server processing stuff
 		#use isNetwork to determine if we're still listening
-		if !is_network:
+		if !isNetwork:
 			if server.is_connection_available():
 				stream = server.take_connection()
 				connection = PacketPeerStream.new()
 				connection.set_stream_peer(stream)
 				print("Connecting with player...")
-				is_network = true
+				isNetwork = true
 				server.stop()
-				change_scene("res://network_test.scn")
+				changeScene("res://network_test.scn")
 				#MAKE CALL TO PUZZLE SELECTER
 		else: #not listening anymore, have a client
 			#do quick check to make sure we're still
 			#connected
 			if !stream.is_connected():
 				print("Lost Connection!");
-				is_network = false
+				isNetwork = false
 				set_process(false)
 				#QUIT GAME
 				return
@@ -80,17 +77,17 @@ func _process(delta):
 			if connection.get_available_packet_count() > 0:
 				#have to be careful about more than 1 packet per frame
 				for i in range(connection.get_available_packet_count()):
-					var data_array = connection.get_var()
-					process_server_data(data_array)
+					var dataArray = connection.get_var()
+					processServerData(dataArray)
 					
 	else:
 		#client processing stuff
-		if !is_network:
+		if !isNetwork:
 			#Still waiting for connection confirmed
 			if stream.get_status() == stream.STATUS_CONNECTED:
 				print("Connection established!")
-				is_network = true
-				change_scene("res://network_test.scn")
+				isNetwork = true
+				changeScene("res://network_test.scn")
 				return
 			if stream.get_status() == stream.STATUS_NONE or stream.get_status() == stream.STATUS_ERROR:
 				print("Error establishing connection!")
@@ -102,44 +99,44 @@ func _process(delta):
 			#check if we have any data
 			if connection.get_available_packet_count() > 0:
 				for i in range(connection.get_available_packet_count()):
-					var data_array = connection.get_var()
-					process_server_data(data_array)
+					var dataArray = connection.get_var()
+					processServerData(dataArray)
 					#Call the server process script cuase it's peer to peer and we have the same functions!
 
 
 func disconnect():
 	#need to do lots of things! If the server is open and listening, but has no connection just stop listening!
-	if is_host and !is_network:
+	if isHost and !isNetwork:
 		#this means we're waiting for connection still
 		server.stop()
 		print("closing server listener!")
-	elif is_host and is_network:
+	elif isHost and isNetwork:
 		#have connections. Need to send them stop packet, and close connection
 		connection.put_var([REMOTE_QUIT])
 		stream.disconnect()
 		print("Closing connection to remote player...")
-	elif !is_host and !is_network:
+	elif !isHost and !isNetwork:
 		stream.disconnect()
 		print("Halting connection request...")
-	elif !is_host and is_network:
+	elif !isHost and isNetwork:
 		#connected to server already
 		stream.disconnect()
 		print("Disconnecting from server...")
 	
 	#no matter where we wre before disconnect, set network to false and return to beginning screen!
-	is_network = false;
-	is_host = false;
-	is_client = false;
+	isNetwork = false;
+	isHost = false;
+	isClient = false;
 	
 	set_process(false)
 	
-	change_scene("res://menus.scn")
+	changeScene("res://menus.scn")
 
 
 
-func process_server_data(data_array):
+func ProcessServerData(dataArray):
 	#have an array of data. First element should be identifying int
-	var ID = data_array[0]
+	var ID = dataArray[0]
 	print(ID)
 	#no swithc statement. I'm crying right now while i type this. My fingers are bleeding
 	if ID == REMOTE_START:
@@ -160,26 +157,26 @@ func process_server_data(data_array):
 		print("remote_msg")
 
 func send_start():
-	if !is_network:
+	if !isNetwork:
 		print("Error sending start packet: not connected!")
 		return
 	var er = connection.put_var([REMOTE_START])
 	print("Sending start and got [" + str(er) + "]")
 
 func send_finish(score):
-	if !is_network:
+	if !isNetwork:
 		print("Error sending finish packet: not connected!")
 		return
 	connection.put_var([REMOTE_FINISH, score])
 
 func send_quit():
-	if !is_network:
+	if !isNetwork:
 		print("Error sending finish packet: not connected!")
 		return
 	connection.put_var([REMOTE_QUIT])
 
 
-func change_scene(scene):
+func changeScene(scene):
 	var root = get_tree().get_root()
 	root.get_child( root.get_child_count() - 1 ).queue_free()
 	root.add_child( ResourceLoader.load( scene ).instance() )
