@@ -8,7 +8,7 @@ const REMOTE_SCORE = 3
 const REMOTE_BLOCK = 4
 const REMOTE_MSG = 5
 
-var port=31111
+var port = 54321
 
 var is_network
 var is_host
@@ -19,34 +19,35 @@ var connections
 var stream
 
 func _ready():
-	print("Network ready!")
 	is_network = false
 	is_host = false
+	get_tree().get_root().get_node("GUIManager/OptionsMenu/Panel/PortField/LineEdit").set_text(str(port))
 
 func set_host(isHost):
 	is_host = isHost
-	
-func set_port(pt):
-	port = pt
 
-func connect_to(ip, port):
-	print("Connecting to " + ip + ":" + str(port));
+func set_port(pt):
+	port = pt;
+
+func connnect(ip, pt):
 	stream = StreamPeerTCP.new()
-	stream.connect(ip, port);
+	stream.connect(ip, pt);
 	
 	if stream.get_status() == stream.STATUS_CONNECTED or stream.get_status() == stream.STATUS_CONNECTING:
+		print("Connecting to " + ip + ":" + str(port));
 		set_process(true)
 		#leave is_network as false to indicate we're still waiting for connection
 	
 	
-func host(port):
-	print("Starting Server")
+func host(pt):
 	server = TCP_Server.new()
 	is_host = true
-	if server.listen(port) == 0:
+	print("Starting listening server on port " + str(pt))
+	if server.listen(pt) == 0:
 		set_process(true)
+		print("Listening...")
 	else:
-		print("Failed to start server on port " + str(port));
+		print("Failed to start server on port " + str(pt));
 	
 func _process(delta):
 	if (is_host):
@@ -112,19 +113,19 @@ func process_server_data(data_array):
 	#no swithc statement. I'm crying right now while i type this. My fingers are bleeding
 	if ID == REMOTE_START:
 		#do start something or something whut
-		print()
+		print("remote_stuff")
 	elif ID == REMOTE_FINISH:
 		#again, do ending stuff
-		print()
+		print("remote_finish")
 	elif ID == REMOTE_QUIT:
 		#omg those jerks!
-		print()
+		print("remote_quit")
 	elif ID == REMOTE_SCORE:
 		#what was their score?
-		print()
+		print("remote_score")
 	elif ID == REMOTE_BLOCK:
 		#get their block ifnormation!
-		print()
+		print("remote_block")
 	elif ID == REMOTE_MSG:
 		#sent some sort of message?
-		print()
+		print("remote_msg")
