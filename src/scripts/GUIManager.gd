@@ -121,6 +121,8 @@ func _on_Cancel_pressed():
 
 func _on_SaveQuit_pressed():
 	# Add save options here.
+	var field = get_tree().get_root().get_node("GUIManager/OptionsMenu/Panel/PortField/LineEdit")
+	get_node("/root/Network").setPort(field.get_text())
 	_on_Cancel_pressed()
 
 func _on_SP_pressed():
