@@ -29,7 +29,7 @@ func set_host(isHost):
 func set_port(pt):
 	port = pt;
 
-func connnect(ip, pt):
+func connect(ip, pt):
 	stream = StreamPeerTCP.new()
 	stream.connect(ip, pt);
 	
