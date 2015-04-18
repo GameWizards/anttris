@@ -2,6 +2,7 @@ extends "AbstractBlock.gd"
 
 var mat
 var vectToPair = Vector3()
+var fired = false
 
 const beamScn = preload( "res://blocks/block.scn" )
 const Beam = preload("res://scripts/Blocks/Beam.gd")
@@ -22,10 +23,6 @@ func setTexture(color=Color(0.5, 0, 0)):
 
 	return self
 
-func setPairName(other):
-	pairName = other
-	return self
-
 # sets light emission color
 func setColor(col):
 	mat.set_parameter(FixedMaterial.PARAM_EMISSION, col)
@@ -35,24 +32,25 @@ func setExtent(laserExtent):
 
 # create a beam and activate it
 func activate(ev, click_pos, click_normal):
-	if fired:
+	var pairNode = pairActivate(ev, click_pos, click_normal)
+	if pairNode == null or pairNode.selected == false:
 		return
-
-	fired = true
-	pairNode.activate(ev, click_pos, click_normal)
-# BUG: firing two beams, one for each laser in the pair?
+	# shrink to 80% size, 0.5 sec
+	scaleTweenNode(0.8, 0.5, Tween.TRANS_ELASTIC).start()
 
 	var tweenNode = newTweenNode()
-
-	# shrink to 80% size, 0.5 sec
-	var scaleTween = scaleTweenNode(0.8, 0.5, Tween.TRANS_ELASTIC)
-	scaleTween.start()
-
 	# fade emission color
 	tweenNode.interpolate_method( self, "setColor", \
 		self.mat.get_parameter(FixedMaterial.PARAM_EMISSION), Color(0.1, 0.1, 0.1), \
 		0.5, Tween.TRANS_ELASTIC, Tween.EASE_IN_OUT )
 	tweenNode.start()
+
+	if fired:
+		return
+
+	fired = true
+	pairNode.fired = true
+	pairNode.activate(ev, click_pos, click_normal)
 
 	# fire laser beam
 	var beam = beamScn.instance()

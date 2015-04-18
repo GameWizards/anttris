@@ -108,6 +108,9 @@ func generatePuzzle( layers, difficulty ):
 	# assign blocks to positions
 	var prevBlock = null
 	var even = false
+
+	var prevLaser = null
+	var laserEven = false
 	for pos in pairblocks:
 		var x = pos.x
 		var y = pos.y
@@ -129,6 +132,14 @@ func generatePuzzle( layers, difficulty ):
 
 		if t == BLOCK_LASER:
 			b.setBlockClass("LaserBlock")
+			if laserEven:
+				b.setPairName(prevLaser.name) \
+				.setLaserExtent(prevLaser.blockPos - b.blockPos)
+
+				prevLaser.setPairName(b.name) \
+				.setLaserExtent(b.blockPos - prevLaser.blockPos)
+			laserEven = not laserEven
+			prevLaser = b
 			continue
 
 		if t == BLOCK_WILD:

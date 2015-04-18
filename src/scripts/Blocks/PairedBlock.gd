@@ -1,8 +1,5 @@
 extends "AbstractBlock.gd"
 
-var pairName = null
-var selected = false
-
 func setTexture(textureName="Red"):
 	var img = Image()
 	var mat = FixedMaterial.new()
@@ -18,25 +15,12 @@ func setTexture(textureName="Red"):
 	self.get_node("MeshInstance").set_material_override(mat)
 	return self
 
-func setPairName(other):
-	pairName = other
-	return self
-
 # fly away only if self.pairName is selected
 func activate(ev, click_pos, click_normal, justFly=false):
-	selected = true
-
-	# get my pair sibling
-	# TODO merge Laser and Paired into an abstract paired class
-	var pairNode = get_parent().get_node(str(pairName))
-	if pairName == null or not get_parent().has_node(pairName):
-		scaleTweenNode(0.9, 0.2, Tween.TRANS_EXPO).start()
+	var pairNode = pairActivate(ev, click_pos, click_normal)
+	if pairNode == null:
 		return
-		
-
-	if not pairNode.selected:
-		scaleTweenNode(1.1, 0.2, Tween.TRANS_EXPO).start()
-	else:
+	if pairNode.selected:
 		get_parent().samplePlayer.play("deraj_pop_sound_low")
 		# fly away
 		var tweenNode = newTweenNode()
