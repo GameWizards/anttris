@@ -26,7 +26,7 @@ func pairActivate(ev, click_pos, click_normal):
 	selected = true
 
 	# is my pair Nil?
-	if pairName == null or not get_parent().has_node(str(pairName)):
+	if pairName == null or get_parent() == null or not get_parent().has_node(str(pairName)):
 		scaleTweenNode(0.9, 0.2, Tween.TRANS_EXPO).start()
 		return null
 

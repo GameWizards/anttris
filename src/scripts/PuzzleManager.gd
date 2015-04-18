@@ -24,10 +24,25 @@ var shape = {}
 class Puzzle:
 	var puzzleLayers
 	var blocks = []
-
-# Holds all of the steps needed to solve a puzzle.
-class PuzzleSteps:
-	var solveable
+	
+	# Determines if a puzzle is solveable.
+	func solvePuzzle():
+		# Simply use the solvePuzzleSteps function and return the solveable part.
+		var ps = self.solvePuzzleSteps()
+		return ps.solveable
+	
+	# Determines if a puzzle is solveable and returns the steps needed to solve it.
+	func solvePuzzleSteps():
+		var puzzleSteps = PuzzleSteps.new()
+		puzzleSteps.solveable = true
+	
+		# SOLVER
+	
+		return puzzleSteps
+	
+	# Holds all of the steps needed to solve a puzzle.
+	class PuzzleSteps:
+		var solveable
 
 # Randomly shuffle an array.
 func shuffleArray( arr ):
@@ -161,27 +176,12 @@ func generatePuzzle( layers, difficulty ):
 
 	return puzzle
 
-# Determines if a puzzle is solveable.
-func solvePuzzle( puzzle ):
-	# Simply use the solvePuzzleSteps function and return the solveable part.
-	var ps = solvePuzzleSteps()
-	return ps.solveable
-
-# Determines if a puzzle is solveable and returns the steps needed to solve it.
-func solvePuzzleSteps( puzzle ):
-	var puzzleSteps = PuzzleSteps.new()
-	puzzleSteps.solveable = true
-
-	# SOLVER
-
-	return puzzleSteps
-
 
 class PickledBlock:
 	var name
-	var blockClass
+	var blockClass = "PairedBlock"
 	var pairName
-	var textureName
+	var textureName = "Red"
 	var blockPos
 	var laserExtent
 

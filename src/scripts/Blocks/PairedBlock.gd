@@ -1,7 +1,10 @@
 extends "AbstractBlock.gd"
 
+var textureName
+
 func setTexture(textureName="Red"):
 	var img = Image()
+	self.textureName = textureName
 	var mat = FixedMaterial.new()
 	var text = ImageTexture.new()
 
