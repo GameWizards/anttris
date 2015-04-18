@@ -4,7 +4,6 @@ extends Node
 const REMOTE_FINISH = 0
 const REMOTE_START = 1
 const REMOTE_QUIT = 2
-const REMOTE_SCORE = 3
 const REMOTE_BLOCK = 4
 const REMOTE_MSG = 5
 
@@ -136,9 +135,6 @@ func process_server_data(data_array):
 	elif ID == REMOTE_QUIT:
 		#omg those jerks!
 		print("remote_quit")
-	elif ID == REMOTE_SCORE:
-		#what was their score?
-		print("remote_score")
 	elif ID == REMOTE_BLOCK:
 		#get their block ifnormation!
 		print("remote_block")
