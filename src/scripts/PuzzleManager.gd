@@ -148,27 +148,6 @@ func generatePuzzle( layers, difficulty ):
 		even = not even
 		prevBlock = b
 
-
-
-	# TODO, proposed algorithm:
-	# make blocks, pairs are adjacent
-	# shuffle board, half the blocks pick a "nearby" block to swap places with
-	# nearby = same layer, somewhere accessible to the user
-
-	# Randomize the order of the blocks.
-#	self.shuffleArray( puzzle.blocks )
-
-	# Assign block types in pairs.
-#	for i in range( 0, puzzle.blocks.size(), 2 ):
-#		var randColor = blockColors[randi() % blockColors.size()]
-#		puzzle.blocks[i].setBlockClass("PairedBlock") \
-#			.setPairName(puzzle.blocks[i+1].name) \
-#			.setTextureName(randColor)
-#
-#		puzzle.blocks[i+1].setBlockClass("PairedBlock") \
-#			.setPairName(puzzle.blocks[i].name) \
-#			.setTextureName(randColor)
-
 	return puzzle
 
 # Determines if a puzzle is solveable.

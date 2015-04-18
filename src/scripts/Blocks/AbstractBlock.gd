@@ -1,6 +1,8 @@
 extends RigidBody
 
 var name
+var pairName
+var selected = false
 var blockPos
 const far_away_corner = Vector3(80, 80, 80)
 
@@ -13,7 +15,24 @@ func setName(n):
 func _input_event( camera, ev, click_pos, click_normal, shape_idx ):
 	if ((ev.type==InputEvent.MOUSE_BUTTON and ev.button_index==BUTTON_LEFT)
 	or (ev.type==InputEvent.SCREEN_TOUCH)):
-		activate(ev, click_pos, click_normal)
+		activate(ev, click_pos, click_normal, pairNode)
+
+func pairActivate(ev, click_pos, click_normal):
+	selected = true
+
+	# is my pair Nil?
+	if pairName == null or not get_parent().has_node(str(pairName)):
+		scaleTweenNode(0.9, 0.2, Tween.TRANS_EXPO).start()
+		return
+
+	# get my pair sibling
+	var pairNode = get_parent().get_node(pairName)
+
+
+	if not pairNode.selected:
+		scaleTweenNode(1.1, 0.2, Tween.TRANS_EXPO).start()
+		return
+
 
 # returns a tween node that uniformly changes the object's scale
 # call start() on the returned object
@@ -38,7 +57,7 @@ func remove_with_pop(node, key):
 func setTexture():
 	pass
 
-func activate(ev, click_pos, click_normal):
+func activate(ev, click_pos, click_normal, pairNode):
 	pass
 
 func _ready():

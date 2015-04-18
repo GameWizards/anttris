@@ -1,17 +1,13 @@
 extends "AbstractBlock.gd"
 
 var mat
-var fired = false
-
 var vectToPair = Vector3()
-var pairName = null
-var selected = false
 
 const beamScn = preload( "res://blocks/block.scn" )
 const Beam = preload("res://scripts/Blocks/Beam.gd")
 const laserBlockImg = Image() # TODO preload this somewhere else
 
-# colorify and
+# color
 func setTexture(color=Color(0.5, 0, 0)):
 	var text = ImageTexture.new()
 	mat = FixedMaterial.new()
@@ -39,21 +35,6 @@ func setExtent(laserExtent):
 
 # create a beam and activate it
 func activate(ev, click_pos, click_normal):
-	selected = true
-
-	# is my pair Nil?
-	if pairName == null or not get_parent().has_node(str(pairName)):
-		scaleTweenNode(0.9, 0.2, Tween.TRANS_EXPO).start()
-		return
-	
-	# get my pair sibling
-	var pairNode = get_parent().get_node(pairName)
-
-
-	if not pairNode.selected:
-		scaleTweenNode(1.1, 0.2, Tween.TRANS_EXPO).start()
-		return
-
 	if fired:
 		return
 
