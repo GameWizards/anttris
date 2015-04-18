@@ -144,7 +144,7 @@ func ProcessServerData(dataArray):
 		print("remote_stuff")
 	elif ID == REMOTE_FINISH:
 		#again, do ending stuff
-		print("remote_finish: " + str(data_array[1]))
+		print("remote_finish: " + str(dataArray[1]))
 	elif ID == REMOTE_QUIT:
 		#omg those jerks!
 		print("remote_quit")
@@ -156,20 +156,20 @@ func ProcessServerData(dataArray):
 		#sent some sort of message?
 		print("remote_msg")
 
-func send_start():
+func sendStart():
 	if !isNetwork:
 		print("Error sending start packet: not connected!")
 		return
 	var er = connection.put_var([REMOTE_START])
 	print("Sending start and got [" + str(er) + "]")
 
-func send_finish(score):
+func sendFinish(score):
 	if !isNetwork:
 		print("Error sending finish packet: not connected!")
 		return
 	connection.put_var([REMOTE_FINISH, score])
 
-func send_quit():
+func sendQuit():
 	if !isNetwork:
 		print("Error sending finish packet: not connected!")
 		return

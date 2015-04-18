@@ -17,16 +17,16 @@ func _ready():
 
 func start_button():
 	print("start")
-	network.send_start()
+	network.sendStart()
 
 func quit_button():
 	print("quit")
-	network.send_quit()
+	network.sendQuit()
 	network.disconnect()
 
 func finish_button():
 	print("finish")
-	network.send_finish(51)
+	network.sendFinish(51)
 
 func score_button() :
 	print("score")
