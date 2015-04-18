@@ -89,21 +89,14 @@ func generatePuzzle( layers, difficulty ):
 	var puzzle = Puzzle.new()
 	puzzle.puzzleLayers = layers
 
-	# Calculate puzzle size.
-	#var puzzSize = layers + 2
-	#var middle = puzzSize / 2
-
 	# Create all possible positions.
-	var pairblocks = []
-	var lasers = []
-	var wildblocks = []
+	var allblocks = []
 	for x in range( -layers, layers + 1 ):
 		for y in range( -layers, layers + 1 ):
 			for z in range( -layers, layers + 1 ):
-				pairblocks.append(Vector3(x,y,z))
-				shape[Vector3(x,y,z)] = null
-
-	# Assign lasers.
+				allblocks.append(Vector3(x,y,z))
+				
+	shuffleArray( allblocks )
 
 	# assign blocks to positions
 	var prevBlock = null
@@ -111,12 +104,10 @@ func generatePuzzle( layers, difficulty ):
 
 	var prevLaser = null
 	var laserEven = false
-	for pos in pairblocks:
+	for pos in allblocks:
 		var x = pos.x
 		var y = pos.y
 		var z = pos.z
-#		if (x == middle && y == middle && z == middle):
-#			continue
 
 		var t = getBlockType( difficulty, x, y, z )
 
