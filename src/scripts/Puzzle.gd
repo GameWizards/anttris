@@ -27,11 +27,17 @@ func addTimer():
 	time.tween.start()
 	time.label.set_text(str(time.val))
 
+func formatTime(t):
+	var mins = floor(t / 60)
+	var secs = fmod(floor(t), 60)
+	var millis = floor((t - floor(t)) * 1000)
+	return str(mins) + ":" + str(secs).pad_zeros(2) + ":" + str(millis).pad_zeros(3)
+
 func _process(dTime):
 	# start label tween on
 	time.val += dTime
-	time.label.set_text(str(time.val))
-	if fmod(time.val, 3) < 0.1:
+	time.label.set_text(formatTime(time.val))
+	if fmod(time.val, 10) < 0.1:
 		time.tween.seek(0.0)
 
 # Called for initialization
@@ -63,14 +69,14 @@ func _ready():
 		p.set_translation(Vector3(20, 0, 0))
 
 		var v = Viewport.new()
-		# ?
-		v.set_as_render_target(true)
+		var c = Control.new()
 
 		v.set_world(p.get_world())
 		v.set_rect(Rect2(0, 0, 100, 100))
 		v.set_physics_object_picking(false)
 		v.add_child(p)
-		add_child(v)
+		add_child(c)
+		c.add_child(v)
 # child of control? easier input
 
 

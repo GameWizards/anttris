@@ -16,6 +16,13 @@ func get_block(pos):
 	else:
 		return null
 
+func remove_block(block_node):
+	shape[block_node.blockPos] = null
+	# TODO scan_layer, fire lasers if empty
+
+# TODO wild block selected? can click any pair. can deselect wild block.
+var wildBlockSelected = null
+
 func set_puzzle(puzzle):
 	puzzle = puzzle
 	# Initalization here

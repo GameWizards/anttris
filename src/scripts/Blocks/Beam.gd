@@ -19,7 +19,7 @@ func fire(extent):
 	tweenNodeScale = Tween.new()
 	add_child(tweenNodeScale)
 
-	var gridMan = get_tree().get_root().get_node( "Spatial/GridView/GridMan" )
+	var gridMan = get_parent().get_parent()
 
 	# shrink, expand along one axis
 	# assumes blocks are 1 unit
@@ -42,9 +42,9 @@ func fire(extent):
 	for i in r:
 		pt += extent.normalized()
 		var pn = gridMan.get_block(pt)
-		var pn_go_away = pn.scaleTweenNode(0, timeToFade*randf() + 0.1, Tween.TRANS_EXPO)
+		var pn_go_away = pn.scaleTweenNode(0, randf() + 0.5, Tween.TRANS_EXPO)
 		pn_go_away.start()
-		pn_go_away.connect("tween_complete", pn, "removeQ")
+		pn_go_away.connect("tween_complete", pn, "remove_with_pop")
 
 	# connect to the tween_complete signal.
 	# delete the beam on completion, add its children to this node.

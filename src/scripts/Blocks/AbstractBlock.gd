@@ -57,6 +57,7 @@ func newTweenNode():
 
 func remove_with_pop(node, key):
 	get_parent().samplePlayer.play("deraj_pop_sound")
+	get_parent().remove_block(self)
 	remove_and_skip()
 
 func _ready():
