@@ -10,11 +10,11 @@ var puzzleMan
 func _ready():
 	# Generate the puzzle.
 	puzzleMan = PuzzleManScript.new()
-	var puzzle = puzzleMan.generatePuzzle( puzzleMan.PUZZLE_3x3 )
-	var n = puzzle.puzzleType
+	var puzzle = puzzleMan.generatePuzzle( 2, puzzleMan.DIFF_HARD )
+	#var n = puzzle.puzzleType
 	
 	# Compute the offset for centering the cubes.
-	var offset = Vector3( float( -n * 2.0 / 2.0 ) + .5, float( -n * 2.0 ) / 2.0 + .5, float( -n * 2.0 / 2.0 ) + .5 )
+	#var offset = Vector3( float( -n * 2.0 / 2.0 ) + .5, float( -n * 2.0 ) / 2.0 + .5, float( -n * 2.0 / 2.0 ) + .5 )
 
 	print("Generated ", puzzle.blocks.size(), " blocks." )
 
@@ -24,6 +24,6 @@ func _ready():
 		var node = block.toNode(self)
 		get_node( "GridView/GridMan" ).add_child( node )
 		get_node( "GridView/GridMan/" + block.name ) \
-			.set_translation(block.blockPos * 2 + offset )
+			.set_translation(block.blockPos * 2 )
 
 
