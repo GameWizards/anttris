@@ -154,12 +154,20 @@ func _on_MainMenuHG_pressed():
 	Menu_Main.guiIn()
 	timer = 0.0
 	menuOn = MENU_MAIN
+	var network = get_node("/root/Network")
+	network.disconnect()
 
 func _on_HostGame_pressed():
 	Menu_MP.guiOut()
 	Menu_HostGame.guiIn()
 	timer = 0.0
 	menuOn = MENU_HOSTGAME
+	var network = get_node("/root/Network")
+	
+	if !network.isHost and !network.isNetwork:
+		print("calling!")
+		network.host(network.port)
+		get_tree().get_root().get_node("GUIManager/HostGame/Panel/Waiting").set_text("Waiting for player to join on port " + str(network.port) + "...")
 
 func _on_JoinGame_pressed():
 	Menu_MP.guiOut()
@@ -178,3 +186,15 @@ func _on_RandomPuzzle_pressed():
 	root.get_child( root.get_child_count() - 1 ).queue_free()
 	root.add_child( ResourceLoader.load( "res://puzzle.scn" ).instance() )
 
+
+
+func _on_Join_pressed():
+	var IPPanel = get_tree().get_root().get_node("GUIManager/JoinGame/Panel/IPAddress")
+	var ip = IPPanel.get_text();
+	
+	if (ip.empty()):
+		return
+	
+	var network = get_node("/root/Network")
+	if !network.isClient:
+		network.connectTo(ip, network.port)
