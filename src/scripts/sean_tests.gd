@@ -1,6 +1,7 @@
 extends "res://scripts/gut.gd".Test
 
 var puzzleManScript = load("res://scripts/PuzzleManager.gd")
+var abstractScript = load("res://scripts/Blocks/AbstractBlock.gd")
 
 func setup():
 	gut.p("ran setup", 2)
@@ -11,13 +12,14 @@ func teardown():
 func test_unpickled_paired_block():
 	var pMan = puzzleManScript.new()
 	var pickle = pMan.PickledBlock.new()
-	pickle.setName("TestPickledBlock") \
-		.setBlockClass("PairedBlock") \
+	var aB = abstractScript
+	pickle.setName(1) \
+		.setBlockClass(pMan.BLOCK_PAIR) \
 		.setPairName("TestPickledBlock_BUDDY") \
 		.setTextureName("Blue")
 	var node = pickle.toNode()
-	gut.assert_eq(node.name, pickle.name, "Pickled name = node name")
-	gut.assert_eq(node.pairName, pickle.pairName, "Pickled pair name = node pair name")
+	gut.assert_eq(node.name, aB.nameToNodeName(pickle.name), "toName(Pickled name) = node name")
+	gut.assert_eq(node.pairName,  aB.nameToNodeName(pickle.pairName), "toName(Pickled pair name) = node pair name")
 	gut.assert_eq(node.textureName, pickle.textureName, "Pickled texture = node texture")
 
 	# test AbstractBlock.pairActivate
@@ -29,14 +31,15 @@ func test_unpickled_paired_block():
 func test_unpickled_laser_block():
 	var pMan = puzzleManScript.new()
 	var pickle = pMan.PickledBlock.new()
-	pickle.setName("TestPickledBlock") \
-		.setBlockClass("LaserBlock") \
+	var aB = abstractScript
+	pickle.setName(0) \
+		.setBlockClass(pMan.BLOCK_LASER) \
 		.setPairName("TestPickledBlock_BUDDY") \
 		.setLaserExtent(Vector3(1,1,1)) \
 		.setTextureName("Blue")
 	var node = pickle.toNode()
-	gut.assert_eq(node.name, pickle.name, "Pickled name = node name")
-	gut.assert_eq(node.pairName, pickle.pairName, "Pickled pair name = node pair name")
+	gut.assert_eq(node.name, aB.nameToNodeName(pickle.name), "toName(Pickled name) = node name")
+	gut.assert_eq(node.pairName,  aB.nameToNodeName(pickle.pairName), "toName(Pickled pair name) = node pair name")
 	gut.assert_eq(node.laserExtent, pickle.laserExtent, "Pickled laser extent = node laser extent")
 
 func test_puzzleMan_generatePuzzle():
