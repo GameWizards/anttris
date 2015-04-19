@@ -28,9 +28,6 @@ const blocks = [ preload( "Blocks/LaserBlock.gd" )
 # Hash map of all possible positions
 var shape = {}
 
-# Hash map of all possible positions
-var shape = {}
-
 # Stores a puzzle in a convenient class.
 class Puzzle:
 	var puzzleName
@@ -110,22 +107,12 @@ func generatePuzzle( layers, difficulty ):
 				
 	shuffleArray( allblocks )
 
-				pairblocks.append(Vector3(x,y,z))
-				shape[Vector3(x,y,z)] = null
-
-	# Assign lasers.
-
 	# Assign block types based on position.
 	var prevBlock = null
 	var even = false
 	var prevLaser = null
 	var laserEven = false
-	
 	for pos in allblocks:
-
-	var prevLaser = null
-	var laserEven = false
-	for pos in pairblocks:
 		var x = pos.x
 		var y = pos.y
 		var z = pos.z
@@ -145,10 +132,10 @@ func generatePuzzle( layers, difficulty ):
 		if t == BLOCK_LASER:
 			b.setBlockClass(BLOCK_LASER)
 			if laserEven:
-				b.setPairName(prevLaser.name) \
+				b.setPairID(prevLaser.name) \
 				.setLaserExtent(prevLaser.blockPos - b.blockPos)
 
-				prevLaser.setPairName(b.name) \
+				prevLaser.setPairID(b.name) \
 				.setLaserExtent(b.blockPos - prevLaser.blockPos)
 			laserEven = not laserEven
 			prevLaser = b
@@ -162,11 +149,11 @@ func generatePuzzle( layers, difficulty ):
 		if even:
 			var randColor = blockColors[randi() % blockColors.size()]
 			b.setBlockClass(BLOCK_PAIR) \
-				.setPairName(prevBlock.name) \
+				.setPairID(prevBlock.name) \
 				.setTextureName(randColor)
 
 			prevBlock.setBlockClass(BLOCK_PAIR) \
-				.setPairName(b.name) \
+				.setPairID(b.name) \
 				.setTextureName(randColor)
 		even = not even
 		prevBlock = b
@@ -226,7 +213,7 @@ class PickledBlock:
 		n.set_script(blocks[blockClass])
 
 		# configure block node
-		n.setName(name).setTexture()
+		n.setName(str(name)).setTexture()
 		n.blockPos = blockPos
 
 		if blockClass == BLOCK_PAIR:
