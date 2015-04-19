@@ -189,6 +189,7 @@ func _on_MainMenuJG_pressed():
 	Menu_Main.guiIn()
 	timer = 0.0
 	menuOn = MENU_MAIN
+	network.disconnect()
 
 func _on_RandomPuzzle_pressed():
 	var root = get_tree().get_root()
