@@ -176,6 +176,8 @@ func sendQuit():
 	connection.put_var([REMOTE_QUIT])
 
 
+
+
 func changeScene(scene):
 	root.get_child( root.get_child_count() - 1 ).queue_free()
 	#root.get_child( 0).queue_free()
