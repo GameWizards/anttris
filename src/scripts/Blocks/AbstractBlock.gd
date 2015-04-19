@@ -22,7 +22,8 @@ func setPairName(n):
 func _input_event( camera, ev, click_pos, click_normal, shape_idx ):
 	if ((ev.type==InputEvent.MOUSE_BUTTON and ev.button_index==BUTTON_LEFT)
 	or (ev.type==InputEvent.SCREEN_TOUCH)):
-		activate(ev, click_pos, click_normal)
+		if (get_parent().get_parent().active):
+			activate(ev, click_pos, click_normal)
 
 # returns this block's pairNode or null
 func pairActivate(ev, click_pos, click_normal):
