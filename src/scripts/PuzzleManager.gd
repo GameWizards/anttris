@@ -30,9 +30,9 @@ class Puzzle:
 	var blocks = []
 	
 	# Converts a puzzle to a dictionary.
-	func to Dict():
+	func toDict():
 		var blockArr = []
-		for b in range( puzzle.blocks.size() ):
+		for b in range( blocks.size() ):
 			blockArr.append( blocks[b].toDict() )
 	
 		var di = { pN = puzzleName
@@ -42,7 +42,8 @@ class Puzzle:
 		return di
 	
 	# Converts a dictionary to a puzzle.
-	func fromDict( dict ):
+	func fromDict( di ):
+		return
 	
 	# Determines if a puzzle is solveable.
 	func solvePuzzle():
@@ -159,10 +160,10 @@ func generatePuzzle( layers, difficulty ):
 		if t == BLOCK_LASER:
 			b.setBlockClass(BLOCK_LASER)
 			if laserEven:
-				b.setPairName(prevLaser.name) \
+				b.setPairID(prevLaser.name) \
 				.setLaserExtent(prevLaser.blockPos - b.blockPos)
 
-				prevLaser.setPairName(b.name) \
+				prevLaser.setPairID(b.name) \
 				.setLaserExtent(b.blockPos - prevLaser.blockPos)
 			laserEven = not laserEven
 			prevLaser = b
@@ -176,11 +177,11 @@ func generatePuzzle( layers, difficulty ):
 		if even:
 			var randColor = blockColors[randi() % blockColors.size()]
 			b.setBlockClass(BLOCK_PAIR) \
-				.setPairName(prevBlock.name) \
+				.setPairID(prevBlock.name) \
 				.setTextureName(randColor)
 
 			prevBlock.setBlockClass(BLOCK_PAIR) \
-				.setPairName(b.name) \
+				.setPairID(b.name) \
 				.setTextureName(randColor)
 		even = not even
 		prevBlock = b
