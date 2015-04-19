@@ -14,32 +14,40 @@ const wildColors = ["WildBlue", "WildOrange", "WildRed", "WildYellow", "WildPurp
 # Preload paired blocks
 const blockScn = preload( "res://blocks/block.scn" )
 const blocks = [ preload( "Blocks/LaserBlock.gd" )
-			   , preload( "Blocks/AbstractBlock.gd" )
+			   , preload( "Blocks/LaserBlock.gd" )
 			   , preload( "Blocks/PairedBlock.gd" )
-			   , preload( "Blocks/AbstractBlock.gd" )
+			   , preload( "Blocks/LaserBlock.gd" )
 			   ]
-
-#const blocks = { PairedBlock = preload("Blocks/PairedBlock.gd")
-#			   , LaserBlock  = preload("Blocks/LaserBlock.gd")
-#			   , FlyBlock    = preload("Blocks/FlyawayTestBlock.gd")
-#			   , blockScn    = preload( "res://blocks/block.scn" )
-#			   }
+const aBlock = preload( "Blocks/AbstractBlock.gd" )
 
 # Hash map of all possible positions
 var shape = {}
 
-# Hash map of all possible positions
-var shape = {}
 
 # Stores a puzzle in a convenient class.
 class Puzzle:
 	var puzzleName
 	var puzzleLayers
 	var blocks = []
-
-# Holds all of the steps needed to solve a puzzle.
-class PuzzleSteps:
-	var solveable
+	
+	# Determines if a puzzle is solveable.
+	func solvePuzzle():
+		# Simply use the solvePuzzleSteps function and return the solveable part.
+		var ps = self.solvePuzzleSteps()
+		return ps.solveable
+	
+	# Determines if a puzzle is solveable and returns the steps needed to solve it.
+	func solvePuzzleSteps():
+		var puzzleSteps = PuzzleSteps.new()
+		puzzleSteps.solveable = true
+	
+		# SOLVER
+	
+		return puzzleSteps
+	
+	# Holds all of the steps needed to solve a puzzle.
+	class PuzzleSteps:
+		var solveable
 
 # Randomly shuffle an array.
 func shuffleArray( arr ):
@@ -107,11 +115,9 @@ func generatePuzzle( layers, difficulty ):
 		for y in range( -layers, layers + 1 ):
 			for z in range( -layers, layers + 1 ):
 				allblocks.append(Vector3(x,y,z))
+				shape[Vector3(x,y,z)] = null
 				
 	shuffleArray( allblocks )
-
-				pairblocks.append(Vector3(x,y,z))
-				shape[Vector3(x,y,z)] = null
 
 	# Assign lasers.
 
@@ -120,12 +126,10 @@ func generatePuzzle( layers, difficulty ):
 	var even = false
 	var prevLaser = null
 	var laserEven = false
-	
-	for pos in allblocks:
 
 	var prevLaser = null
 	var laserEven = false
-	for pos in pairblocks:
+	for pos in allblocks:
 		var x = pos.x
 		var y = pos.y
 		var z = pos.z
@@ -173,35 +177,20 @@ func generatePuzzle( layers, difficulty ):
 
 	return puzzle
 
-# Determines if a puzzle is solveable.
-func solvePuzzle( puzzle ):
-	# Simply use the solvePuzzleSteps function and return the solveable part.
-	var ps = solvePuzzleSteps()
-	return ps.solveable
-
-# Determines if a puzzle is solveable and returns the steps needed to solve it.
-func solvePuzzleSteps( puzzle ):
-	var puzzleSteps = PuzzleSteps.new()
-	puzzleSteps.solveable = true
-
-	# SOLVER
-
-	return puzzleSteps
-
 
 class PickledBlock:
 	var name
-	var blockClass
+	var blockClass = BLOCK_PAIR
 	var pairName
-	var textureName
+	var textureName = "Red"
 	var blockPos
 	var laserExtent
 
-	func setID(n):
+	func setName(n):
 		name = n
 		return self
 
-	func setPairID(n):
+	func setPairName(n):
 		pairName = n
 		return self
 
@@ -228,7 +217,6 @@ class PickledBlock:
 		# configure block node
 		n.setName(name).setTexture()
 		n.blockPos = blockPos
-
 		if blockClass == BLOCK_PAIR:
 			n.setPairName(pairName).setTexture(textureName)
 

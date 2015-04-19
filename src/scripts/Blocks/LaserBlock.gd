@@ -1,7 +1,7 @@
 extends "AbstractBlock.gd"
 
 var mat
-var vectToPair = Vector3()
+var laserExtent = Vector3()
 var fired = false
 
 const beamScn = preload( "res://blocks/block.scn" )
@@ -28,7 +28,7 @@ func setColor(col):
 	mat.set_parameter(FixedMaterial.PARAM_EMISSION, col)
 
 func setExtent(laserExtent):
-	 vectToPair = laserExtent
+	 self.laserExtent = laserExtent
 
 # create a beam and activate it
 func activate(ev, click_pos, click_normal):
@@ -59,6 +59,6 @@ func activate(ev, click_pos, click_normal):
 	beam.set_script(Beam)
 
 	add_child( beam )
-	beam.fire( vectToPair )
+	beam.fire( laserExtent )
 
 	get_parent().samplePlayer.play("soundslikewillem_hitting_slinky")

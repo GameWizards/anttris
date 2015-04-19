@@ -25,7 +25,9 @@ var stream
 func _ready():
 	isNetwork = false
 	isHost = false
-	get_tree().get_root().get_node("GUIManager/OptionsMenu/Panel/PortField/LineEdit").set_text(str(port))
+	var label = get_tree().get_root().get_node("GUIManager/OptionsMenu/Panel/PortField/LineEdit")
+	if not label == null:
+		label.set_text(str(port))
 
 func setPort(pt):
 	port = pt;

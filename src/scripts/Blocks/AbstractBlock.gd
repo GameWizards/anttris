@@ -6,13 +6,16 @@ var selected = false
 var blockPos
 const far_away_corner = Vector3(80, 80, 80)
 
+func nameToNodeName(n):
+	return "block" + str(n)
+
 func setName(n):
-	name = n
-	set_name(n)
+	name = nameToNodeName(n)
+	set_name(nameToNodeName(n))
 	return self
 
 func setPairName(n):
-	pairName = n
+	pairName = nameToNodeName(n)
 	return self
 
 # catch clicks/taps
@@ -25,8 +28,9 @@ func _input_event( camera, ev, click_pos, click_normal, shape_idx ):
 func pairActivate(ev, click_pos, click_normal):
 	selected = true
 
+	print(pairName, name)
 	# is my pair Nil?
-	if pairName == null or not get_parent().has_node(str(pairName)):
+	if pairName == null or get_parent() == null or not get_parent().has_node(str(pairName)):
 		scaleTweenNode(0.9, 0.2, Tween.TRANS_EXPO).start()
 		return null
 
@@ -58,7 +62,6 @@ func newTweenNode():
 func remove_with_pop(node, key):
 	get_parent().samplePlayer.play("deraj_pop_sound")
 	get_parent().remove_block(self)
-	remove_and_skip()
 
 func _ready():
 	set_ray_pickable(true)
