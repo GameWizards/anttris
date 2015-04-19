@@ -1,7 +1,7 @@
 var PuzzleManScript = preload( "res://scripts/PuzzleManager.gd" )
 
 # Saves the config settings to a file.
-function saveConfig( config ):
+func saveConfig( config ):
 	var file = File.new()
 	file.open( "config.cfg", File.WRITE )
 	
@@ -13,7 +13,7 @@ function saveConfig( config ):
 		file.close()
 
 # Loads the config settings from a file.
-function loadConfig():
+func loadConfig():
 	var file = File.new()
 	file.open( "config.cfg", File.READ )
 	
@@ -38,6 +38,7 @@ function loadConfig():
 
 # Saves a puzzle to the file given.
 func savePuzzle( name, puzzle ):
+	print( puzzle.puzzleName )
 	var file = File.new()
 	file.open( name, File.WRITE )
 	
@@ -55,7 +56,9 @@ func savePuzzle( name, puzzle ):
 # Loads a puzzle for the file given.
 func loadPuzzle( name ):
 	var file = File.new()
-	var puzzle = PuzzleManScript.new().Puzzle.new()
+	var puzzleMan = PuzzleManScript.new()
+	var puzzle = puzzleMan.Puzzle.new()
+	puzzle.puzzleMan = puzzleMan
 	file.open( name, File.READ )
 	
 	if file.is_open():

@@ -13,11 +13,11 @@ const wildColors = ["WildBlue", "WildOrange", "WildRed", "WildYellow", "WildPurp
 
 # Preload paired blocks
 const blockScn = preload( "res://blocks/block.scn" )
-const blocks = [ preload( "Blocks/LaserBlock.gd" )
-			   , preload( "Blocks/LaserBlock.gd" )
-			   , preload( "Blocks/PairedBlock.gd" )
-			   , preload( "Blocks/LaserBlock.gd" )
-			   ]
+const blockScripts = [ preload( "Blocks/LaserBlock.gd" )
+			   	      , preload( "Blocks/LaserBlock.gd" )
+			   	      , preload( "Blocks/PairedBlock.gd" )
+			   	      , preload( "Blocks/LaserBlock.gd" )
+			   	      ]
 const aBlock = preload( "Blocks/AbstractBlock.gd" )
 
 # Hash map of all possible positions
@@ -28,6 +28,8 @@ class Puzzle:
 	var puzzleName
 	var puzzleLayers
 	var blocks = []
+	
+	var puzzleMan
 	
 	# Converts a puzzle to a dictionary.
 	func toDict():
@@ -43,6 +45,12 @@ class Puzzle:
 	
 	# Converts a dictionary to a puzzle.
 	func fromDict( di ):
+		puzzleName = di.pN
+		puzzleLayers = di.pL
+		for b in range( di.bL.size() ):
+			var nb = puzzleMan.PickledBlock.new()
+			nb.fromDict( di.bL[b] )
+			blocks.append( nb )
 		return
 	
 	# Determines if a puzzle is solveable.
@@ -160,10 +168,10 @@ func generatePuzzle( layers, difficulty ):
 		if t == BLOCK_LASER:
 			b.setBlockClass(BLOCK_LASER)
 			if laserEven:
-				b.setPairID(prevLaser.name) \
+				b.setPairName(prevLaser.name) \
 				.setLaserExtent(prevLaser.blockPos - b.blockPos)
 
-				prevLaser.setPairID(b.name) \
+				prevLaser.setPairName(b.name) \
 				.setLaserExtent(b.blockPos - prevLaser.blockPos)
 			laserEven = not laserEven
 			prevLaser = b
@@ -177,17 +185,16 @@ func generatePuzzle( layers, difficulty ):
 		if even:
 			var randColor = blockColors[randi() % blockColors.size()]
 			b.setBlockClass(BLOCK_PAIR) \
-				.setPairID(prevBlock.name) \
+				.setPairName(prevBlock.name) \
 				.setTextureName(randColor)
 
 			prevBlock.setBlockClass(BLOCK_PAIR) \
-				.setPairID(b.name) \
+				.setPairName(b.name) \
 				.setTextureName(randColor)
 		even = not even
 		prevBlock = b
 
 	return puzzle
-
 
 class PickledBlock:
 	var name
@@ -223,7 +230,7 @@ class PickledBlock:
 	func toNode():
 		# instantiate a block scene, assign the appropriate script to it
 		var n = blockScn.instance()
-		n.set_script(blocks[blockClass])
+		n.set_script(blockScripts[blockClass])
 
 		# configure block node
 		n.setName(str(name)).setTexture()
