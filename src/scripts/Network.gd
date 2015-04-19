@@ -5,7 +5,8 @@ const REMOTE_FINISH = 0
 const REMOTE_START = 1
 const REMOTE_QUIT = 2
 const REMOTE_BLOCK = 4
-const REMOTE_MSG = 5
+const REMOTE_BLOCK_TRANSFORM = 5
+const REMOTE_BLOCK_UPDATE = 6
 
 var port = 54321
 var root
@@ -15,6 +16,9 @@ var isClient
 var server
 var client
 var connection
+
+var remotePuzzle
+
 #Store the peer stream used by both the lcient and server
 var stream
 
@@ -63,6 +67,7 @@ func _process(delta):
 				isNetwork = true
 				server.stop()
 				changeScene("res://network_test.scn")
+				remotePuzzle = root.get_node("Spatial")
 				#MAKE CALL TO PUZZLE SELECTER
 		else: #not listening anymore, have a client
 			#do quick check to make sure we're still
@@ -88,6 +93,7 @@ func _process(delta):
 				print("Connection established!")
 				isNetwork = true
 				changeScene("res://network_test.scn")
+				remotePuzzle = root.get_node("Spatial")
 				return
 			if stream.get_status() == stream.STATUS_NONE or stream.get_status() == stream.STATUS_ERROR:
 				print("Error establishing connection!")
@@ -152,9 +158,13 @@ func ProcessServerData(dataArray):
 	elif ID == REMOTE_BLOCK:
 		#get their block ifnormation!
 		print("remote_block")
-	elif ID == REMOTE_MSG:
-		#sent some sort of message?
-		print("remote_msg")
+	elif ID == REMOTE_BLOCK_TRANSFORM:
+		#sent block information
+		print("block TRANSFORM!!!!!!!!!!!")
+		var scale = dataArray[1]
+		var translation = dataArray[2]
+		remotePuzzle.otherPuzzle.set_scale(scale)
+		remotePuzzle.otherPuzzle.set_translation(translation)
 
 func sendStart():
 	if !isNetwork:
@@ -175,6 +185,11 @@ func sendQuit():
 		return
 	connection.put_var([REMOTE_QUIT])
 
+func sendTransform(scale, translation):
+	if !isNetwork:
+		print("Cannot send transformation over an unitialized network!")
+		return
+	connection.put_var([REMOTE_BLOCK_TRANSFORM, scale, translation])
 
 
 
