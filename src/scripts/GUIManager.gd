@@ -121,7 +121,7 @@ func _on_Options_pressed():
 	Menu_Options.guiIn()
 	timer = 0.0
 	menuOn = MENU_OPTIONS
-	get_tree().get_root().get_node("GUIManager/OptionsMenu/Panel/PortField/LineEdit").set_text(str(network.port))
+	get_node("OptionsMenu/Panel/PortField/LineEdit").set_text(str(network.port))
 
 func _on_Cancel_pressed():
 	Menu_Options.guiOut()
@@ -131,8 +131,8 @@ func _on_Cancel_pressed():
 
 func _on_SaveQuit_pressed():
 	# Add save options here.
-	var field = get_tree().get_root().get_node("GUIManager/OptionsMenu/Panel/PortField/LineEdit")
-	get_node("/root/Network").setPort(field.get_text())
+	var field = get_node("OptionsMenu/Panel/PortField/LineEdit")
+	network.setPort(field.get_text())
 	network.setPort(field.get_text())
 	_on_Cancel_pressed()
 
@@ -176,7 +176,7 @@ func _on_HostGame_pressed():
 	if !network.isHost and !network.isNetwork:
 		print("calling!")
 		network.host(network.port)
-		get_tree().get_root().get_node("GUIManager/HostGame/Panel/Waiting").set_text("Waiting for player to join on port " + str(network.port) + "...")
+		get_node("HostGame/Panel/Waiting").set_text("Waiting for player to join on port " + str(network.port) + "...")
 
 func _on_JoinGame_pressed():
 	Menu_MP.guiOut()
@@ -189,7 +189,8 @@ func _on_MainMenuJG_pressed():
 	Menu_Main.guiIn()
 	timer = 0.0
 	menuOn = MENU_MAIN
-	network.disconnect()
+	if (network.isClient):
+		network.disconnect()
 
 func _on_RandomPuzzle_pressed():
 	var root = get_tree().get_root()
@@ -198,7 +199,7 @@ func _on_RandomPuzzle_pressed():
 
 
 func _on_Join_pressed():
-	var IPPanel = get_tree().get_root().get_node("GUIManager/JoinGame/Panel/IPAddress")
+	var IPPanel = get_node("JoinGame/Panel/IPAddress")
 	var ip = IPPanel.get_text();
 	
 	if (ip.empty()):

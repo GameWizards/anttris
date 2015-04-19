@@ -12,7 +12,7 @@ var port = 54321
 var root
 var isNetwork
 var isHost
-var isClient
+var isClient = false
 var server
 var client
 var connection
@@ -172,7 +172,7 @@ func ProcessServerData(dataArray):
 		var pos1 = dataArray[1]
 		var pos2 = dataArray[2]
 		gridMan.remove_block(pos1)
-		girdMan.remove_block(pos2)
+		gridMan.remove_block(pos2)
 
 func sendStart():
 	if !isNetwork:
@@ -180,6 +180,12 @@ func sendStart():
 		return
 	var er = connection.put_var([REMOTE_START])
 	print("Sending start and got [" + str(er) + "]")
+
+func sendBlockUpdate(pos1, pos2):
+	if !isNetwork:
+		print("Error sending start packet: not connected!")
+		return
+	connection.put_var([REMOTE_BLOCK_UPDATE, pos1, pos2])
 
 func sendFinish(score):
 	if !isNetwork:
