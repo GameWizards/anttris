@@ -5,23 +5,29 @@ const REMOTE_FINISH = 0
 const REMOTE_START = 1
 const REMOTE_QUIT = 2
 const REMOTE_BLOCK = 4
-const REMOTE_MSG = 5
+const REMOTE_BLOCK_TRANSFORM = 5
+const REMOTE_BLOCK_UPDATE = 6
 
 var port = 54321
 var root
 var isNetwork
 var isHost
-var isClient
+var isClient = false
 var server
 var client
 var connection
+
+var remotePuzzle
+
 #Store the peer stream used by both the lcient and server
 var stream
 
 func _ready():
 	isNetwork = false
 	isHost = false
-	get_tree().get_root().get_node("GUIManager/OptionsMenu/Panel/PortField/LineEdit").set_text(str(port))
+	var label = get_tree().get_root().get_node("GUIManager/OptionsMenu/Panel/PortField/LineEdit")
+	if not label == null:
+		label.set_text(str(port))
 
 func setPort(pt):
 	port = pt;
@@ -62,7 +68,8 @@ func _process(delta):
 				print("Connecting with player...")
 				isNetwork = true
 				server.stop()
-				changeScene("res://network_test.scn")
+				changeScene("res://puzzle.scn")
+				remotePuzzle = root.get_node("Spatial")
 				#MAKE CALL TO PUZZLE SELECTER
 		else: #not listening anymore, have a client
 			#do quick check to make sure we're still
@@ -87,7 +94,8 @@ func _process(delta):
 			if stream.get_status() == stream.STATUS_CONNECTED:
 				print("Connection established!")
 				isNetwork = true
-				changeScene("res://network_test.scn")
+				changeScene("res://puzzle.scn")
+				remotePuzzle = root.get_node("Spatial")
 				return
 			if stream.get_status() == stream.STATUS_NONE or stream.get_status() == stream.STATUS_ERROR:
 				print("Error establishing connection!")
@@ -152,9 +160,21 @@ func ProcessServerData(dataArray):
 	elif ID == REMOTE_BLOCK:
 		#get their block ifnormation!
 		print("remote_block")
-	elif ID == REMOTE_MSG:
-		#sent some sort of message?
-		print("remote_msg")
+	elif ID == REMOTE_BLOCK_TRANSFORM:
+		#sent block information
+		print("block TRANSFORM!!!!!!!!!!!")
+		var scale = dataArray[1]
+		var translation = dataArray[2]
+		remotePuzzle.otherPuzzle.set_scale(scale)
+		remotePuzzle.otherPuzzle.set_translation(translation)
+	elif ID == REMOTE_BLOCK_UPDATE:
+		#sent an updated block pair
+		print("block update")
+		var gridMan = root.get_node( "Spatial/GridView/GridMan" )
+		var pos1 = dataArray[1]
+		var pos2 = dataArray[2]
+		gridMan.remove_block(pos1)
+		gridMan.remove_block(pos2)
 
 func sendStart():
 	if !isNetwork:
@@ -162,6 +182,12 @@ func sendStart():
 		return
 	var er = connection.put_var([REMOTE_START])
 	print("Sending start and got [" + str(er) + "]")
+
+func sendBlockUpdate(pos1, pos2):
+	if !isNetwork:
+		print("Error sending start packet: not connected!")
+		return
+	connection.put_var([REMOTE_BLOCK_UPDATE, pos1, pos2])
 
 func sendFinish(score):
 	if !isNetwork:
@@ -174,6 +200,13 @@ func sendQuit():
 		print("Error sending finish packet: not connected!")
 		return
 	connection.put_var([REMOTE_QUIT])
+
+func sendTransform(scale, translation):
+	if !isNetwork:
+		print("Cannot send transformation over an unitialized network!")
+		return
+	connection.put_var([REMOTE_BLOCK_TRANSFORM, scale, translation])
+
 
 
 func changeScene(scene):

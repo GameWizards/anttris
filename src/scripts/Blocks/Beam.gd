@@ -42,6 +42,8 @@ func fire(extent):
 	for i in r:
 		pt += extent.normalized()
 		var pn = gridMan.get_block(pt)
+		if pn == null:
+			continue
 		var pn_go_away = pn.scaleTweenNode(0, randf() + 0.5, Tween.TRANS_EXPO)
 		pn_go_away.start()
 		pn_go_away.connect("tween_complete", pn, "remove_with_pop")
