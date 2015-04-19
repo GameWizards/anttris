@@ -4,6 +4,7 @@ var name
 var pairName
 var selected = false
 var blockPos
+var blockLayer
 const far_away_corner = Vector3(80, 80, 80)
 
 func nameToNodeName(n):
@@ -17,6 +18,13 @@ func setName(n):
 func setPairName(n):
 	pairName = nameToNodeName(n)
 	return self
+
+func setBlockLayer(n):
+	blockLayer = n
+	return self
+
+func getBlockLayer():
+	return blockLayer
 
 # catch clicks/taps
 func _input_event( camera, ev, click_pos, click_normal, shape_idx ):
