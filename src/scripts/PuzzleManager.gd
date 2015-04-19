@@ -56,6 +56,12 @@ func shuffleArray( arr ):
 		var temp = arr[swapVal]
 		arr[swapVal] = arr[i]
 		arr[i] = temp
+		
+
+# calculate the layer; move into a method so that it can be used elsewhere
+func calcBlockLayer( x, y, z ):
+	var layer = max( max( abs( x ), abs( y ) ), abs( z ) )
+	return layer
 
 # Determines the block type based on puzzle size and difficulty.
 func getBlockType( difficulty, x, y, z ):
@@ -64,7 +70,7 @@ func getBlockType( difficulty, x, y, z ):
 		return BLOCK_GOAL
 
 	# Determine the layer this block is on.
-	var layer = max( max( abs( x ), abs( y ) ), abs( z ) )
+	var layer = calcBlockLayer( x, y, z )
 
 	# Determine how many blocks are on the outer part of the layer.
 	var layerCount = 0
