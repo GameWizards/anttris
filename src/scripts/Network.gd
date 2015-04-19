@@ -66,7 +66,7 @@ func _process(delta):
 				print("Connecting with player...")
 				isNetwork = true
 				server.stop()
-				changeScene("res://network_test.scn")
+				changeScene("res://puzzle.scn")
 				remotePuzzle = root.get_node("Spatial")
 				#MAKE CALL TO PUZZLE SELECTER
 		else: #not listening anymore, have a client
@@ -92,7 +92,7 @@ func _process(delta):
 			if stream.get_status() == stream.STATUS_CONNECTED:
 				print("Connection established!")
 				isNetwork = true
-				changeScene("res://network_test.scn")
+				changeScene("res://puzzle.scn")
 				remotePuzzle = root.get_node("Spatial")
 				return
 			if stream.get_status() == stream.STATUS_NONE or stream.get_status() == stream.STATUS_ERROR:
