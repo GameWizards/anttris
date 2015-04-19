@@ -28,6 +28,9 @@ const blocks = [ preload( "Blocks/LaserBlock.gd" )
 # Hash map of all possible positions
 var shape = {}
 
+# Hash map of all possible positions
+var shape = {}
+
 # Stores a puzzle in a convenient class.
 class Puzzle:
 	var puzzleName
@@ -107,6 +110,11 @@ func generatePuzzle( layers, difficulty ):
 				
 	shuffleArray( allblocks )
 
+				pairblocks.append(Vector3(x,y,z))
+				shape[Vector3(x,y,z)] = null
+
+	# Assign lasers.
+
 	# Assign block types based on position.
 	var prevBlock = null
 	var even = false
@@ -114,6 +122,10 @@ func generatePuzzle( layers, difficulty ):
 	var laserEven = false
 	
 	for pos in allblocks:
+
+	var prevLaser = null
+	var laserEven = false
+	for pos in pairblocks:
 		var x = pos.x
 		var y = pos.y
 		var z = pos.z
@@ -219,6 +231,7 @@ class PickledBlock:
 
 		if blockClass == BLOCK_PAIR:
 			n.setPairName(pairName).setTexture(textureName)
+
 		if blockClass == BLOCK_LASER:
 			n.setPairName(pairName).setExtent(laserExtent)
 		return n

@@ -5,6 +5,9 @@
 
 extends Node
 
+# network variables
+var network
+
 # State variables.
 var menuOn
 var splashTween
@@ -58,6 +61,12 @@ func _ready():
 	Menu_HostGame = get_node( "HostGame" )
 	Menu_JoinGame = get_node( "JoinGame" )
 	Menu_Options = get_node( "OptionsMenu" )
+	
+	Globals.set("Network", load("res://scripts/Network.gd").new())
+	network = Globals.get("Network")
+	
+	#get_tree().get_root().add_child(network)
+	network.root = get_tree().get_root()
 
 # Function to update the GUI.
 func _process( delta ):
@@ -112,6 +121,7 @@ func _on_Options_pressed():
 	Menu_Options.guiIn()
 	timer = 0.0
 	menuOn = MENU_OPTIONS
+	get_tree().get_root().get_node("GUIManager/OptionsMenu/Panel/PortField/LineEdit").set_text(str(network.port))
 
 func _on_Cancel_pressed():
 	Menu_Options.guiOut()
@@ -123,6 +133,7 @@ func _on_SaveQuit_pressed():
 	# Add save options here.
 	var field = get_tree().get_root().get_node("GUIManager/OptionsMenu/Panel/PortField/LineEdit")
 	get_node("/root/Network").setPort(field.get_text())
+	network.setPort(field.get_text())
 	_on_Cancel_pressed()
 
 func _on_SP_pressed():
@@ -154,12 +165,18 @@ func _on_MainMenuHG_pressed():
 	Menu_Main.guiIn()
 	timer = 0.0
 	menuOn = MENU_MAIN
+	network.disconnect()
 
 func _on_HostGame_pressed():
 	Menu_MP.guiOut()
 	Menu_HostGame.guiIn()
 	timer = 0.0
 	menuOn = MENU_HOSTGAME
+	
+	if !network.isHost and !network.isNetwork:
+		print("calling!")
+		network.host(network.port)
+		get_tree().get_root().get_node("GUIManager/HostGame/Panel/Waiting").set_text("Waiting for player to join on port " + str(network.port) + "...")
 
 func _on_JoinGame_pressed():
 	Menu_MP.guiOut()
@@ -178,3 +195,13 @@ func _on_RandomPuzzle_pressed():
 	root.get_child( root.get_child_count() - 1 ).queue_free()
 	root.add_child( ResourceLoader.load( "res://puzzle.scn" ).instance() )
 
+
+func _on_Join_pressed():
+	var IPPanel = get_tree().get_root().get_node("GUIManager/JoinGame/Panel/IPAddress")
+	var ip = IPPanel.get_text();
+	
+	if (ip.empty()):
+		return
+	
+	if !network.isClient:
+		network.connectTo(ip, network.port)
