@@ -39,6 +39,10 @@ var MENU_HOSTGAME		= 6
 var MENU_JOINGAME		= 7
 var MENU_OPTIONS		= 8
 
+# Main Menu Theme
+var samplePlayer = StreamPlayer.new()
+var songs = [load("res://main_theme_antris.ogg")]
+
 # Function to be called once for setup.
 func _ready():
 	# Initial setup.
@@ -67,7 +71,12 @@ func _ready():
 	
 	#get_tree().get_root().add_child(network)
 	network.root = get_tree().get_root()
-
+	
+	# Main Menu Theme
+	add_child(samplePlayer)
+	samplePlayer.set_stream(songs[0])
+	samplePlayer.play()
+	
 # Function to update the GUI.
 func _process( delta ):
 	# Handle the initial wait.
