@@ -3,7 +3,7 @@ extends Spatial
 # proposed script manager:
 # var PuzzleManScript = get_node("Globals").get("PuzzleManScript")
 
-var FileMan = preload( "res://scripts/FileManager.gd" ).new()
+var FileMan = preload( "res://scripts/DataManager.gd" ).new()
 var PuzzleManScript = preload( "res://scripts/PuzzleManager.gd" )
 var PuzzleScn = preload("res://puzzle.scn")
 var puzzleMan

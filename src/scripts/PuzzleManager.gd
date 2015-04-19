@@ -29,6 +29,21 @@ class Puzzle:
 	var puzzleLayers
 	var blocks = []
 	
+	# Converts a puzzle to a dictionary.
+	func to Dict():
+		var blockArr = []
+		for b in range( puzzle.blocks.size() ):
+			blockArr.append( blocks[b].toDict() )
+	
+		var di = { pN = puzzleName
+		 	     , pL = puzzleLayers
+				 , bL = blockArr
+			     }
+		return di
+	
+	# Converts a dictionary to a puzzle.
+	func fromDict( dict ):
+	
 	# Determines if a puzzle is solveable.
 	func solvePuzzle():
 		# Simply use the solvePuzzleSteps function and return the solveable part.

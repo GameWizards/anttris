@@ -67,6 +67,16 @@ func _ready():
 	
 	#get_tree().get_root().add_child(network)
 	network.root = get_tree().get_root()
+	
+	# Load the config.
+	var config = preload( "res://scripts/DataManager.gd" ).new().loadConfig()
+	
+	get_node("OptionsMenu/Panel/OnlineName/LineEdit").set_text( config.name )
+	get_node("OptionsMenu/Panel/SoundVolume/SoundSlider").set_value( config.soundvolume )
+	get_node("OptionsMenu/Panel/MusicVolume/MusicSlider").set_value( config.musicvolume )
+	#get_node("OptionsMenu/Panel/PortField/LineEdit").set_text( config.portnumber )
+	
+	network.port = config.portnumber
 
 # Function to update the GUI.
 func _process( delta ):
@@ -130,7 +140,16 @@ func _on_Cancel_pressed():
 	menuOn = MENU_MAIN
 
 func _on_SaveQuit_pressed():
-	# Add save options here.
+	# Save the options.
+	
+	var config = { name = get_node("OptionsMenu/Panel/OnlineName/LineEdit").get_text()
+				  , soundvolume = get_node("OptionsMenu/Panel/SoundVolume/SoundSlider").get_value()
+				  , musicvolume = get_node("OptionsMenu/Panel/MusicVolume/MusicSlider").get_value()
+				  , portnumber = get_node("OptionsMenu/Panel/PortField/LineEdit").get_text()
+				  }
+
+	preload( "res://scripts/DataManager.gd" ).new().saveConfig( config )
+	
 	var field = get_node("OptionsMenu/Panel/PortField/LineEdit")
 	network.setPort(field.get_text())
 	network.setPort(field.get_text())
