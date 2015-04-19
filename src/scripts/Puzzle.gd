@@ -3,7 +3,7 @@ extends Spatial
 # proposed script manager:
 # var PuzzleManScript = get_node("Globals").get("PuzzleManScript")
 
-var FileMan = preload( "res://scripts/FileManager.gd" ).new()
+var DataMan = preload( "res://scripts/DataManager.gd" ).new()
 var PuzzleManScript = preload( "res://scripts/PuzzleManager.gd" )
 var PuzzleScn = preload("res://puzzle.scn")
 var puzzleMan
@@ -47,15 +47,16 @@ func _ready():
 	set_process(true) # needed for time keeping
 	puzzleMan = PuzzleManScript.new()
 	var puzzle = puzzleMan.generatePuzzle( 2, puzzleMan.DIFF_EASY )
+	puzzle.puzzleMan = puzzleMan
 
 	print("Generated ", puzzle.blocks.size(), " blocks." )
 	
 	print( "Saving..." )
-	FileMan.savePuzzle( "TestPuzzle.pzl", puzzle )
+	DataMan.savePuzzle( "TestPuzzle.pzl", puzzle )
 	
 	puzzle = 0
 	
-	puzzle = FileMan.loadPuzzle( "TestPuzzle.pzl" )
+	puzzle = DataMan.loadPuzzle( "TestPuzzle.pzl" )
 	
 	print( puzzle.puzzleName )
 	print( puzzle.blocks.size() )

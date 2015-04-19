@@ -13,11 +13,11 @@ const wildColors = ["WildBlue", "WildOrange", "WildRed", "WildYellow", "WildPurp
 
 # Preload paired blocks
 const blockScn = preload( "res://blocks/block.scn" )
-const blocks = [ preload( "Blocks/LaserBlock.gd" )
-			   , preload( "Blocks/LaserBlock.gd" )
-			   , preload( "Blocks/PairedBlock.gd" )
-			   , preload( "Blocks/LaserBlock.gd" )
-			   ]
+const blockScripts = [ preload( "Blocks/LaserBlock.gd" )
+			   	      , preload( "Blocks/LaserBlock.gd" )
+			   	      , preload( "Blocks/PairedBlock.gd" )
+			   	      , preload( "Blocks/LaserBlock.gd" )
+			   	      ]
 const aBlock = preload( "Blocks/AbstractBlock.gd" )
 
 # Hash map of all possible positions
@@ -28,6 +28,30 @@ class Puzzle:
 	var puzzleName
 	var puzzleLayers
 	var blocks = []
+	
+	var puzzleMan
+	
+	# Converts a puzzle to a dictionary.
+	func toDict():
+		var blockArr = []
+		for b in range( blocks.size() ):
+			blockArr.append( blocks[b].toDict() )
+	
+		var di = { pN = puzzleName
+		 	     , pL = puzzleLayers
+				 , bL = blockArr
+			     }
+		return di
+	
+	# Converts a dictionary to a puzzle.
+	func fromDict( di ):
+		puzzleName = di.pN
+		puzzleLayers = di.pL
+		for b in range( di.bL.size() ):
+			var nb = puzzleMan.PickledBlock.new()
+			nb.fromDict( di.bL[b] )
+			blocks.append( nb )
+		return
 	
 	# Determines if a puzzle is solveable.
 	func solvePuzzle():
@@ -178,7 +202,6 @@ func generatePuzzle( layers, difficulty ):
 
 	return puzzle
 
-
 class PickledBlock:
 	var name
 	var blockClass = BLOCK_PAIR
@@ -213,7 +236,7 @@ class PickledBlock:
 	func toNode():
 		# instantiate a block scene, assign the appropriate script to it
 		var n = blockScn.instance()
-		n.set_script(blocks[blockClass])
+		n.set_script(blockScripts[blockClass])
 
 		# configure block node
 		n.setName(str(name)).setTexture()
