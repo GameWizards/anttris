@@ -18,6 +18,7 @@ func get_block(pos):
 
 func remove_block(block_node):
 	shape[block_node.blockPos] = null
+	remove_and_skip()
 	# TODO scan_layer, fire lasers if empty
 
 # TODO wild block selected? can click any pair. can deselect wild block.

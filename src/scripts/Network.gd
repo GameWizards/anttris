@@ -165,6 +165,14 @@ func ProcessServerData(dataArray):
 		var translation = dataArray[2]
 		remotePuzzle.otherPuzzle.set_scale(scale)
 		remotePuzzle.otherPuzzle.set_translation(translation)
+	elif ID == REMOTE_BLOCK_UPDATE:
+		#sent an updated block pair
+		print("block update")
+		var gridMan = root.get_node( "Spatial/GridView/GridMan" )
+		var pos1 = dataArray[1]
+		var pos2 = dataArray[2]
+		gridMan.remove_block(pos1)
+		girdMan.remove_block(pos2)
 
 func sendStart():
 	if !isNetwork:
