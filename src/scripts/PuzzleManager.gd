@@ -96,6 +96,7 @@ func getBlockType( difficulty, x, y, z ):
 func generatePuzzle( layers, difficulty ):
 	var blockID = 0
 	var puzzle = Puzzle.new()
+	puzzle.puzzleName = "RANDOM PUZZLE"
 	puzzle.puzzleLayers = layers
 
 	# Create all possible positions.
@@ -222,4 +223,24 @@ class PickledBlock:
 		if blockClass == BLOCK_LASER:
 			n.setPairName(pairName).setExtent(laserExtent)
 		return n
+		
+	# Convert this object to a dictionary.
+	func toDict():
+		var di = { n = name
+		 	     , bC = blockClass
+			     , pN = pairName
+			     , tN = textureName
+			     , bP = blockPos
+			     , lE = laserExtent
+			     }
+		return di
+			
+	# Make this object from a dictionary.
+	func fromDict( di ):
+		name = di.n
+		blockClass = di.bC
+		pairName = di.pN
+		textureName = di.tN
+		blockPos = di.bP
+		laserExtent = di.lE
 
