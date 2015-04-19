@@ -6,6 +6,7 @@ extends Spatial
 var PuzzleManScript = preload( "res://scripts/PuzzleManager.gd" )
 var PuzzleScn = preload("res://puzzle.scn")
 var puzzleMan
+var otherPuzzle
 var mainPuzzle = true
 
 var time = {
@@ -77,6 +78,7 @@ func _ready():
 		v.add_child(p)
 		add_child(c)
 		c.add_child(v)
+		otherPuzzle = p #for use with network
 # child of control? easier input
 
 
