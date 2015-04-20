@@ -144,10 +144,10 @@ func generatePuzzle( layers, difficulty ):
 		if t == BLOCK_LASER:
 			b.setBlockClass(BLOCK_LASER)
 			if laserEven:
-				b.setPairID(prevLaser.name) \
+				b.setPairName(prevLaser.name) \
 				.setLaserExtent(prevLaser.blockPos - b.blockPos)
 
-				prevLaser.setPairID(b.name) \
+				prevLaser.setPairName(b.name) \
 				.setLaserExtent(b.blockPos - prevLaser.blockPos)
 			laserEven = not laserEven
 			prevLaser = b
@@ -161,11 +161,11 @@ func generatePuzzle( layers, difficulty ):
 		if even:
 			var randColor = blockColors[randi() % blockColors.size()]
 			b.setBlockClass(BLOCK_PAIR) \
-				.setPairID(prevBlock.name) \
+				.setPairName(prevBlock.name) \
 				.setTextureName(randColor)
 
 			prevBlock.setBlockClass(BLOCK_PAIR) \
-				.setPairID(b.name) \
+				.setPairName(b.name) \
 				.setTextureName(randColor)
 		even = not even
 		prevBlock = b
