@@ -6,7 +6,7 @@ var mouseposlast = Input.get_mouse_pos()   # the mouses last position
 
 # global tweakable parameters
 var orbitrate = 10        # the rate the camera orbits the target when the mouse is moved
-var active = true
+
 
 func _ready():
 	# Initalization here
@@ -14,8 +14,6 @@ func _ready():
 
 # called to handle a user input event
 func _input(ev):
-	if (not active):
-		return
 	# If the mouse has been moved
 	if (ev.type==InputEvent.SCREEN_DRAG or (ev.type==InputEvent.MOUSE_MOTION and ev.button_mask == 1)):
 		# calculate the delta change from the last mouse movement
