@@ -11,6 +11,7 @@ var otherPuzzle
 var mainPuzzle = true
 
 var time = {
+		on = true,
 		val = 0.0,
 		label = null,
 		tween = null }
@@ -44,7 +45,8 @@ func _process(dTime):
 
 # Called for initialization
 func _ready():
-	set_process(true) # needed for time keeping
+	if time.on:
+		set_process(true) # needed for time keeping
 	puzzleMan = PuzzleManScript.new()
 	var puzzle = puzzleMan.generatePuzzle( 2, puzzleMan.DIFF_EASY )
 	puzzle.puzzleMan = puzzleMan
