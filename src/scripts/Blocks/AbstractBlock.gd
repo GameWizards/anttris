@@ -4,7 +4,6 @@ var name
 var pairName
 var selected = false
 var blockPos
-var blockLayer
 const far_away_corner = Vector3(80, 80, 80)
 
 func nameToNodeName(n):
