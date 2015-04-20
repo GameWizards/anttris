@@ -64,3 +64,5 @@ func remove_with_pop(node, key):
 
 func _ready():
 	set_ray_pickable(true)
+	#var img;
+	#img.load("res://textures/Block_" + textureName + ".png")

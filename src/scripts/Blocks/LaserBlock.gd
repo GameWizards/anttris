@@ -10,13 +10,15 @@ const laserBlockImg = Image() # TODO preload this somewhere else
 
 # color
 func setTexture(color=Color(0.5, 0, 0)):
-	var text = ImageTexture.new()
-	mat = FixedMaterial.new()
+	#var text = ImageTexture.new()
+	#mat = FixedMaterial.new()
 
-	laserBlockImg.load("res://textures/Block_Laser.png")
+	
+	var mat = load("res://materials/block_Laser.mtl")
+	#laserBlockImg.load("res://textures/Block_Laser.png")
 
-	text.create_from_image(laserBlockImg)
-	mat.set_texture(FixedMaterial.PARAM_DIFFUSE, text)
+	#text.create_from_image(laserBlockImg)
+	#mat.set_texture(FixedMaterial.PARAM_DIFFUSE, text)
 
 	mat.set_parameter(FixedMaterial.PARAM_EMISSION, color)
 	self.get_node("MeshInstance").set_material_override(mat)

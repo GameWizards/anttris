@@ -5,14 +5,14 @@ var textureName
 func setTexture(textureName="Red"):
 	var img = Image()
 	self.textureName = textureName
-	var mat = FixedMaterial.new()
-	var text = ImageTexture.new()
+	#var text = ImageTexture.new()
 
 	# TODO preload
-	img.load("res://textures/Block_" + textureName + ".png")
+	var mat = load("res://materials/block_" + textureName + ".mtl")
+	#img.load("res://textures/Block_" + textureName + ".png")
 
-	text.create_from_image(img)
-	mat.set_texture(FixedMaterial.PARAM_DIFFUSE, text)
+	#text.create_from_image(img)
+	#mat.set_texture(FixedMaterial.PARAM_DIFFUSE, text)
 	# TODO color the texture: mat.set_parameter(FixedMaterial.PARAM_DIFFUSE, Color(0.5, 0.5, 0))
 
 	self.get_node("MeshInstance").set_material_override(mat)
