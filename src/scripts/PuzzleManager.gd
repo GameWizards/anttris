@@ -149,6 +149,20 @@ func generatePuzzle( layers, difficulty ):
 				layeredblocks[calcBlockLayer( x, y, z )].append(Vector3(x,y,z))
 				shape[Vector3(x,y,z)] = null
 
+	# Generate laser lines.
+	for l in range( 1, layers + 1 ):
+		if difficulty == DIFF_EASY:
+			for lx in [ -l, l ]:
+				for lz in [ -l, l ]:
+					puzzle.lasers.append( [Vector3( lx, lx, lz ), Vector3( lx + lx*-1, lx, lz )] )
+					puzzle.lasers.append( [Vector3( lx, lx, lz ), Vector3( lx, lx + lx*-1, lz )] )
+					puzzle.lasers.append( [Vector3( lx, lx, lz ), Vector3( lx, lx, lz + lz*-1 )] )
+						
+	for l in puzzle.lasers:
+		print( l )
+		
+	print( "LASERS ", puzzle.lasers.size() )
+
 	# Assign block types based on position.
 	for l in range( 0, layers + 1 ):
 		# Randomize the pairs.
