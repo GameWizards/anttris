@@ -23,7 +23,6 @@ const aBlock = preload( "Blocks/AbstractBlock.gd" )
 # Hash map of all possible positions
 var shape = {}
 
-
 # Stores a puzzle in a convenient class.
 class Puzzle:
 	var puzzleName
@@ -107,6 +106,7 @@ func getBlockType( difficulty, x, y, z ):
 func generatePuzzle( layers, difficulty ):
 	var blockID = 0
 	var puzzle = Puzzle.new()
+	puzzle.puzzleName = "RANDOM PUZZLE"
 	puzzle.puzzleLayers = layers
 
 	# Create all possible positions.
@@ -119,14 +119,9 @@ func generatePuzzle( layers, difficulty ):
 				
 	shuffleArray( allblocks )
 
-	# Assign lasers.
-
 	# Assign block types based on position.
 	var prevBlock = null
 	var even = false
-	var prevLaser = null
-	var laserEven = false
-
 	var prevLaser = null
 	var laserEven = false
 	for pos in allblocks:
@@ -149,10 +144,10 @@ func generatePuzzle( layers, difficulty ):
 		if t == BLOCK_LASER:
 			b.setBlockClass(BLOCK_LASER)
 			if laserEven:
-				b.setPairName(prevLaser.name) \
+				b.setPairID(prevLaser.name) \
 				.setLaserExtent(prevLaser.blockPos - b.blockPos)
 
-				prevLaser.setPairName(b.name) \
+				prevLaser.setPairID(b.name) \
 				.setLaserExtent(b.blockPos - prevLaser.blockPos)
 			laserEven = not laserEven
 			prevLaser = b
@@ -166,11 +161,11 @@ func generatePuzzle( layers, difficulty ):
 		if even:
 			var randColor = blockColors[randi() % blockColors.size()]
 			b.setBlockClass(BLOCK_PAIR) \
-				.setPairName(prevBlock.name) \
+				.setPairID(prevBlock.name) \
 				.setTextureName(randColor)
 
 			prevBlock.setBlockClass(BLOCK_PAIR) \
-				.setPairName(b.name) \
+				.setPairID(b.name) \
 				.setTextureName(randColor)
 		even = not even
 		prevBlock = b
@@ -215,7 +210,7 @@ class PickledBlock:
 		n.set_script(blocks[blockClass])
 
 		# configure block node
-		n.setName(name).setTexture()
+		n.setName(str(name)).setTexture()
 		n.blockPos = blockPos
 		if blockClass == BLOCK_PAIR:
 			n.setPairName(pairName).setTexture(textureName)
@@ -223,4 +218,24 @@ class PickledBlock:
 		if blockClass == BLOCK_LASER:
 			n.setPairName(pairName).setExtent(laserExtent)
 		return n
+		
+	# Convert this object to a dictionary.
+	func toDict():
+		var di = { n = name
+		 	     , bC = blockClass
+			     , pN = pairName
+			     , tN = textureName
+			     , bP = blockPos
+			     , lE = laserExtent
+			     }
+		return di
+			
+	# Make this object from a dictionary.
+	func fromDict( di ):
+		name = di.n
+		blockClass = di.bC
+		pairName = di.pN
+		textureName = di.tN
+		blockPos = di.bP
+		laserExtent = di.lE
 
