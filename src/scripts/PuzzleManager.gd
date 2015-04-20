@@ -28,6 +28,7 @@ class Puzzle:
 	var puzzleName
 	var puzzleLayers
 	var blocks = []
+	var lasers = []
 	
 	var puzzleMan
 	
@@ -84,8 +85,7 @@ func shuffleArray( arr ):
 
 # calculate the layer; move into a method so that it can be used elsewhere
 func calcBlockLayer( x, y, z ):
-	var layer = max( max( abs( x ), abs( y ) ), abs( z ) )
-	return layer
+	return max( max( abs( x ), abs( y ) ), abs( z ) )
 
 # Determines the block type based on puzzle size and difficulty.
 func getBlockType( difficulty, x, y, z ):
@@ -138,67 +138,71 @@ func generatePuzzle( layers, difficulty ):
 	var puzzle = Puzzle.new()
 	puzzle.puzzleName = "RANDOM PUZZLE"
 	puzzle.puzzleLayers = layers
-
+	
 	# Create all possible positions.
-	var allblocks = []
+	var layeredblocks = []
+	for l in range( 0, layers + 1 ):
+		layeredblocks.append( [] )
 	for x in range( -layers, layers + 1 ):
 		for y in range( -layers, layers + 1 ):
 			for z in range( -layers, layers + 1 ):
-				allblocks.append(Vector3(x,y,z))
+				layeredblocks[calcBlockLayer( x, y, z )].append(Vector3(x,y,z))
 				shape[Vector3(x,y,z)] = null
-				
-	shuffleArray( allblocks )
 
 	# Assign block types based on position.
-	var prevBlock = null
-	var even = false
-	var prevLaser = null
-	var laserEven = false
-	for pos in allblocks:
-		var x = pos.x
-		var y = pos.y
-		var z = pos.z
-
-		var t = getBlockType( difficulty, x, y, z )
-
-		if t == BLOCK_GOAL:
-			continue
-
-		var b = PickledBlock.new()
-		b.blockPos = pos
-		b.name = blockID
-
-		blockID += 1
-		puzzle.blocks.append( b )
-
-		if t == BLOCK_LASER:
-			b.setBlockClass(BLOCK_LASER)
-			if laserEven:
-				b.setPairName(prevLaser.name) \
-				.setLaserExtent(prevLaser.blockPos - b.blockPos)
-
-				prevLaser.setPairName(b.name) \
-				.setLaserExtent(b.blockPos - prevLaser.blockPos)
-			laserEven = not laserEven
-			prevLaser = b
-			continue
-
-		if t == BLOCK_WILD:
-			b.setBlockClass(BLOCK_PAIR) \
-				.setTextureName(wildColors[randi() % wildColors.size()])
-			continue
-
-		if even:
-			var randColor = blockColors[randi() % blockColors.size()]
-			b.setBlockClass(BLOCK_PAIR) \
-				.setPairName(prevBlock.name) \
-				.setTextureName(randColor)
-
-			prevBlock.setBlockClass(BLOCK_PAIR) \
-				.setPairName(b.name) \
-				.setTextureName(randColor)
-		even = not even
-		prevBlock = b
+	for l in range( 0, layers + 1 ):
+		# Randomize the pairs.
+		shuffleArray( layeredblocks[l] )
+		print( "NUM ", layeredblocks[l].size() )
+		var prevBlock = null
+		var even = false
+		var prevLaser = null
+		var laserEven = false
+		for pos in layeredblocks[l]:
+			var x = pos.x
+			var y = pos.y
+			var z = pos.z
+	
+			var t = getBlockType( difficulty, x, y, z )
+	
+			if t == BLOCK_GOAL:
+				continue
+	
+			var b = PickledBlock.new()
+			b.blockPos = pos
+			b.name = blockID
+	
+			blockID += 1
+			puzzle.blocks.append( b )
+	
+			if t == BLOCK_LASER:
+				b.setBlockClass(BLOCK_LASER)
+				if laserEven:
+					b.setPairName(prevLaser.name) \
+					.setLaserExtent(prevLaser.blockPos - b.blockPos)
+	
+					prevLaser.setPairName(b.name) \
+					.setLaserExtent(b.blockPos - prevLaser.blockPos)
+				laserEven = not laserEven
+				prevLaser = b
+				continue
+	
+			if t == BLOCK_WILD:
+				b.setBlockClass(BLOCK_PAIR) \
+					.setTextureName(wildColors[randi() % wildColors.size()])
+				continue
+	
+			if even:
+				var randColor = blockColors[randi() % blockColors.size()]
+				b.setBlockClass(BLOCK_PAIR) \
+					.setPairName(prevBlock.name) \
+					.setTextureName(randColor)
+	
+				prevBlock.setBlockClass(BLOCK_PAIR) \
+					.setPairName(b.name) \
+					.setTextureName(randColor)
+			even = not even
+			prevBlock = b
 
 	return puzzle
 

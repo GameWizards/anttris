@@ -81,7 +81,8 @@ func _ready():
 		var p = PuzzleScn.instance()
 		p.mainPuzzle = false
 		p.set_scale(Vector3(0.5, 0.5, 0.5))
-		p.set_translation(Vector3(20, 0, 0))
+		p.set_translation(Vector3(10, 5, -20))
+		p.get_node("GridView").active = false
 
 		var v = Viewport.new()
 		var c = Control.new()
@@ -89,7 +90,7 @@ func _ready():
 		v.set_world(p.get_world())
 		v.set_rect(Rect2(0, 0, 100, 100))
 		v.set_physics_object_picking(false)
-		v.add_child(p)
+		get_node("Camera").add_child(p)
 		add_child(c)
 		c.add_child(v)
 		otherPuzzle = p #for use with network
