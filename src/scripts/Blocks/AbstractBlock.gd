@@ -26,12 +26,29 @@ func setBlockLayer(n):
 func getBlockLayer():
 	return blockLayer
 
+func setSelected(sel):
+	selected = sel
+	return self
+
 # catch clicks/taps
 func _input_event( camera, ev, click_pos, click_normal, shape_idx ):
 	if ((ev.type==InputEvent.MOUSE_BUTTON and ev.button_index==BUTTON_LEFT)
 	or (ev.type==InputEvent.SCREEN_TOUCH)):
-		if (get_parent().get_parent().active):
+		if (get_parent().get_parent().active and ev.is_pressed()):
 			activate(ev, click_pos, click_normal)
+			
+			#now check if that was the second block we picked. If it was, we want to
+			#unselect the blocks again
+			var gridView = get_parent().get_parent()
+			if (gridView.offClick):
+				print("omg")
+				gridView.offClick = false
+				gridView.addSelected(name)
+				gridView.clearSelection()
+			else:
+				print("lulz")
+				gridView.offClick = true;
+				gridView.addSelected(name)
 
 # returns this block's pairNode or null
 func pairActivate(ev, click_pos, click_normal):
