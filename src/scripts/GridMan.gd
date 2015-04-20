@@ -17,8 +17,10 @@ func get_block(pos):
 		return null
 
 func remove_block(block_node):
+	if shape[block_node.blockPos] == null:
+		return
 	shape[block_node.blockPos] = null
-	block_node.remove_and_skip()
+	remove_and_delete_child(block_node)
 	# TODO scan_layer, fire lasers if empty
 
 # TODO wild block selected? can click any pair. can deselect wild block.
