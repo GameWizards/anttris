@@ -1,5 +1,12 @@
-extends "Node"
 
-var selectedPosition = Vector3(0,0,0)
+extends Spatial
 
-# receives input events... UD, LR, FB
+# member variables here, example:
+# var a=2
+# var b="textvar"
+
+func _ready():
+	# Initalization here
+	pass
+
+
