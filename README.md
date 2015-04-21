@@ -1,4 +1,4 @@
-CSE326 Project [![Build Status](https://travis-ci.org/0culus/travis-testing.svg?branch=master)](https://travis-ci.org/0culus/travis-testing)
+CSE326 Project [![Build Status](https://travis-ci.org/GameWizards/anttris.svg?branch=unify)](https://travis-ci.org/GameWizards/anttris.svg?branch=unify)
 =======
 
 # anttris
