@@ -76,7 +76,6 @@ class Puzzle:
 # Randomly shuffle an array.
 func shuffleArray( arr ):
 	for i in range( arr.size() - 1, 1, -1 ):
-		# works great! print( "SWAP" )
 		var swapVal = randi() % (i + 1)
 		var temp = arr[swapVal]
 		arr[swapVal] = arr[i]
@@ -159,15 +158,15 @@ func generatePuzzle( layers, difficulty ):
 					puzzle.lasers.append( [Vector3( lx, lx, lz ), Vector3( lx, lx, lz + lz*-1 )] )
 						
 	for l in puzzle.lasers:
-		print( l )
+		pass # print( l )
 		
-	print( "LASERS ", puzzle.lasers.size() )
+	# print( "LASERS ", puzzle.lasers.size() )
 
 	# Assign block types based on position.
 	for l in range( 0, layers + 1 ):
 		# Randomize the pairs.
 		shuffleArray( layeredblocks[l] )
-		print( "NUM ", layeredblocks[l].size() )
+		# print( "NUM ", layeredblocks[l].size() )
 		var prevBlock = null
 		var even = false
 		var prevLaser = null
