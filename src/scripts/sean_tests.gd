@@ -3,11 +3,11 @@ extends "res://scripts/gut.gd".Test
 var puzzleManScript = load("res://scripts/PuzzleManager.gd")
 var abstractScript = load("res://scripts/Blocks/AbstractBlock.gd")
 
-func setup():
-	gut.p("ran setup", 2)
-
-func teardown():
-	gut.p("ran teardown")
+# func setup():
+# 	gut.p("ran setup", 2)
+#
+# func teardown():
+# 	gut.p("ran teardown")
 
 func test_unpickled_paired_block():
 	var pMan = puzzleManScript.new()
@@ -55,5 +55,5 @@ func test_network():
 	# test start
 	# test transmit blocks
 	# test end
-	gut.assert_eq(true, true, "TRUE")
+	gut.assert_eq(false, true, "should fail")
 	pass
