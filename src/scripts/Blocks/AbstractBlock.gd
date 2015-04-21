@@ -4,6 +4,7 @@ var name
 var pairName
 var selected = false
 var blockPos
+var blockLayer
 const far_away_corner = Vector3(80, 80, 80)
 
 func nameToNodeName(n):
@@ -35,7 +36,7 @@ func _input_event( camera, ev, click_pos, click_normal, shape_idx ):
 	or (ev.type==InputEvent.SCREEN_TOUCH)):
 		if (get_parent().get_parent().active and ev.is_pressed()):
 			activate(ev, click_pos, click_normal)
-			
+
 			#now check if that was the second block we picked. If it was, we want to
 			#unselect the blocks again
 			var gridView = get_parent().get_parent()
