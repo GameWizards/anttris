@@ -7,7 +7,7 @@ var blockPos
 var blockLayer
 const far_away_corner = Vector3(80, 80, 80)
 
-func nameToNodeName(n):
+static func nameToNodeName(n):
 	return "block" + str(n)
 
 func setName(n):
