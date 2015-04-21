@@ -8,6 +8,10 @@ branches:
   except:
     -requirements
 
+cache:
+    directories:
+        - bin/
+
 before_script: ./get_godot.sh
 
 script: make
