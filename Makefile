@@ -5,7 +5,7 @@ WINDOWS_OUTPUT=Anttris.exe
 all: test
 
 test:
-	$(GODOT_HEADLESS) test.scn
+	$(GODOT_HEADLESS) test.scn | python gut_check_failure.py
 
 export: export_linux export_windows
 
