@@ -1,7 +1,4 @@
-language: cpp
-compiler:
-  -clang
-  -gcc
+language: gdscript
 
 notifications:
   email: false
@@ -10,5 +7,11 @@ notifications:
 branches:
   except:
     -requirements
+
+install: ./get_godot.sh
+
+cache:
+    directories:
+        - bin/
 
 script: make

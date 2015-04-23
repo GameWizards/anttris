@@ -24,10 +24,12 @@ func guiIn():
 	set_opacity( 0.0 )
 	show()
 	set_pos( Vector2( 0, 0 ) )
+	tween_out.set_active( false )
 	tween_in.reset_all()
 	tween_in.start()
 	
 # Zooms the whole GUI out. This is the same for all GUI elements.
 func guiOut():
+	tween_in.set_active( false )
 	tween_out.reset_all()
 	tween_out.start()
