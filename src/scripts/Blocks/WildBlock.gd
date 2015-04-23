@@ -1,5 +1,11 @@
 extends "AbstractBlock.gd"
 
+const BLOCK_LASER	= 0
+const BLOCK_WILD	= 1
+const BLOCK_PAIR	= 2
+const BLOCK_GOAL	= 3
+const BLOCK_BLOCK   = 4
+
 var textureName
 
 func setTexture(textureName="Red"):
@@ -30,5 +36,15 @@ func popBlock():
 
 # fly away only if self.pairName is selected
 func activate(ev, click_pos, click_normal, justFly=false):
-	pass
+	var gridView = get_parent().get_parent()
+
+	if gridView.selectedBlocks.size() > 0:
+		var selBlock = gridView.get_node( "GridMan" ).get_node( gridView.selectedBlocks[0] )
+		
+		if selBlock.getBlockType() == BLOCK_PAIR:
+			if selBlock.textureName == textureName:
+				gridView.clearSelection()
+				popBlock()
+				selBlock.forceActivate()
+				return
 
