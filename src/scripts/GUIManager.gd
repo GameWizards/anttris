@@ -236,3 +236,10 @@ func _on_Join_pressed():
 	
 	if !network.isClient:
 		network.connectTo(ip, network.port)
+
+
+func _on_Editor_pressed():
+	var root = get_tree().get_root()
+	root.get_child( root.get_child_count() - 1 ).queue_free()
+	root.add_child( ResourceLoader.load( "res://editor.scn" ).instance() )
+
