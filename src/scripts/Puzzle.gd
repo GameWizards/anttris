@@ -79,6 +79,7 @@ func _ready():
 	# make a new puzzle, embed using Viewport
 	if mainPuzzle:
 		var p = PuzzleScn.instance()
+		p.get_node("GridView").active = false
 		p.mainPuzzle = false
 		p.set_scale(Vector3(0.5, 0.5, 0.5))
 		p.set_translation(Vector3(20, 0, 0))
