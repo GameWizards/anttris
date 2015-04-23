@@ -1,9 +1,14 @@
 extends Spatial
 
-var cursorPos = Vector3(1,0,0)
+
+
+var puzzleScn = preload("res://puzzle.scn")
+var cursorScn = preload("res://cursor.scn")
+
+var cursorPos = Vector3(1,6,0)
 var cursor
-var puzzleMan
-var puzzle
+var puzzle = puzzleScn.instance()
+var puzzleMan = puzzle.puzzleMan
 var gridMan
 var selectedBlock = null
 
@@ -21,9 +26,6 @@ var gui_text = {
 }
 
 
-var puzzleScn = preload("res://puzzle.scn")
-var cursorScn = preload("res://cursor.scn")
-
 func cursor_move(dir):
 	var tween = Tween.new()
 	var N = 2
@@ -33,7 +35,7 @@ func cursor_move(dir):
 		0.25, Tween.TRANS_EXPO, Tween.EASE_OUT )
 	tween.start()
 	cursorPos += dir
-	selectedBlock = gridMan.get_block(cursorPos)
+	selectedBlock = gridMan.get_block(cursorPos / 2)
 
 func _input(ev):
 	if ev.type == InputEvent.KEY:
@@ -51,24 +53,46 @@ func _input(ev):
 			if Input.is_action_pressed("ui_page_down"):
 				cursor_move(Vector3(0,0,-1))
 			if Input.is_action_pressed("ui_accept"):
-				cursor_action()
+				delete_block()
+
+func delete_block():
+	if not selectedBlock == null:
+		gridMan.remove_block(selectedBlock)
+	selectedBlock = null
 
 func cursor_action():
 	if not selectedBlock == null:
 		print("CHILDREN:",gridMan.get_child_count())
-		gridMan.remove_block(selectedBlock)
 		print("CHILDREN:",gridMan.get_child_count())
-
+		delete_block()
 		selectedBlock = null
 
+func add_block():
+	if gridMan.get_block(cursorPos) != null:
+		return
+
+	var pickled = preload("PuzzleManager.gd").PickledBlock.new()
+	pickled.blockPos = cursorPos * 2
+	pickled.name = 300
+	
+	pickled.setBlockClass( preload("PuzzleManager.gd").BLOCK_PAIR) \
+					.setTextureName("Red")
+				
+	var n = pickled.toNode()
+
+	gridMan.add_block(n)
+	print(n.name, gridMan.get_node(n.name))
+	gridMan.print_tree()
+	gridMan.get_node(n.name) \
+			.set_translation(pickled.blockPos)
+
+
 func _ready():
-	var pMan = puzzleScn.instance()
-	gridMan = pMan.get_node("GridView/GridMan")
+	gridMan = puzzle.get_node("GridView/GridMan")
 	cursor = cursorScn.instance()
-	pMan.mainPuzzle = false
-	pMan.time.on = false
-	puzzleMan = pMan.puzzleMan
-	pMan.set_as_toplevel(true)
+	puzzle.mainPuzzle = false
+	puzzle.time.on = false
+	puzzle.set_as_toplevel(true)
 
 	var pos = Vector2(10, 10)
 	for k in gui.keys():
@@ -77,12 +101,13 @@ func _ready():
 		gui[k].set_text(gui_text[k])
 		gui[k].set_pos(pos)
 		add_child(gui[k]);
-
+	gui.add.connect("pressed", self, "add_block")
+	gui.rm.connect("pressed", self, "delete_block")
+	
 	gridMan.add_child(cursor)
-	add_child(pMan)
-	cursor.set_owner(pMan)
-
-
+	
+	add_child(puzzle)
+	cursor.set_owner(puzzle)
 
 	set_process_input(true)
 
