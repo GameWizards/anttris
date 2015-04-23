@@ -48,7 +48,7 @@ func _ready():
 	if time.on:
 		set_process(true) # needed for time keeping
 	puzzleMan = PuzzleManScript.new()
-	var puzzle = puzzleMan.generatePuzzle( 2, puzzleMan.DIFF_EASY )
+	var puzzle = puzzleMan.generatePuzzle( 2, puzzleMan.DIFF_HARD )
 	puzzle.puzzleMan = puzzleMan
 
 	print("Generated ", puzzle.blocks.size(), " blocks." )

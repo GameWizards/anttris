@@ -156,9 +156,20 @@ func generatePuzzle( layers, difficulty ):
 					puzzle.lasers.append( [Vector3( lx, lx, lz ), Vector3( lx + lx*-1, lx, lz )] )
 					puzzle.lasers.append( [Vector3( lx, lx, lz ), Vector3( lx, lx + lx*-1, lz )] )
 					puzzle.lasers.append( [Vector3( lx, lx, lz ), Vector3( lx, lx, lz + lz*-1 )] )
+					
+		if difficulty == DIFF_MEDIUM:
+			for lx in [ -l, l ]:
+				for ly in [ -l, l ]:
+					puzzle.lasers.append( [Vector3( lx, ly, lx ), Vector3( lx + lx*-1, ly, lx )] )
+					puzzle.lasers.append( [Vector3( lx, ly, lx ), Vector3( lx, ly, lx + lx*-1 )] )
+					
+		if difficulty == DIFF_HARD:
+			for lx in [ -l, l ]:
+					puzzle.lasers.append( [Vector3( lx, 0, lx ), Vector3( lx + lx*-1, 0, lx )] )
+					puzzle.lasers.append( [Vector3( lx, 0, lx ), Vector3( lx, 0, lx + lx*-1 )] )
 						
 	for l in puzzle.lasers:
-		pass # print( l )
+		print( l )
 		
 	# print( "LASERS ", puzzle.lasers.size() )
 
