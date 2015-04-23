@@ -7,6 +7,20 @@ var puzzle
 var gridMan
 var selectedBlock = null
 
+var gui = {
+	add=Button.new(),
+	rm=Button.new(),
+	save_pzl=Button.new(),
+	load_pzl=Button.new()
+}
+var gui_text = {
+	add="Add Block",
+	rm="Remove Block",
+	save_pzl="Save",
+	load_pzl="Load"
+}
+
+
 var puzzleScn = preload("res://puzzle.scn")
 var cursorScn = preload("res://cursor.scn")
 
@@ -20,7 +34,7 @@ func cursor_move(dir):
 	tween.start()
 	cursorPos += dir
 	selectedBlock = gridMan.get_block(cursorPos)
-	
+
 func _input(ev):
 	if ev.type == InputEvent.KEY:
 		if ev.is_pressed():
@@ -44,7 +58,7 @@ func cursor_action():
 		print("CHILDREN:",gridMan.get_child_count())
 		gridMan.remove_block(selectedBlock)
 		print("CHILDREN:",gridMan.get_child_count())
-		
+
 		selectedBlock = null
 
 func _ready():
@@ -55,10 +69,20 @@ func _ready():
 	pMan.time.on = false
 	puzzleMan = pMan.puzzleMan
 	pMan.set_as_toplevel(true)
-	
+
+	var pos = Vector2(10, 10)
+	for k in gui.keys():
+		pos.y += 45
+		gui[k].set_theme(preload("res://themes/MainTheme.thm"))
+		gui[k].set_text(gui_text[k])
+		gui[k].set_pos(pos)
+		add_child(gui[k]);
+
 	gridMan.add_child(cursor)
 	add_child(pMan)
 	cursor.set_owner(pMan)
+
+
 
 	set_process_input(true)
 
