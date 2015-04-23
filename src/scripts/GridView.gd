@@ -16,6 +16,8 @@ func _ready():
 
 # called to handle a user input event
 func _input(ev):
+	if (not active):
+		return
 	# If the mouse has been moved
 	if (ev.type==InputEvent.SCREEN_DRAG or (ev.type==InputEvent.MOUSE_MOTION and ev.button_mask == 1)):
 		# calculate the delta change from the last mouse movement
