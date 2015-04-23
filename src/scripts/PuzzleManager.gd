@@ -9,12 +9,12 @@ const BLOCK_GOAL	= 3
 const BLOCK_BLOCK   = 4
 
 const blockColors = ["Blue", "Orange", "Red", "Yellow", "Purple", "Green"]
-const wildColors = ["WildBlue", "WildOrange", "WildRed", "WildYellow", "WildPurple", "WildGreen"]
+#const wildColors = ["WildBlue", "WildOrange", "WildRed", "WildYellow", "WildPurple", "WildGreen"]
 
 # Preload paired blocks
 const blockScn = preload( "res://blocks/block.scn" )
 const blockScripts = [ preload( "Blocks/LaserBlock.gd" )
-			   	      , preload( "Blocks/LaserBlock.gd" )
+			   	      , preload( "Blocks/WildBlock.gd" )
 			   	      , preload( "Blocks/PairedBlock.gd" )
 			   	      , preload( "Blocks/LaserBlock.gd" )
 			   	      ]
@@ -223,8 +223,8 @@ func generatePuzzle( layers, difficulty ):
 				continue
 	
 			if t == BLOCK_WILD:
-				b.setBlockClass(BLOCK_PAIR) \
-					.setTextureName(wildColors[randi() % wildColors.size()])
+				b.setBlockClass(BLOCK_WILD) \
+					.setTextureName(blockColors[randi() % blockColors.size()])
 				continue
 	
 			if even:
@@ -276,12 +276,17 @@ class PickledBlock:
 		# instantiate a block scene, assign the appropriate script to it
 		var n = blockScn.instance()
 		n.set_script(blockScripts[blockClass])
+		
+		n.setBlockType( blockClass )
 
 		# configure block node
 		n.setName(str(name)).setTexture()
 		n.blockPos = blockPos
 		if blockClass == BLOCK_PAIR:
 			n.setPairName(pairName).setTexture(textureName)
+			
+		if blockClass == BLOCK_WILD:
+			n.setTexture(textureName)
 
 		if blockClass == BLOCK_LASER:
 			n.setPairName(pairName).setExtent(laserExtent)

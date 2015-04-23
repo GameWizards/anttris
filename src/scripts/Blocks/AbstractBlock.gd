@@ -5,6 +5,7 @@ var pairName
 var selected = false
 var blockPos
 var blockLayer
+var blockType
 const far_away_corner = Vector3(80, 80, 80)
 
 static func nameToNodeName(n):
@@ -25,6 +26,13 @@ func setBlockLayer(n):
 
 func getBlockLayer():
 	return blockLayer
+	
+func setBlockType( blockT ):
+	blockType = blockT
+	return self
+	
+func getBlockType():
+	return blockType
 
 func setSelected(sel):
 	selected = sel
