@@ -9,12 +9,12 @@ const BLOCK_GOAL	= 3
 const BLOCK_BLOCK   = 4
 
 const blockColors = ["Blue", "Orange", "Red", "Yellow", "Purple", "Green"]
-const wildColors = ["WildBlue", "WildOrange", "WildRed", "WildYellow", "WildPurple", "WildGreen"]
+#const wildColors = ["WildBlue", "WildOrange", "WildRed", "WildYellow", "WildPurple", "WildGreen"]
 
 # Preload paired blocks
 const blockScn = preload( "res://blocks/block.scn" )
 const blockScripts = [ preload( "Blocks/LaserBlock.gd" )
-			   	      , preload( "Blocks/LaserBlock.gd" )
+			   	      , preload( "Blocks/WildBlock.gd" )
 			   	      , preload( "Blocks/PairedBlock.gd" )
 			   	      , preload( "Blocks/LaserBlock.gd" )
 			   	      ]
@@ -65,7 +65,18 @@ class Puzzle:
 		var puzzleSteps = PuzzleSteps.new()
 		puzzleSteps.solveable = true
 	
-		# SOLVER
+		var lasers = []
+		var pairs = []
+		var wildblocks = []
+	
+		# Split the blocks into lasers, pairs and wild blocks.
+		for b in blocks:
+			if b.blockClass == BLOCK_PAIR:
+				pairs.append( b )
+			if b.blockClass == BLOCK_LASER:
+				lasers.append( b )
+			if b.blockClass == BLOCK_WILD:
+				wildblocks.append( b )
 	
 		return puzzleSteps
 	
@@ -168,8 +179,8 @@ func generatePuzzle( layers, difficulty ):
 					puzzle.lasers.append( [Vector3( lx, 0, lx ), Vector3( lx + lx*-1, 0, lx )] )
 					puzzle.lasers.append( [Vector3( lx, 0, lx ), Vector3( lx, 0, lx + lx*-1 )] )
 						
-	for l in puzzle.lasers:
-		print( l )
+	#for l in puzzle.lasers:
+	#	pass #print( l )
 		
 	# print( "LASERS ", puzzle.lasers.size() )
 
@@ -212,8 +223,8 @@ func generatePuzzle( layers, difficulty ):
 				continue
 	
 			if t == BLOCK_WILD:
-				b.setBlockClass(BLOCK_PAIR) \
-					.setTextureName(wildColors[randi() % wildColors.size()])
+				b.setBlockClass(BLOCK_WILD) \
+					.setTextureName(blockColors[randi() % blockColors.size()])
 				continue
 	
 			if even:
@@ -265,12 +276,17 @@ class PickledBlock:
 		# instantiate a block scene, assign the appropriate script to it
 		var n = blockScn.instance()
 		n.set_script(blockScripts[blockClass])
+		
+		n.setBlockType( blockClass )
 
 		# configure block node
 		n.setName(str(name)).setTexture()
 		n.blockPos = blockPos
 		if blockClass == BLOCK_PAIR:
 			n.setPairName(pairName).setTexture(textureName)
+			
+		if blockClass == BLOCK_WILD:
+			n.setTexture(textureName)
 
 		if blockClass == BLOCK_LASER:
 			n.setPairName(pairName).setExtent(laserExtent)
