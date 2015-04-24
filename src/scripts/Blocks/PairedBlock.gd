@@ -34,9 +34,10 @@ func popBlock( pairNode, justFly = false ):
 	# just one call to activate...
 	if not justFly:
 		pairNode.activate(true)
+		get_parent().popPair( blockPos )
 
 # fly away only if self.pairName is selected
-func activate(justFly=false):
+func activate( justFly=false ):
 	var gridMan = get_parent()
 
 	if gridMan.selectedBlocks.size() > 0:

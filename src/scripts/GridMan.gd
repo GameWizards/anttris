@@ -1,11 +1,21 @@
 extends Spatial
 
+# Is there a better way to do this?
+const BLOCK_LASER	= 0
+const BLOCK_WILD	= 1
+const BLOCK_PAIR	= 2
+const BLOCK_GOAL	= 3
+const BLOCK_BLOCK   = 4
+
 # Shape dictionary to access blocks quickly by position.
 var shape = {}
 
 # Block selection handling.
 var offClick = false
 var selectedBlocks = []
+
+# Puzzle vars.
+var pairCount = []
 
 # sounds
 var samplePlayer = SamplePlayer.new()
@@ -43,8 +53,10 @@ func set_puzzle(puzzle):
 	cam.distance.val = 3.2 * totalSize
 	cam.distance.min_ = 3 * totalSize
 	cam.distance.max_ = 10 * totalSize
-	print( cam.distance.val, " ", cam.distance.min_, " ", cam.distance.max_ )
 	cam.recalculate_camera()
+	
+	# Gather important info from the puzzle.
+	pairCount = [] + puzzle.pairCount	# Make a copy, don't use the same array.
 	
 # Clears any selected blocks. WE SHOULD FIX THIS, THERE CAN ONLY BE ONE BLOCK SELECTED AT ANY ONE TIME, NO NEED FOR AN ARRAY!
 func clearSelection():
@@ -58,5 +70,19 @@ func clearSelection():
 func addSelected(bl):
 	selectedBlocks.append(bl)
 
+# Calculates the layer that a block is on.
+# COPY OF FUNCTION IN PUZZLEMAN, IS THERE A BETTER WAY TO DO THIS?!
+func calcBlockLayer( x, y, z ):
+	return max( max( abs( x ), abs( y ) ), abs( z ) )
 
-
+# Handles keeping track of pairs being removed.
+func popPair( pos ):
+	var blayer = calcBlockLayer( pos.x, pos.y, pos.z )
+	pairCount[blayer] -= 1
+	print( blayer, " ", pairCount[blayer] )
+	if( pairCount[blayer] == 0 ):
+		for b in shape:
+			if not ( shape[b] == null ):
+				if shape[b].getBlockType() == BLOCK_LASER:
+					shape[b].activate()
+		

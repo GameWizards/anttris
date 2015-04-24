@@ -25,33 +25,36 @@ func setExtent(laserExtent):
 
 # create a beam and activate it
 func activate():
-	var pairNode = pairActivate()
-	if pairNode == null or pairNode.selected == false:
-		return
+	#var pairNode = pairActivate()
+	#if pairNode == null or pairNode.selected == false:
+	#	return
 	# shrink to 80% size, 0.5 sec
-	scaleTweenNode(0.8, 0.5, Tween.TRANS_ELASTIC).start()
+	#scaleTweenNode(0.8, 0.5, Tween.TRANS_ELASTIC).start()
 
 	var tweenNode = newTweenNode()
 	# fade emission color
-	tweenNode.interpolate_method( self, "setColor", \
-		self.mat.get_parameter(FixedMaterial.PARAM_EMISSION), Color(0.1, 0.1, 0.1), \
-		0.5, Tween.TRANS_ELASTIC, Tween.EASE_IN_OUT )
+	#tweenNode.interpolate_method( self, "setColor", \
+	#	self.mat.get_parameter(FixedMaterial.PARAM_EMISSION), Color(0.1, 0.1, 0.1), \
+	#	0.5, Tween.TRANS_ELASTIC, Tween.EASE_IN_OUT )
+	tweenNode.interpolate_method( self, "set_translation", \
+		self.get_translation(), self.get_translation().normalized() * far_away_corner, \
+		1, Tween.TRANS_CIRC, Tween.EASE_IN_OUT )
 	tweenNode.start()
 
 	if fired:
 		return
 
 	fired = true
-	pairNode.fired = true
-	pairNode.activate()
+	#pairNode.fired = true
+	#pairNode.activate()
 
 	# fire laser beam
-	var beam = beamScn.instance()
+	#var beam = beamScn.instance()
 
-	beam.set_name(name + "_beam")
-	beam.set_script(Beam)
+	#beam.set_name(name + "_beam")
+	#beam.set_script(Beam)
 
-	add_child( beam )
-	beam.fire( laserExtent )
+	#add_child( beam )
+	#beam.fire( laserExtent )
 
-	get_parent().samplePlayer.play("soundslikewillem_hitting_slinky")
+	#get_parent().samplePlayer.play("soundslikewillem_hitting_slinky")

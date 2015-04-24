@@ -49,12 +49,10 @@ func _input_event( camera, ev, click_pos, click_normal, shape_idx ):
 			#unselect the blocks again
 			var gridMan = get_parent()
 			if (gridMan.offClick):
-				print("omg")
 				gridMan.offClick = false
 				gridMan.addSelected(name)
 				gridMan.clearSelection()
 			else:
-				print("lulz")
 				gridMan.offClick = true;
 				gridMan.addSelected(name)
 

@@ -41,6 +41,7 @@ class Puzzle:
 		var di = { pN = puzzleName
 		 	     , pL = puzzleLayers
 				 , bL = blockArr
+				 , pC = pairCount
 			     }
 		return di
 	
@@ -48,6 +49,8 @@ class Puzzle:
 	func fromDict( di ):
 		puzzleName = di.pN
 		puzzleLayers = di.pL
+		pairCount = di.pC
+		
 		for b in range( di.bL.size() ):
 			var nb = puzzleMan.PickledBlock.new()
 			nb.fromDict( di.bL[b] )
@@ -153,6 +156,7 @@ func generatePuzzle( layers, difficulty ):
 	var layeredblocks = []
 	for l in range( 0, layers + 1 ):
 		layeredblocks.append( [] )
+		puzzle.pairCount.append( 0 )
 	for x in range( -layers, layers + 1 ):
 		for y in range( -layers, layers + 1 ):
 			for z in range( -layers, layers + 1 ):
@@ -219,6 +223,9 @@ func generatePuzzle( layers, difficulty ):
 				continue
 	
 			if even:
+				# Count this pair.
+				puzzle.pairCount[l] += 1
+				
 				var randColor = blockColors[randi() % blockColors.size()]
 				b.setBlockClass(BLOCK_PAIR) \
 					.setPairName(prevBlock.name) \
