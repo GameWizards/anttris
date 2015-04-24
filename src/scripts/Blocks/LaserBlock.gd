@@ -33,8 +33,8 @@ func setExtent(laserExtent):
 	 self.laserExtent = laserExtent
 
 # create a beam and activate it
-func activate(ev, click_pos, click_normal):
-	var pairNode = pairActivate(ev, click_pos, click_normal)
+func activate():
+	var pairNode = pairActivate()
 	if pairNode == null or pairNode.selected == false:
 		return
 	# shrink to 80% size, 0.5 sec
@@ -52,7 +52,7 @@ func activate(ev, click_pos, click_normal):
 
 	fired = true
 	pairNode.fired = true
-	pairNode.activate(ev, click_pos, click_normal)
+	pairNode.activate()
 
 	# fire laser beam
 	var beam = beamScn.instance()
