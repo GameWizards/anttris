@@ -37,14 +37,14 @@ func popBlock( pairNode, justFly = false ):
 
 # fly away only if self.pairName is selected
 func activate(justFly=false):
-	var gridView = get_parent().get_parent()
+	var gridMan = get_parent()
 
-	if gridView.selectedBlocks.size() > 0:
-		var selBlock = gridView.get_node( "GridMan" ).get_node( gridView.selectedBlocks[0] )
+	if gridMan.selectedBlocks.size() > 0:
+		var selBlock = gridMan.get_node( gridMan.selectedBlocks[0] )
 		
 		if selBlock.getBlockType() == BLOCK_WILD:
 			if selBlock.textureName == textureName:
-				gridView.clearSelection()
+				gridMan.clearSelection()
 				selBlock.popBlock()
 				forceActivate()
 				return

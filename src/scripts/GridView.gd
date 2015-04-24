@@ -1,5 +1,3 @@
-
-
 # global working variables
 var turn = Vector2( 0.0, 0.0 )            # the amount the mouse has turned
 var mouseposlast = Input.get_mouse_pos()   # the mouses last position
@@ -7,8 +5,6 @@ var mouseposlast = Input.get_mouse_pos()   # the mouses last position
 # global tweakable parameters
 var orbitrate = 10        # the rate the camera orbits the target when the mouse is moved
 var active = true
-var offClick = false
-var selectedBlocks = []
 
 func _ready():
 	# Initalization here
@@ -36,14 +32,3 @@ func _input(ev):
 	if (ev.type==InputEvent.SCREEN_DRAG or ev.type==InputEvent.MOUSE_MOTION or ev.type==InputEvent.JOYSTICK_MOTION or ev.type==InputEvent.SCREEN_TOUCH):
 		mouseposlast = ev.pos
 	# Android does not like this: Input.get_mouse_pos()
-
-func clearSelection():
-	for bl in selectedBlocks:
-		var blo = get_node("GridMan/" + bl)
-		print("this bothers Hugo")
-		blo.setSelected(false)
-		blo.scaleTweenNode(1.0).start()
-	selectedBlocks = []
-	
-func addSelected(bl):
-	selectedBlocks.append(bl)

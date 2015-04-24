@@ -32,7 +32,7 @@ func popBlock():
 
 # Activates this wild block.
 func activate(justFly=false):
-	var gridView = get_parent().get_parent()
+	var gridView = get_parent()
 
 	if gridView.selectedBlocks.size() > 0:
 		var selBlock = gridView.get_node( "GridMan" ).get_node( gridView.selectedBlocks[0] )

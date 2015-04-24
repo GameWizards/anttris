@@ -24,9 +24,15 @@ var shape = {}
 
 # Stores a puzzle in a convenient class.
 class Puzzle:
+	# The name of the puzzle.
 	var puzzleName
+	# The amount of layers the puzzle has.
 	var puzzleLayers
+	# The amount of pair blocks on each layer.
+	var pairCount = []
+	# Information on all of the blocks in the puzzle.
 	var blocks = []
+	# Laser connections.
 	var lasers = []
 	
 	var puzzleMan
@@ -190,8 +196,6 @@ func generatePuzzle( layers, difficulty ):
 		# print( "NUM ", layeredblocks[l].size() )
 		var prevBlock = null
 		var even = false
-		var prevLaser = null
-		var laserEven = false
 		for pos in layeredblocks[l]:
 			var x = pos.x
 			var y = pos.y
@@ -210,15 +214,8 @@ func generatePuzzle( layers, difficulty ):
 			puzzle.blocks.append( b )
 	
 			if t == BLOCK_LASER:
-				b.setBlockClass(BLOCK_LASER)
-				if laserEven:
-					b.setPairName(prevLaser.name) \
-					.setLaserExtent(prevLaser.blockPos - b.blockPos)
-	
-					prevLaser.setPairName(b.name) \
-					.setLaserExtent(b.blockPos - prevLaser.blockPos)
-				laserEven = not laserEven
-				prevLaser = b
+				b.setBlockClass(BLOCK_LASER)\
+					.setLaserExtent( Vector3( 0, 1, 0 ) )
 				continue
 	
 			if t == BLOCK_WILD:

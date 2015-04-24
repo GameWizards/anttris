@@ -1,7 +1,11 @@
 extends Spatial
 
-# block positions
+# Shape dictionary to access blocks quickly by position.
 var shape = {}
+
+# Block selection handling.
+var offClick = false
+var selectedBlocks = []
 
 # sounds
 var samplePlayer = SamplePlayer.new()
@@ -31,6 +35,16 @@ func set_puzzle(puzzle):
 	# Initalization here
 	samplePlayer.set_voice_count(puzzle.puzzleLayers * 2)
 	samplePlayer.set_sample_library(ResourceLoader.load("new_samplelibrary.xml"))
+	
+func clearSelection():
+	for bl in selectedBlocks:
+		var blo = get_node( bl )
+		blo.setSelected(false)
+		blo.scaleTweenNode(1.0).start()
+	selectedBlocks = []
+	
+func addSelected(bl):
+	selectedBlocks.append(bl)
 
 
 
