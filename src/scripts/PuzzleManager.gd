@@ -9,7 +9,6 @@ const BLOCK_GOAL	= 3
 const BLOCK_BLOCK   = 4
 
 const blockColors = ["Blue", "Orange", "Red", "Yellow", "Purple", "Green"]
-#const wildColors = ["WildBlue", "WildOrange", "WildRed", "WildYellow", "WildPurple", "WildGreen"]
 
 # Preload paired blocks
 const blockScn = preload( "res://blocks/block.scn" )
@@ -241,6 +240,7 @@ func generatePuzzle( layers, difficulty ):
 
 	return puzzle
 
+# Storage class for blocks in a puzzle.
 class PickledBlock:
 	var name
 	var blockClass = BLOCK_PAIR

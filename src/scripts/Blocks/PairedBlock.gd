@@ -1,5 +1,6 @@
 extends "AbstractBlock.gd"
 
+# Is there a better way to do this?
 const BLOCK_LASER	= 0
 const BLOCK_WILD	= 1
 const BLOCK_PAIR	= 2
@@ -11,14 +12,10 @@ var textureName
 func setTexture(textureName="Red"):
 	var img = Image()
 	self.textureName = textureName
-	#var text = ImageTexture.new()
 
 	# TODO preload
 	var mat = load("res://materials/block_" + textureName + ".mtl")
-	#img.load("res://textures/Block_" + textureName + ".png")
 
-	#text.create_from_image(img)
-	#mat.set_texture(FixedMaterial.PARAM_DIFFUSE, text)
 	# TODO color the texture: mat.set_parameter(FixedMaterial.PARAM_DIFFUSE, Color(0.5, 0.5, 0))
 
 	self.get_node("MeshInstance").set_material_override(mat)
@@ -36,10 +33,10 @@ func popBlock( pairNode, justFly = false ):
 	tweenNode.start()
 	# just one call to activate...
 	if not justFly:
-		pairNode.activate(null, null, null, true)
+		pairNode.activate(true)
 
 # fly away only if self.pairName is selected
-func activate(ev, click_pos, click_normal, justFly=false):
+func activate(justFly=false):
 	var gridView = get_parent().get_parent()
 
 	if gridView.selectedBlocks.size() > 0:
@@ -52,7 +49,7 @@ func activate(ev, click_pos, click_normal, justFly=false):
 				forceActivate()
 				return
 
-	var pairNode = pairActivate(ev, click_pos, click_normal)
+	var pairNode = pairActivate()
 	if pairNode == null:
 		return
 	if pairNode.selected:
@@ -60,7 +57,7 @@ func activate(ev, click_pos, click_normal, justFly=false):
 			
 # Force the pair to activate.
 func forceActivate():
-	var pairNode = pairActivate(null, null, null)
+	var pairNode = pairActivate()
 	if pairNode == null:
 		return
 		
