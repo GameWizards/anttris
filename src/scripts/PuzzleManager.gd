@@ -17,25 +17,20 @@ const blockScripts = [ preload( "Blocks/LaserBlock.gd" )
 			   	      , preload( "Blocks/PairedBlock.gd" )
 			   	      , preload( "Blocks/LaserBlock.gd" )
 			   	      ]
-const aBlock = preload( "Blocks/AbstractBlock.gd" )
+#const aBlock = preload( "Blocks/AbstractBlock.gd" ) ?? WHAT WAS THIS FOR?
 
 # Hash map of all possible positions
 var shape = {}
 
 # Stores a puzzle in a convenient class.
 class Puzzle:
-	# The name of the puzzle.
-	var puzzleName
-	# The amount of layers the puzzle has.
-	var puzzleLayers
-	# The amount of pair blocks on each layer.
-	var pairCount = []
-	# Information on all of the blocks in the puzzle.
-	var blocks = []
-	# Laser connections.
-	var lasers = []
 	
-	var puzzleMan
+	var puzzleName			# The name of the puzzle.
+	var puzzleLayers		# The amount of layers the puzzle has.
+	var pairCount = []		# The amount of pair blocks on each layer.
+	var blocks = []			# Information on all of the blocks in the puzzle.
+	var lasers = []			# Laser connections.
+	var puzzleMan			# Stores the puzzle manager for making pickled blocks.
 	
 	# Converts a puzzle to a dictionary.
 	func toDict():
@@ -98,7 +93,7 @@ func shuffleArray( arr ):
 		arr[i] = temp
 		
 
-# calculate the layer; move into a method so that it can be used elsewhere
+# Calculates the layer that a block is on.
 func calcBlockLayer( x, y, z ):
 	return max( max( abs( x ), abs( y ) ), abs( z ) )
 
