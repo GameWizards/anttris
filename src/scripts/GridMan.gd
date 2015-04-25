@@ -97,7 +97,7 @@ func popPair( pos ):
 			if not ( shape[b] == null ):
 				if calcBlockLayerVec( b ) == blayer:
 					if shape[b].getBlockType() == BLOCK_LASER:
-						shape[b].activate()
+						shape[b].forceActivate()
 					
 		# Fire beams.
 		var beamNum = 0
