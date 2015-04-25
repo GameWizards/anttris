@@ -4,8 +4,8 @@ var mat
 var laserExtent = Vector3()
 var fired = false
 
-const beamScn = preload( "res://blocks/block.scn" )
-const Beam = preload("res://scripts/Blocks/Beam.gd")
+#const beamScn = preload( "res://blocks/block.scn" )
+#const Beam = preload("res://scripts/Blocks/Beam.gd")
 #const laserBlockImg = Image() # TODO preload this somewhere else
 
 # color
@@ -29,32 +29,19 @@ func activate():
 	#if pairNode == null or pairNode.selected == false:
 	#	return
 	# shrink to 80% size, 0.5 sec
-	#scaleTweenNode(0.8, 0.5, Tween.TRANS_ELASTIC).start()
+	scaleTweenNode(0, 0.5, Tween.TRANS_ELASTIC).start()
 
-	var tweenNode = newTweenNode()
+	#var tweenNode = newTweenNode()
 	# fade emission color
 	#tweenNode.interpolate_method( self, "setColor", \
 	#	self.mat.get_parameter(FixedMaterial.PARAM_EMISSION), Color(0.1, 0.1, 0.1), \
 	#	0.5, Tween.TRANS_ELASTIC, Tween.EASE_IN_OUT )
-	tweenNode.interpolate_method( self, "set_translation", \
-		self.get_translation(), self.get_translation().normalized() * far_away_corner, \
-		1, Tween.TRANS_CIRC, Tween.EASE_IN_OUT )
-	tweenNode.start()
+	#tweenNode.interpolate_method( self, "set_translation", \
+	#	self.get_translation(), self.get_translation().normalized() * far_away_corner, \
+	#	1, Tween.TRANS_CIRC, Tween.EASE_IN_OUT )
+	#tweenNode.start()
 
 	if fired:
 		return
 
 	fired = true
-	#pairNode.fired = true
-	#pairNode.activate()
-
-	# fire laser beam
-	#var beam = beamScn.instance()
-
-	#beam.set_name(name + "_beam")
-	#beam.set_script(Beam)
-
-	#add_child( beam )
-	#beam.fire( laserExtent )
-
-	#get_parent().samplePlayer.play("soundslikewillem_hitting_slinky")

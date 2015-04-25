@@ -15,7 +15,12 @@ var offClick = false
 var selectedBlocks = []
 
 # Puzzle vars.
+var puzzle
 var pairCount = []
+
+# Beam stuff.
+const beamScn = preload( "res://blocks/block.scn" )
+const Beam = preload("res://scripts/Blocks/Beam.gd")
 
 # sounds
 var samplePlayer = SamplePlayer.new()
@@ -41,8 +46,10 @@ func remove_block(block_node):
 var wildBlockSelected = null
 
 # Sets the puzzle for this GridMan.
-func set_puzzle(puzzle):
-	#puzzle = puzzle ???
+func set_puzzle(puzz):
+	# Store the puzzle.
+	puzzle = puzz
+	
 	# Initalization here
 	samplePlayer.set_voice_count(puzzle.puzzleLayers * 2)
 	samplePlayer.set_sample_library(ResourceLoader.load("new_samplelibrary.xml"))
@@ -50,7 +57,7 @@ func set_puzzle(puzzle):
 	# Set the camera range to be relative to the layer count.
 	var cam = get_parent().get_parent().get_node( "Camera" )
 	var totalSize = ( puzzle.puzzleLayers * 2 + 1 )
-	cam.distance.val = 3.2 * totalSize
+	cam.distance.val = 4.5 * totalSize
 	cam.distance.min_ = 3 * totalSize
 	cam.distance.max_ = 10 * totalSize
 	cam.recalculate_camera()
@@ -74,15 +81,37 @@ func addSelected(bl):
 # COPY OF FUNCTION IN PUZZLEMAN, IS THERE A BETTER WAY TO DO THIS?!
 func calcBlockLayer( x, y, z ):
 	return max( max( abs( x ), abs( y ) ), abs( z ) )
+func calcBlockLayerVec( pos ):
+	return max( max( abs( pos.x ), abs( pos.y ) ), abs( pos.z ) )
 
 # Handles keeping track of pairs being removed.
 func popPair( pos ):
 	var blayer = calcBlockLayer( pos.x, pos.y, pos.z )
 	pairCount[blayer] -= 1
-	print( blayer, " ", pairCount[blayer] )
+
 	if( pairCount[blayer] == 0 ):
+		if blayer == 1:
+			print( "GAME OVER!" )
+	
 		for b in shape:
 			if not ( shape[b] == null ):
-				if shape[b].getBlockType() == BLOCK_LASER:
-					shape[b].activate()
+				if calcBlockLayerVec( b ) == blayer:
+					if shape[b].getBlockType() == BLOCK_LASER:
+						shape[b].activate()
+					
+		# Fire beams.
+		var beamNum = 0
+		for l in range( puzzle.lasers.size() ):
+			if calcBlockLayerVec( puzzle.lasers[l][0] ) == blayer:
+				# Firin mah lazerz!
+				var beam = beamScn.instance()
+			
+				beam.set_name( str(blayer) + "_beam_" + str(beamNum) )
+				beamNum += 1
+				beam.set_script( Beam )
+			
+				add_child( beam )
+				beam.fire( puzzle.lasers[l][0], puzzle.lasers[l][1] )
+			
+				samplePlayer.play( "soundslikewillem_hitting_slinky" )
 		

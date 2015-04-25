@@ -42,6 +42,7 @@ class Puzzle:
 		 	     , pL = puzzleLayers
 				 , bL = blockArr
 				 , pC = pairCount
+				 , lS = lasers
 			     }
 		return di
 	
@@ -50,6 +51,7 @@ class Puzzle:
 		puzzleName = di.pN
 		puzzleLayers = di.pL
 		pairCount = di.pC
+		lasers = di.lS
 		
 		for b in range( di.bL.size() ):
 			var nb = puzzleMan.PickledBlock.new()
@@ -165,28 +167,21 @@ func generatePuzzle( layers, difficulty ):
 
 	# Generate laser lines.
 	for l in range( 1, layers + 1 ):
+		if difficulty == DIFF_MEDIUM or difficulty == DIFF_EASY:
+			for lx in [ -l, l ]:
+				for ly in [ -l, l ]:
+					puzzle.lasers.append( [Vector3( lx, ly, lx ), Vector3( lx*-1, ly, lx )] )
+					puzzle.lasers.append( [Vector3( lx, ly, lx ), Vector3( lx, ly, lx*-1 )] )
+					
 		if difficulty == DIFF_EASY:
 			for lx in [ -l, l ]:
 				for lz in [ -l, l ]:
-					puzzle.lasers.append( [Vector3( lx, lx, lz ), Vector3( lx + lx*-1, lx, lz )] )
-					puzzle.lasers.append( [Vector3( lx, lx, lz ), Vector3( lx, lx + lx*-1, lz )] )
-					puzzle.lasers.append( [Vector3( lx, lx, lz ), Vector3( lx, lx, lz + lz*-1 )] )
-					
-		if difficulty == DIFF_MEDIUM:
-			for lx in [ -l, l ]:
-				for ly in [ -l, l ]:
-					puzzle.lasers.append( [Vector3( lx, ly, lx ), Vector3( lx + lx*-1, ly, lx )] )
-					puzzle.lasers.append( [Vector3( lx, ly, lx ), Vector3( lx, ly, lx + lx*-1 )] )
+					puzzle.lasers.append( [Vector3( lx, l, lz ), Vector3( lx, -l, lz )] )
 					
 		if difficulty == DIFF_HARD:
 			for lx in [ -l, l ]:
-					puzzle.lasers.append( [Vector3( lx, 0, lx ), Vector3( lx + lx*-1, 0, lx )] )
-					puzzle.lasers.append( [Vector3( lx, 0, lx ), Vector3( lx, 0, lx + lx*-1 )] )
-						
-	#for l in puzzle.lasers:
-	#	pass #print( l )
-		
-	# print( "LASERS ", puzzle.lasers.size() )
+					puzzle.lasers.append( [Vector3( lx, 0, lx ), Vector3( lx*-1, 0, lx )] )
+					puzzle.lasers.append( [Vector3( lx, 0, lx ), Vector3( lx, 0, lx*-1 )] )
 
 	# Assign block types based on position.
 	for l in range( 0, layers + 1 ):
