@@ -48,7 +48,7 @@ func _ready():
 	if time.on:
 		set_process(true) # needed for time keeping
 	puzzleMan = PuzzleManScript.new()
-	var puzzle = puzzleMan.generatePuzzle( 2, puzzleMan.DIFF_HARD )
+	var puzzle = puzzleMan.generatePuzzle( 2, puzzleMan.DIFF_EASY )
 	puzzle.puzzleMan = puzzleMan
 
 	print("Generated ", puzzle.blocks.size(), " blocks." )
@@ -60,8 +60,8 @@ func _ready():
 	
 	puzzle = DataMan.loadPuzzle( "TestPuzzle.pzl" )
 	
-	print( puzzle.puzzleName )
-	print( puzzle.blocks.size() )
+	#print( puzzle.pairCount.size() )
+	#print( "Pair blocks on layer 2: ", puzzle.pairCount[2] )
 
 	addTimer()
 

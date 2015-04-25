@@ -17,19 +17,20 @@ const blockScripts = [ preload( "Blocks/LaserBlock.gd" )
 			   	      , preload( "Blocks/PairedBlock.gd" )
 			   	      , preload( "Blocks/LaserBlock.gd" )
 			   	      ]
-const aBlock = preload( "Blocks/AbstractBlock.gd" )
+#const aBlock = preload( "Blocks/AbstractBlock.gd" ) ?? WHAT WAS THIS FOR?
 
 # Hash map of all possible positions
 var shape = {}
 
 # Stores a puzzle in a convenient class.
 class Puzzle:
-	var puzzleName
-	var puzzleLayers
-	var blocks = []
-	var lasers = []
 	
-	var puzzleMan
+	var puzzleName			# The name of the puzzle.
+	var puzzleLayers		# The amount of layers the puzzle has.
+	var pairCount = []		# The amount of pair blocks on each layer.
+	var blocks = []			# Information on all of the blocks in the puzzle.
+	var lasers = []			# Laser connections.
+	var puzzleMan			# Stores the puzzle manager for making pickled blocks.
 	
 	# Converts a puzzle to a dictionary.
 	func toDict():
@@ -40,6 +41,8 @@ class Puzzle:
 		var di = { pN = puzzleName
 		 	     , pL = puzzleLayers
 				 , bL = blockArr
+				 , pC = pairCount
+				 , lS = lasers
 			     }
 		return di
 	
@@ -47,6 +50,9 @@ class Puzzle:
 	func fromDict( di ):
 		puzzleName = di.pN
 		puzzleLayers = di.pL
+		pairCount = di.pC
+		lasers = di.lS
+		
 		for b in range( di.bL.size() ):
 			var nb = puzzleMan.PickledBlock.new()
 			nb.fromDict( di.bL[b] )
@@ -92,7 +98,7 @@ func shuffleArray( arr ):
 		arr[i] = temp
 		
 
-# calculate the layer; move into a method so that it can be used elsewhere
+# Calculates the layer that a block is on.
 func calcBlockLayer( x, y, z ):
 	return max( max( abs( x ), abs( y ) ), abs( z ) )
 
@@ -152,6 +158,7 @@ func generatePuzzle( layers, difficulty ):
 	var layeredblocks = []
 	for l in range( 0, layers + 1 ):
 		layeredblocks.append( [] )
+		puzzle.pairCount.append( 0 )
 	for x in range( -layers, layers + 1 ):
 		for y in range( -layers, layers + 1 ):
 			for z in range( -layers, layers + 1 ):
@@ -160,28 +167,21 @@ func generatePuzzle( layers, difficulty ):
 
 	# Generate laser lines.
 	for l in range( 1, layers + 1 ):
+		if difficulty == DIFF_MEDIUM or difficulty == DIFF_EASY:
+			for lx in [ -l, l ]:
+				for ly in [ -l, l ]:
+					puzzle.lasers.append( [Vector3( lx, ly, lx ), Vector3( lx*-1, ly, lx )] )
+					puzzle.lasers.append( [Vector3( lx, ly, lx ), Vector3( lx, ly, lx*-1 )] )
+					
 		if difficulty == DIFF_EASY:
 			for lx in [ -l, l ]:
 				for lz in [ -l, l ]:
-					puzzle.lasers.append( [Vector3( lx, lx, lz ), Vector3( lx + lx*-1, lx, lz )] )
-					puzzle.lasers.append( [Vector3( lx, lx, lz ), Vector3( lx, lx + lx*-1, lz )] )
-					puzzle.lasers.append( [Vector3( lx, lx, lz ), Vector3( lx, lx, lz + lz*-1 )] )
-					
-		if difficulty == DIFF_MEDIUM:
-			for lx in [ -l, l ]:
-				for ly in [ -l, l ]:
-					puzzle.lasers.append( [Vector3( lx, ly, lx ), Vector3( lx + lx*-1, ly, lx )] )
-					puzzle.lasers.append( [Vector3( lx, ly, lx ), Vector3( lx, ly, lx + lx*-1 )] )
+					puzzle.lasers.append( [Vector3( lx, l, lz ), Vector3( lx, -l, lz )] )
 					
 		if difficulty == DIFF_HARD:
 			for lx in [ -l, l ]:
-					puzzle.lasers.append( [Vector3( lx, 0, lx ), Vector3( lx + lx*-1, 0, lx )] )
-					puzzle.lasers.append( [Vector3( lx, 0, lx ), Vector3( lx, 0, lx + lx*-1 )] )
-						
-	#for l in puzzle.lasers:
-	#	pass #print( l )
-		
-	# print( "LASERS ", puzzle.lasers.size() )
+					puzzle.lasers.append( [Vector3( lx, 0, lx ), Vector3( lx*-1, 0, lx )] )
+					puzzle.lasers.append( [Vector3( lx, 0, lx ), Vector3( lx, 0, lx*-1 )] )
 
 	# Assign block types based on position.
 	for l in range( 0, layers + 1 ):
@@ -190,8 +190,6 @@ func generatePuzzle( layers, difficulty ):
 		# print( "NUM ", layeredblocks[l].size() )
 		var prevBlock = null
 		var even = false
-		var prevLaser = null
-		var laserEven = false
 		for pos in layeredblocks[l]:
 			var x = pos.x
 			var y = pos.y
@@ -210,15 +208,8 @@ func generatePuzzle( layers, difficulty ):
 			puzzle.blocks.append( b )
 	
 			if t == BLOCK_LASER:
-				b.setBlockClass(BLOCK_LASER)
-				if laserEven:
-					b.setPairName(prevLaser.name) \
-					.setLaserExtent(prevLaser.blockPos - b.blockPos)
-	
-					prevLaser.setPairName(b.name) \
-					.setLaserExtent(b.blockPos - prevLaser.blockPos)
-				laserEven = not laserEven
-				prevLaser = b
+				b.setBlockClass(BLOCK_LASER)\
+					.setLaserExtent( Vector3( 0, 1, 0 ) )
 				continue
 	
 			if t == BLOCK_WILD:
@@ -227,6 +218,9 @@ func generatePuzzle( layers, difficulty ):
 				continue
 	
 			if even:
+				# Count this pair.
+				puzzle.pairCount[l] += 1
+				
 				var randColor = blockColors[randi() % blockColors.size()]
 				b.setBlockClass(BLOCK_PAIR) \
 					.setPairName(prevBlock.name) \

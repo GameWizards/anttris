@@ -47,16 +47,14 @@ func _input_event( camera, ev, click_pos, click_normal, shape_idx ):
 
 			#now check if that was the second block we picked. If it was, we want to
 			#unselect the blocks again
-			var gridView = get_parent().get_parent()
-			if (gridView.offClick):
-				print("omg")
-				gridView.offClick = false
-				gridView.addSelected(name)
-				gridView.clearSelection()
+			var gridMan = get_parent()
+			if (gridMan.offClick):
+				gridMan.offClick = false
+				gridMan.addSelected(name)
+				gridMan.clearSelection()
 			else:
-				print("lulz")
-				gridView.offClick = true;
-				gridView.addSelected(name)
+				gridMan.offClick = true;
+				gridMan.addSelected(name)
 
 # returns this block's pairNode or null
 func pairActivate():
