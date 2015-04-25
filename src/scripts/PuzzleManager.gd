@@ -8,6 +8,9 @@ const BLOCK_PAIR	= 2
 const BLOCK_GOAL	= 3
 const BLOCK_BLOCK   = 4
 
+const SOLVER_ERROR_NONE				= 0
+const SOLVER_ERROR_MISSING_PAIR		= 1
+
 const blockColors = ["Blue", "Orange", "Red", "Yellow", "Purple", "Green"]
 
 # Preload paired blocks
@@ -64,25 +67,44 @@ class Puzzle:
 		# Simply use the solvePuzzleSteps function and return the solveable part.
 		var ps = self.solvePuzzleSteps()
 		return ps.solveable
+		
+	# Class that stores a solution or the errors in a puzzle.
+	class PuzzleSteps:
+		var solveable = false
+		var error = SOLVER_ERROR_NONE
+		var errorBlock = null
+		var solveSteps = []
 	
 	# Determines if a puzzle is solveable and returns the steps needed to solve it.
 	func solvePuzzleSteps():
 		var puzzleSteps = PuzzleSteps.new()
-		puzzleSteps.solveable = true
 	
-		var lasers = []
 		var pairs = []
-		var wildblocks = []
+		
+		# Add new dictionary for each later.
+		for l in range( puzzleLayers + 1 ):
+			pairs.append( {} )
 	
-		# Split the blocks into lasers, pairs and wild blocks.
+		# Gather paired blocks from the puzzle.
 		for b in blocks:
 			if b.blockClass == BLOCK_PAIR:
-				pairs.append( b )
-			if b.blockClass == BLOCK_LASER:
-				lasers.append( b )
-			if b.blockClass == BLOCK_WILD:
-				wildblocks.append( b )
+				b.solverFlag = false
+				pairs[calcBlockLayerVec(b.blockPos)][b.blockName] = b
+				
+		# Make sure each pair block has a valid pair on the same layer.
+		for l in pairs:
+			for p in pairs[l]:
+				if pairs[l].has( pairs[l][p].pairName ):
+					if( not pairs[l][p].solverFlag ):
+						pairs[l][p].solverFlag = true
+						pairs[l][pairs[l][p].pairName].solverFlag = true
+						puzzleSteps.append( [ pairs[l][p].blockPos, pairs[l][pairs[l][p].pairName].blockPos ] )
+				else:
+					puzzleSteps.error = SOLVER_ERROR_MISSING_PAIR
+					puzzleSteps.errorBlock = pairs[l][p]
+					return
 	
+		puzzleSteps.solveable = true
 		return puzzleSteps
 	
 	# Holds all of the steps needed to solve a puzzle.
@@ -101,23 +123,26 @@ func shuffleArray( arr ):
 # Calculates the layer that a block is on.
 func calcBlockLayer( x, y, z ):
 	return max( max( abs( x ), abs( y ) ), abs( z ) )
+# THIS IS EVERYWHERE, ANY BETTER WAY TO HAVE FUNCTIONS BETWEEN SCRIPTS?
+func calcBlockLayerVec( pos ):
+	return max( max( abs( pos.x ), abs( pos.y ) ), abs( pos.z ) )
 
 # Determines the block type based on puzzle size and difficulty.
-func getBlockType( difficulty, x, y, z ):
+func getBlockType( difficulty, pos ):
 	# Determine if this is the goal block.
-	if x == 0 and y == 0 and z == 0:
+	if pos.x == 0 and pos.y == 0 and pos.z == 0:
 		return BLOCK_GOAL
 
 	# Determine the layer this block is on.
-	var layer = calcBlockLayer( x, y, z )
+	var layer = calcBlockLayerVec( pos )
 
 	# Determine how many blocks are on the outer part of the layer.
 	var layerCount = 0
-	if abs( x ) == layer:
+	if abs( pos.x ) == layer:
 		layerCount += 1
-	if abs( y ) == layer:
+	if abs( pos.y ) == layer:
 		layerCount += 1
-	if abs( z ) == layer:
+	if abs( pos.z ) == layer:
 		layerCount += 1
 
 	# Determine if this block is a laser.
@@ -126,7 +151,7 @@ func getBlockType( difficulty, x, y, z ):
 			return BLOCK_LASER
 
 	if difficulty == DIFF_HARD:
-		if abs( x ) == abs( z ) and y == 0:
+		if abs( pos.x ) == abs( pos.z ) and pos.y == 0:
 			return BLOCK_LASER
 
 	# Determine if this block is a wild block.
@@ -136,12 +161,12 @@ func getBlockType( difficulty, x, y, z ):
 
 	if difficulty == DIFF_MEDIUM:
 		if layerCount == 2:
-			if y == layer || y == -layer:
+			if pos.y == layer || pos.y == -layer:
 				return BLOCK_WILD
 
 	if difficulty == DIFF_HARD:
 		if layerCount == 1:
-			if y == 0:
+			if pos.y == 0:
 				return BLOCK_WILD
 
 	# Otherwise it's a normal block.
@@ -195,7 +220,7 @@ func generatePuzzle( layers, difficulty ):
 			var y = pos.y
 			var z = pos.z
 	
-			var t = getBlockType( difficulty, x, y, z )
+			var t = getBlockType( difficulty, pos )
 	
 			if t == BLOCK_GOAL:
 				continue
@@ -242,6 +267,7 @@ class PickledBlock:
 	var textureName = "Red"
 	var blockPos
 	var laserExtent
+	var solverFlag		# Keeps track of this block, only user for the solver.
 
 	func setName(n):
 		name = n
