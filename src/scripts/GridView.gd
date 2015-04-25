@@ -29,6 +29,6 @@ func _input(ev):
 
 		# record the last position of the mousedelta
 
-	if (ev.type==InputEvent.SCREEN_DRAG or ev.type==InputEvent.MOUSE_MOTION or ev.type==InputEvent.JOYSTICK_MOTION or ev.type==InputEvent.SCREEN_TOUCH):
+	if (ev.type==InputEvent.SCREEN_DRAG or ev.type==InputEvent.MOUSE_MOTION):
 		mouseposlast = ev.pos
 	# Android does not like this: Input.get_mouse_pos()
