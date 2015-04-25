@@ -36,6 +36,10 @@ func popBlock( pairNode, justFly = false ):
 		pairNode.activate(true)
 		get_parent().popPair( blockPos )
 
+# THIS IS EVERYWHERE, ANY BETTER WAY TO HAVE FUNCTIONS BETWEEN SCRIPTS?
+func calcBlockLayerVec( pos ):
+	return max( max( abs( pos.x ), abs( pos.y ) ), abs( pos.z ) )
+
 # fly away only if self.pairName is selected
 func activate( justFly=false ):
 	var gridMan = get_parent()
@@ -45,10 +49,11 @@ func activate( justFly=false ):
 		
 		if selBlock.getBlockType() == BLOCK_WILD:
 			if selBlock.textureName == textureName:
-				gridMan.clearSelection()
-				selBlock.popBlock()
-				forceActivate()
-				return
+				if calcBlockLayerVec( selBlock.blockPos ) == calcBlockLayerVec( blockPos ):
+					gridMan.clearSelection()
+					selBlock.popBlock()
+					forceActivate()
+					return
 
 	var pairNode = pairActivate()
 	if pairNode == null:
