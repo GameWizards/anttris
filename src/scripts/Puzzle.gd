@@ -60,8 +60,8 @@ func _ready():
 	
 	puzzle = DataMan.loadPuzzle( "TestPuzzle.pzl" )
 	
-	#print( puzzle.pairCount.size() )
-	#print( "Pair blocks on layer 2: ", puzzle.pairCount[2] )
+	var steps = puzzle.solvePuzzleSteps()
+	print( "PUZZLE IS SOLVEABLE?: ", steps.solveable )
 
 	addTimer()
 

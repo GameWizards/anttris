@@ -25,6 +25,13 @@ const blockScripts = [ preload( "Blocks/LaserBlock.gd" )
 # Hash map of all possible positions
 var shape = {}
 
+# Calculates the layer that a block is on.
+func calcBlockLayer( x, y, z ):
+	return max( max( abs( x ), abs( y ) ), abs( z ) )
+# THIS IS EVERYWHERE, ANY BETTER WAY TO HAVE FUNCTIONS BETWEEN SCRIPTS?
+func calcBlockLayerVec( pos ):
+	return max( max( abs( pos.x ), abs( pos.y ) ), abs( pos.z ) )
+
 # Stores a puzzle in a convenient class.
 class Puzzle:
 	
@@ -62,18 +69,22 @@ class Puzzle:
 			blocks.append( nb )
 		return
 	
-	# Determines if a puzzle is solveable.
-	func solvePuzzle():
-		# Simply use the solvePuzzleSteps function and return the solveable part.
-		var ps = self.solvePuzzleSteps()
-		return ps.solveable
-		
 	# Class that stores a solution or the errors in a puzzle.
 	class PuzzleSteps:
 		var solveable = false
 		var error = SOLVER_ERROR_NONE
 		var errorBlock = null
 		var solveSteps = []
+		
+	# THIS IS EVERYWHERE, ANY BETTER WAY TO HAVE FUNCTIONS BETWEEN SCRIPTS?
+	func calcBlockLayerVec( pos ):
+		return max( max( abs( pos.x ), abs( pos.y ) ), abs( pos.z ) )
+	
+	# Determines if a puzzle is solveable.
+	func solvePuzzle():
+		# Simply use the solvePuzzleSteps function and return the solveable part.
+		var ps = self.solvePuzzleSteps()
+		return ps.solveable
 	
 	# Determines if a puzzle is solveable and returns the steps needed to solve it.
 	func solvePuzzleSteps():
@@ -89,27 +100,23 @@ class Puzzle:
 		for b in blocks:
 			if b.blockClass == BLOCK_PAIR:
 				b.solverFlag = false
-				pairs[calcBlockLayerVec(b.blockPos)][b.blockName] = b
+				pairs[calcBlockLayerVec(b.blockPos)][b.name] = b
 				
 		# Make sure each pair block has a valid pair on the same layer.
 		for l in pairs:
-			for p in pairs[l]:
-				if pairs[l].has( pairs[l][p].pairName ):
-					if( not pairs[l][p].solverFlag ):
-						pairs[l][p].solverFlag = true
-						pairs[l][pairs[l][p].pairName].solverFlag = true
-						puzzleSteps.append( [ pairs[l][p].blockPos, pairs[l][pairs[l][p].pairName].blockPos ] )
+			for p in l:
+				if l.has( l[p].pairName ):
+					if( not l[p].solverFlag ):
+						l[p].solverFlag = true
+						l[l[p].pairName].solverFlag = true
+						puzzleSteps.solveSteps.append( [ l[p].blockPos, l[l[p].pairName].blockPos ] )
 				else:
 					puzzleSteps.error = SOLVER_ERROR_MISSING_PAIR
-					puzzleSteps.errorBlock = pairs[l][p]
-					return
+					puzzleSteps.errorBlock = l[p]
+					return puzzleSteps
 	
 		puzzleSteps.solveable = true
 		return puzzleSteps
-	
-	# Holds all of the steps needed to solve a puzzle.
-	class PuzzleSteps:
-		var solveable
 
 # Randomly shuffle an array.
 func shuffleArray( arr ):
@@ -118,14 +125,6 @@ func shuffleArray( arr ):
 		var temp = arr[swapVal]
 		arr[swapVal] = arr[i]
 		arr[i] = temp
-		
-
-# Calculates the layer that a block is on.
-func calcBlockLayer( x, y, z ):
-	return max( max( abs( x ), abs( y ) ), abs( z ) )
-# THIS IS EVERYWHERE, ANY BETTER WAY TO HAVE FUNCTIONS BETWEEN SCRIPTS?
-func calcBlockLayerVec( pos ):
-	return max( max( abs( pos.x ), abs( pos.y ) ), abs( pos.z ) )
 
 # Determines the block type based on puzzle size and difficulty.
 func getBlockType( difficulty, pos ):
