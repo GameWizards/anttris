@@ -88,7 +88,7 @@ func _process(delta):
 				#have to be careful about more than 1 packet per frame
 				for i in range(connection.get_available_packet_count()):
 					var dataArray = connection.get_var()
-					processServerData(dataArray)
+					ProcessServerData(dataArray)
 					
 	else:
 		#client processing stuff
@@ -111,7 +111,7 @@ func _process(delta):
 			if connection.get_available_packet_count() > 0:
 				for i in range(connection.get_available_packet_count()):
 					var dataArray = connection.get_var()
-					processServerData(dataArray)
+					ProcessServerData(dataArray)
 					#Call the server process script cuase it's peer to peer and we have the same functions!
 
 
@@ -166,10 +166,11 @@ func ProcessServerData(dataArray):
 	elif ID == REMOTE_BLOCK_TRANSFORM:
 		#sent block information
 		print("block TRANSFORM!!!!!!!!!!!")
-		var scale = dataArray[1]
-		var translation = dataArray[2]
-		remotePuzzle.otherPuzzle.set_scale(scale)
-		remotePuzzle.otherPuzzle.set_translation(translation)
+		#var scale = dataArray[1]
+		var translation = dataArray[1]
+		#remotePuzzle.otherPuzzle.set_scale(scale)
+		remotePuzzle.otherPuzzle.set_transform(Transform( translation ))
+		remotePuzzle.otherPuzzle.set_translation(Vector3(20, 12, -40))
 	elif ID == REMOTE_BLOCK_UPDATE:
 		#sent an updated block pair
 		print("block update")
@@ -204,12 +205,12 @@ func sendQuit():
 		return
 	connection.put_var([REMOTE_QUIT])
 
-func sendTransform(scale, translation):
+func sendTransform(translation):
 	if !isNetwork:
 		print("Cannot send transformation over an unitialized network!")
 		return
-	connection.put_var([REMOTE_BLOCK_TRANSFORM, scale, translation])
-
+	connection.put_var([REMOTE_BLOCK_TRANSFORM, translation])
+	print("it got here")
 
 
 func changeScene(scene):

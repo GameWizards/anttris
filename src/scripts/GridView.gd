@@ -26,6 +26,9 @@ func _input(ev):
 		currentTransform = Matrix3( Vector3(0, 1, 0), PI * turn.x * dtime ) * currentTransform
 		currentTransform = Matrix3( Vector3(1, 0, 0), PI * turn.y * dtime ) * currentTransform
 		set_transform( Transform( currentTransform ) )
+		Globals.get("Network").sendTransform(currentTransform)
+	
+	
 
 		# record the last position of the mousedelta
 
