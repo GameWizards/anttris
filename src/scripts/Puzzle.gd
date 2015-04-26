@@ -50,7 +50,7 @@ func _ready():
 	
 	#set up network stuffs
 	add_child(load("res://networkProxy.scn").instance())
-	Globals.get("Network").proxy.set_process(true)
+	Globals.get("Network").proxy.set_process(Globals.get("Network").isClient or Globals.get("Network").isHost)
 
 	print("Generated ", puzzle.blocks.size(), " blocks." )
 
