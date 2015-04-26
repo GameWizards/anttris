@@ -6,7 +6,7 @@ var prevBlock = null
 
 var fileDialog = FileDialog.new()
 var gui = [
-	["status", Label.new()],
+	["status", Label.new()], # plz keep me as first element, referenced as gui[0] later
 	["save_pzl", Button.new()],
 	["load_pzl", Button.new()],
 	["remove_layer", Button.new()],
@@ -30,7 +30,7 @@ var gui = [
 		left=Button.new(),
 		right=Button.new(),
 		label=Label.new(),
-		values=["Add", "Remove", Replace"],
+		values=["Add", "Remove", "Replace"],
 		value="Add"
 	}],
 ]
@@ -44,7 +44,7 @@ func shouldReplaceSelf():
 	return true
 
 func shouldRemoveSelf():
-	return true
+	return false
 
 func newPickledBlock():
 	var b = puzzleMan.PickledBlock.new()\
@@ -53,12 +53,13 @@ func newPickledBlock():
 		b.setPairName(prevBlock.name)
 		gridMan.get_node(prevBlock.toNode().name).setPairName(b.name)
 		prevBlock = null
+		gui[0][1].set_text("STATUS: ERROR, ADD PAIR")
 	else:
 		prevBlock = b
+		gui[0][1].set_text("STATUS: NOMINAL")
 	return b
 
 func updateToggle(togg, increase):
-	print(togg.values[0], togg.values.size())
 	if increase:
 		var next_ix = togg.values.find(togg.value) + 1
 		if (next_ix >= togg.values.size()):
@@ -123,8 +124,8 @@ func _ready():
 				e.connect('pressed', self, 'puzzleSave')
 			if control[0] == 'load_pzl' :
 				e.connect('pressed', self, 'puzzleSave', [true])
+			if control[0] == 'status':
+				control[1].set_text('STATUS: NOMINAL')
 			add_child(e)
-		if control[0] == 'status':
-			control[1].set_text('STATUS: NOMINAL')
 
 

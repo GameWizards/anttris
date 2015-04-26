@@ -62,8 +62,8 @@ func _input_event( camera, ev, click_pos, click_normal, shape_idx ):
 				if editor.shouldAddNeighbor():
 					addNeighbor(editor, click_normal)
 				if editor.shouldReplaceSelf():
-					remove_with_pop(self, null)
 					addNeighbor(editor, 0 * click_normal)
+					remove_with_pop(self, null)
 				if editor.shouldRemoveSelf():
 					remove_with_pop(self, null)
 			else:
@@ -103,7 +103,7 @@ func newTweenNode():
 	add_child(tween)
 	return tween
 
-func remove_with_pop(node, key):
+func remove_with_pop(node, key=null):
 	get_parent().samplePlayer.play("deraj_pop_sound")
 	get_parent().remove_block(self)
 
