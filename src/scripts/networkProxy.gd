@@ -5,11 +5,13 @@ var Network
 
 func _ready():
 	Network = Globals.get("Network")
-	Network.proxy = self
-	set_process(Network.is_processing())
+	if Network != null:
+		Network.proxy = self
+		set_process(Network.is_processing())
 
 func _process(delta):
 	#simply delegate to the network's process
-	Network._process(delta)
-
+	if Network != null:
+		Network._process(delta)
+	
 
