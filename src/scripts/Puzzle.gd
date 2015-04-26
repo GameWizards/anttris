@@ -13,12 +13,10 @@ var mainPuzzle = true
 var time = {
 		on = true,
 		val = 0.0,
-		label = null,
-		tween = null }
+		label = Label.new(),
+		tween = Tween.new() }
 
 func addTimer():
-	time.label = Label.new()
-	time.tween = Tween.new()
 	add_child(time.label)
 	add_child(time.tween)
 	time.label.set_pos(Vector2(15,15))
