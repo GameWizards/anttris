@@ -2,11 +2,6 @@ extends "AbstractBlock.gd"
 
 var mat
 var laserExtent = Vector3()
-#var fired = false
-
-#const beamScn = preload( "res://blocks/block.scn" )
-#const Beam = preload("res://scripts/Blocks/Beam.gd")
-#const laserBlockImg = Image() # TODO preload this somewhere else
 
 # color
 func setTexture(color=Color(0.5, 0, 0)):

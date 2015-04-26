@@ -71,9 +71,6 @@ func _ready():
 	
 	var scn = load("res://networkProxy.scn")
 	add_child(scn.instance())
-	#get_tree().get_root().add_child(network)
-	
-	#get_tree().get_root().add_child(network)
 	network.root = get_tree().get_root()
 
 	# Load the config.
@@ -82,7 +79,6 @@ func _ready():
 	get_node("OptionsMenu/Panel/OnlineName/LineEdit").set_text( config.name )
 	get_node("OptionsMenu/Panel/SoundVolume/SoundSlider").set_value( config.soundvolume )
 	get_node("OptionsMenu/Panel/MusicVolume/MusicSlider").set_value( config.musicvolume )
-	#get_node("OptionsMenu/Panel/PortField/LineEdit").set_text( config.portnumber )
 	
 	network.port = config.portnumber
 
