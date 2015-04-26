@@ -20,7 +20,6 @@ const blockScripts = [ preload( "Blocks/LaserBlock.gd" )
 			   	      , preload( "Blocks/PairedBlock.gd" )
 			   	      , preload( "Blocks/LaserBlock.gd" )
 			   	      ]
-#const aBlock = preload( "Blocks/AbstractBlock.gd" ) ?? WHAT WAS THIS FOR?
 
 # Hash map of all possible positions
 var shape = {}
@@ -77,6 +76,8 @@ class Puzzle:
 		var solveSteps = []
 		
 	# THIS IS EVERYWHERE, ANY BETTER WAY TO HAVE FUNCTIONS BETWEEN SCRIPTS?
+	# duplicate of the global definition above? Either way godot is chill and
+	# doesn't complain
 	func calcBlockLayerVec( pos ):
 		return max( max( abs( pos.x ), abs( pos.y ) ), abs( pos.z ) )
 	
