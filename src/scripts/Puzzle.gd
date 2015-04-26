@@ -76,6 +76,7 @@ func _ready():
 	# make a new puzzle, embed using Viewport
 	if mainPuzzle:
 		var p = PuzzleScn.instance()
+		p.remove_and_delete_child(p.get_node("Lights"))
 		p.get_node("GridView").active = false
 		p.mainPuzzle = false
 		p.set_scale(Vector3(0.5, 0.5, 0.5))
