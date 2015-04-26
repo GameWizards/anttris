@@ -173,11 +173,9 @@ func ProcessServerData(dataArray):
 	elif ID == REMOTE_BLOCK_UPDATE:
 		#sent an updated block pair
 		print("block update")
-		var gridMan = root.get_node( "Spatial/GridView/GridMan" )
-		var pos1 = dataArray[1]
-		var pos2 = dataArray[2]
-		gridMan.remove_block(pos1)
-		gridMan.remove_block(pos2)
+		var puzzle = root.get_node( "Spatial" )
+		var pos = dataArray[1]
+		puzzle.otherPuzzle.get_node("GridView/GridMan").forceClickBlock(pos)
 
 func sendStart():
 	if !isNetwork:
@@ -186,11 +184,11 @@ func sendStart():
 	var er = connection.put_var([REMOTE_START])
 	print("Sending start and got [" + str(er) + "]")
 
-func sendBlockUpdate(pos1, pos2):
+func sendBlockUpdate(pos):
 	if !isNetwork:
 		print("Error sending start packet: not connected!")
 		return
-	connection.put_var([REMOTE_BLOCK_UPDATE, pos1, pos2])
+	connection.put_var([REMOTE_BLOCK_UPDATE, pos])
 
 func sendFinish(score):
 	if !isNetwork:

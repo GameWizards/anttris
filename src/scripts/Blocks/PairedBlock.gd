@@ -26,6 +26,8 @@ func popBlock( pairNode, justFly = false ):
 	tweenNode.interpolate_method( self, "set_translation", \
 		self.get_translation(), self.get_translation().normalized() * far_away_corner, \
 		1, Tween.TRANS_CIRC, Tween.EASE_IN_OUT )
+	if (not tweenNode == null and get_parent().get_parent().active):
+			Globals.get("Network").sendBlockUpdate(blockPos)
 
 	tweenNode.start()
 	# just one call to activate...
@@ -40,7 +42,6 @@ func calcBlockLayerVec( pos ):
 # fly away only if self.pairName is selected
 func activate( justFly=false ):
 	var gridMan = get_parent()
-
 	if gridMan.selectedBlocks.size() > 0:
 		var selBlock = gridMan.get_node( gridMan.selectedBlocks[0] )
 		
@@ -50,6 +51,8 @@ func activate( justFly=false ):
 					gridMan.clearSelection()
 					selBlock.popBlock()
 					forceActivate()
+					print("whut the heck?")
+					
 					return
 
 	var pairNode = pairActivate()
@@ -57,6 +60,7 @@ func activate( justFly=false ):
 		return
 	if pairNode.selected:
 		popBlock( pairNode, justFly )
+		
 			
 # Force the pair to activate.
 func forceActivate():
