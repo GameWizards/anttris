@@ -16,6 +16,7 @@ var isClient = false
 var server
 var client
 var connection
+var proxy
 
 var remotePuzzle
 
@@ -41,22 +42,24 @@ func connectTo(ip, pt):
 	
 	if stream.get_status() == stream.STATUS_CONNECTED or stream.get_status() == stream.STATUS_CONNECTING:
 		print("Connecting to " + ip + ":" + str(port));
-		set_process(true)
+		proxy.set_process(true)
 		#leave is_network as false to indicate we're still waiting for connection
 	
 	
 func host(pt):
 	server = TCP_Server.new()
-	connection = PacketPeerStream.new()
+	#connection = PacketPeerStream.new()
 	isHost = true
 	print("Starting listening server on port " + str(pt))
 	if server.listen(pt) == 0:
-		set_process(true)
+		proxy.set_process(true)
 		print("Listening...")
 	else:
 		print("Failed to start server on port " + str(pt));
-	
+
 func _process(delta):
+	#print("Spam")
+	#self.omg()
 	if (isHost):
 		#server processing stuff
 		#use isNetwork to determine if we're still listening
@@ -77,7 +80,7 @@ func _process(delta):
 			if !stream.is_connected():
 				print("Lost Connection!");
 				isNetwork = false
-				set_process(false)
+				proxy.set_process(false)
 				#QUIT GAME
 				return
 			#check if we have any data
@@ -99,7 +102,7 @@ func _process(delta):
 				return
 			if stream.get_status() == stream.STATUS_NONE or stream.get_status() == stream.STATUS_ERROR:
 				print("Error establishing connection!")
-				set_process(false)
+				proxy.set_process(false)
 				return
 				#stop running process loop, cause we have no connection
 		else:
@@ -136,7 +139,7 @@ func disconnect():
 	isHost = false;
 	isClient = false;
 	
-	set_process(false)
+	proxy.set_process(false)
 	
 	changeScene("res://menus.scn")
 

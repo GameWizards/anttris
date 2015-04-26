@@ -69,9 +69,12 @@ func _ready():
 	Globals.set("Network", load("res://scripts/Network.gd").new())
 	network = Globals.get("Network")
 	
+	var scn = load("res://networkProxy.scn")
+	add_child(scn.instance())
+	#get_tree().get_root().add_child(network)
+	
 	#get_tree().get_root().add_child(network)
 	network.root = get_tree().get_root()
-	
 
 	# Load the config.
 	var config = preload( "res://scripts/DataManager.gd" ).new().loadConfig()
