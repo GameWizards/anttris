@@ -71,8 +71,7 @@ func _ready():
 	gridMan.set_puzzle(puzzle)
 	for block in puzzle.blocks:
 		# Create a block node, add it to the tree
-		var b = block.toNode()
-		gridMan.add_block(b)
+		gridMan.add_block(block.toNode())
 
 	# make a new puzzle, embed using Viewport
 	if mainPuzzle:
