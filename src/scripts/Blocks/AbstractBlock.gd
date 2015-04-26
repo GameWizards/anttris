@@ -58,8 +58,14 @@ func _input_event( camera, ev, click_pos, click_normal, shape_idx ):
 	if ((ev.type==InputEvent.MOUSE_BUTTON and ev.button_index==BUTTON_LEFT)
 	or (ev.type==InputEvent.SCREEN_TOUCH)):
 		if (get_parent().get_parent().active and ev.is_pressed()):
-			if editor != null and editor.shouldAddNeighbor():
-				addNeighbor(editor, click_normal)
+			print(editor)
+			if editor != null:
+				if editor.shouldAddNeighbor():
+					addNeighbor(editor, click_normal)
+				if editor.shouldReplaceSelf():
+					addNeighbor(editor, 0 * click_normal)
+				if editor.shouldRemoveSelf():
+					remove_with_pop(self, null)
 			else:
 				forceClick()
 
@@ -102,5 +108,5 @@ func remove_with_pop(node, key):
 	get_parent().remove_block(self)
 
 func _ready():
-	editor = get_tree().get_root().get_node("Editor")
+	editor = get_tree().get_root().get_node("EditorSpatial")
 	set_ray_pickable(true)
