@@ -76,6 +76,21 @@ func clearSelection():
 # Add the selected block to the selected list. WE SHOULD FIX THIS, IT ONLY NEEDS TO STORE IT, NOT AN ARRAY!
 func addSelected(bl):
 	selectedBlocks.append(bl)
+	
+# Used for the multiplayer mode to force click a block on their side.
+func forceClickBlock( pos ):
+	shape[pos].forceClick()
+
+func clickBlock( name ):
+	#now check if that was the second block we picked. If it was, we want to
+	#unselect the blocks again
+	if (offClick):
+		offClick = false
+		addSelected(name)
+		clearSelection()
+	else:
+		offClick = true;
+		addSelected(name)
 
 # Calculates the layer that a block is on.
 # COPY OF FUNCTION IN PUZZLEMAN, IS THERE A BETTER WAY TO DO THIS?!
