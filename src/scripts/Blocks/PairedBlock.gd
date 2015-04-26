@@ -43,8 +43,9 @@ func calcBlockLayerVec( pos ):
 # fly away only if self.pairName is selected
 func activate( justFly=false ):
 	var gridMan = get_parent()
-
 	if gridMan.selectedBlocks.size() > 0:
+		if (get_parent().get_parent().active):
+			Globals.get("Network").sendBlockUpdate(blockPos)
 		var selBlock = gridMan.get_node( gridMan.selectedBlocks[0] )
 		
 		if selBlock.getBlockType() == BLOCK_WILD:
@@ -53,6 +54,8 @@ func activate( justFly=false ):
 					gridMan.clearSelection()
 					selBlock.popBlock()
 					forceActivate()
+					print("whut the heck?")
+					
 					return
 
 	var pairNode = pairActivate()
@@ -60,6 +63,7 @@ func activate( justFly=false ):
 		return
 	if pairNode.selected:
 		popBlock( pairNode, justFly )
+		
 			
 # Force the pair to activate.
 func forceActivate():
