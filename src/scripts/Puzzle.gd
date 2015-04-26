@@ -1,7 +1,6 @@
-extends Spatial
+# Provides functionality for the puzzle itself
 
-# proposed script manager:
-# var PuzzleManScript = get_node("Globals").get("PuzzleManScript")
+extends Spatial
 
 var DataMan = preload( "res://scripts/DataManager.gd" ).new()
 var PuzzleManScript = preload( "res://scripts/PuzzleManager.gd" )
