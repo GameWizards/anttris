@@ -56,6 +56,8 @@ var wildBlockSelected = null
 
 # Sets the puzzle for this GridMan.
 func set_puzzle(puzz):
+	# TODO delete current puzzle
+	
 	# Store the puzzle.
 	puzzle = puzz
 
@@ -70,6 +72,10 @@ func set_puzzle(puzz):
 	cam.distance.min_ = 3 * totalSize
 	cam.distance.max_ = 10 * totalSize
 	cam.recalculate_camera()
+	
+	for block in puzzle.blocks:
+		# Create a block node, add it to the tree
+		add_block(block.toNode())
 
 # Clears any selected blocks. WE SHOULD FIX THIS, THERE CAN ONLY BE ONE BLOCK SELECTED AT ANY ONE TIME, NO NEED FOR AN ARRAY!
 func clearSelection():
