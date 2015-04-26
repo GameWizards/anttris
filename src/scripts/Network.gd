@@ -174,9 +174,9 @@ func ProcessServerData(dataArray):
 	elif ID == REMOTE_BLOCK_UPDATE:
 		#sent an updated block pair
 		print("block update")
-		var gridMan = root.get_node( "Spatial/GridView/GridMan" )
+		var puzzle = root.get_node( "Spatial" )
 		var pos = dataArray[1]
-		gridMan.forceClickBlock(pos)
+		puzzle.otherPuzzle.get_node("GridView/GridMan").forceClickBlock(pos)
 
 func sendStart():
 	if !isNetwork:
