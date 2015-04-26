@@ -61,11 +61,14 @@ func _input_event( camera, ev, click_pos, click_normal, shape_idx ):
 			if editor != null:
 				if editor.shouldAddNeighbor():
 					addNeighbor(editor, click_normal)
+					return
 				if editor.shouldReplaceSelf():
 					addNeighbor(editor, 0 * click_normal)
 					remove_with_pop(self, null)
+					return
 				if editor.shouldRemoveSelf():
 					remove_with_pop(self, null)
+					return
 			else:
 				forceClick()
 
