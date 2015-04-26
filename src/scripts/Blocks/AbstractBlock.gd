@@ -5,6 +5,7 @@ var pairName
 var selected = false
 var blockPos
 var blockLayer
+var blockType
 const far_away_corner = Vector3(80, 80, 80)
 
 static func nameToNodeName(n):
@@ -25,33 +26,31 @@ func setBlockLayer(n):
 
 func getBlockLayer():
 	return blockLayer
+	
+func setBlockType( blockT ):
+	blockType = blockT
+	return self
+	
+func getBlockType():
+	return blockType
 
 func setSelected(sel):
 	selected = sel
 	return self
+
+func forceClick():
+	activate()
+	get_parent().clickBlock( name )
 
 # catch clicks/taps
 func _input_event( camera, ev, click_pos, click_normal, shape_idx ):
 	if ((ev.type==InputEvent.MOUSE_BUTTON and ev.button_index==BUTTON_LEFT)
 	or (ev.type==InputEvent.SCREEN_TOUCH)):
 		if (get_parent().get_parent().active and ev.is_pressed()):
-			activate(ev, click_pos, click_normal)
-
-			#now check if that was the second block we picked. If it was, we want to
-			#unselect the blocks again
-			var gridView = get_parent().get_parent()
-			if (gridView.offClick):
-				print("omg")
-				gridView.offClick = false
-				gridView.addSelected(name)
-				gridView.clearSelection()
-			else:
-				print("lulz")
-				gridView.offClick = true;
-				gridView.addSelected(name)
+			forceClick()
 
 # returns this block's pairNode or null
-func pairActivate(ev, click_pos, click_normal):
+func pairActivate():
 	selected = true
 
 	# is my pair Nil?
@@ -90,5 +89,3 @@ func remove_with_pop(node, key):
 
 func _ready():
 	set_ray_pickable(true)
-	#var img;
-	#img.load("res://textures/Block_" + textureName + ".png")

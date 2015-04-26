@@ -27,14 +27,6 @@ func loadConfig():
 		file.close()
 		
 	return config
-	
-# Serializes the puzzle into a dictionary.
-#function serializePuzzle():
-
-
-# Deserializes the puzzle from a dictionary.
-#function deserializePuzzle():
-
 
 # Saves a puzzle to the file given.
 func savePuzzle( name, puzzle ):
@@ -46,11 +38,6 @@ func savePuzzle( name, puzzle ):
 	
 	if file.is_open():
 		file.store_var( di )
-		#file.store_var( puzzle.puzzleName )
-		#file.store_var( puzzle.puzzleLayers )
-		#file.store_var( puzzle.blocks.size() )
-		#for b in range( puzzle.blocks.size() ):
-		#	file.store_var( puzzle.blocks[b].toDict() )
 		file.close()
 
 # Loads a puzzle for the file given.
@@ -63,13 +50,6 @@ func loadPuzzle( name ):
 	
 	if file.is_open():
 		puzzle.fromDict( file.get_var() )
-		#puzzle.puzzleName = file.get_var()
-		#puzzle.puzzleLayers = file.get_var()
-		#var blockNum = file.get_var()
-		#for b in range( blockNum ):
-		#	var b = puzzleMan.PickledBlock.new()
-		#	b.fromDict( file.get_var() )
-		#	puzzle.blocks.append( b )
 		file.close()
 	
 	return puzzle

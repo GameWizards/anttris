@@ -1,3 +1,4 @@
+# Core networking
 
 extends Node
 
@@ -16,6 +17,7 @@ var isClient = false
 var server
 var client
 var connection
+var proxy
 
 var remotePuzzle
 
@@ -41,21 +43,21 @@ func connectTo(ip, pt):
 	
 	if stream.get_status() == stream.STATUS_CONNECTED or stream.get_status() == stream.STATUS_CONNECTING:
 		print("Connecting to " + ip + ":" + str(port));
-		set_process(true)
+		proxy.set_process(true)
 		#leave is_network as false to indicate we're still waiting for connection
 	
 	
 func host(pt):
 	server = TCP_Server.new()
-	connection = PacketPeerStream.new()
+	#connection = PacketPeerStream.new()
 	isHost = true
 	print("Starting listening server on port " + str(pt))
 	if server.listen(pt) == 0:
-		set_process(true)
+		proxy.set_process(true)
 		print("Listening...")
 	else:
 		print("Failed to start server on port " + str(pt));
-	
+
 func _process(delta):
 	if (isHost):
 		#server processing stuff
@@ -77,7 +79,7 @@ func _process(delta):
 			if !stream.is_connected():
 				print("Lost Connection!");
 				isNetwork = false
-				set_process(false)
+				proxy.set_process(false)
 				#QUIT GAME
 				return
 			#check if we have any data
@@ -85,7 +87,7 @@ func _process(delta):
 				#have to be careful about more than 1 packet per frame
 				for i in range(connection.get_available_packet_count()):
 					var dataArray = connection.get_var()
-					processServerData(dataArray)
+					ProcessServerData(dataArray)
 					
 	else:
 		#client processing stuff
@@ -99,7 +101,7 @@ func _process(delta):
 				return
 			if stream.get_status() == stream.STATUS_NONE or stream.get_status() == stream.STATUS_ERROR:
 				print("Error establishing connection!")
-				set_process(false)
+				proxy.set_process(false)
 				return
 				#stop running process loop, cause we have no connection
 		else:
@@ -108,7 +110,7 @@ func _process(delta):
 			if connection.get_available_packet_count() > 0:
 				for i in range(connection.get_available_packet_count()):
 					var dataArray = connection.get_var()
-					processServerData(dataArray)
+					ProcessServerData(dataArray)
 					#Call the server process script cuase it's peer to peer and we have the same functions!
 
 
@@ -136,7 +138,7 @@ func disconnect():
 	isHost = false;
 	isClient = false;
 	
-	set_process(false)
+	proxy.set_process(false)
 	
 	changeScene("res://menus.scn")
 
@@ -146,7 +148,7 @@ func ProcessServerData(dataArray):
 	#have an array of data. First element should be identifying int
 	var ID = dataArray[0]
 	print(ID)
-	#no swithc statement. I'm crying right now while i type this. My fingers are bleeding
+	#no switch statement. I'm crying right now while i type this. My fingers are bleeding
 	if ID == REMOTE_START:
 		#do start something or something whut
 		print("remote_stuff")
@@ -163,18 +165,17 @@ func ProcessServerData(dataArray):
 	elif ID == REMOTE_BLOCK_TRANSFORM:
 		#sent block information
 		print("block TRANSFORM!!!!!!!!!!!")
-		var scale = dataArray[1]
-		var translation = dataArray[2]
-		remotePuzzle.otherPuzzle.set_scale(scale)
-		remotePuzzle.otherPuzzle.set_translation(translation)
+		#var scale = dataArray[1]
+		var translation = dataArray[1]
+		#remotePuzzle.otherPuzzle.set_scale(scale)
+		remotePuzzle.otherPuzzle.set_transform(Transform( translation ))
+		remotePuzzle.otherPuzzle.set_translation(Vector3(20, 12, -40))
 	elif ID == REMOTE_BLOCK_UPDATE:
 		#sent an updated block pair
 		print("block update")
-		var gridMan = root.get_node( "Spatial/GridView/GridMan" )
-		var pos1 = dataArray[1]
-		var pos2 = dataArray[2]
-		gridMan.remove_block(pos1)
-		gridMan.remove_block(pos2)
+		var puzzle = root.get_node( "Spatial" )
+		var pos = dataArray[1]
+		puzzle.otherPuzzle.get_node("GridView/GridMan").forceClickBlock(pos)
 
 func sendStart():
 	if !isNetwork:
@@ -183,11 +184,11 @@ func sendStart():
 	var er = connection.put_var([REMOTE_START])
 	print("Sending start and got [" + str(er) + "]")
 
-func sendBlockUpdate(pos1, pos2):
+func sendBlockUpdate(pos):
 	if !isNetwork:
 		print("Error sending start packet: not connected!")
 		return
-	connection.put_var([REMOTE_BLOCK_UPDATE, pos1, pos2])
+	connection.put_var([REMOTE_BLOCK_UPDATE, pos])
 
 func sendFinish(score):
 	if !isNetwork:
@@ -201,15 +202,14 @@ func sendQuit():
 		return
 	connection.put_var([REMOTE_QUIT])
 
-func sendTransform(scale, translation):
+func sendTransform(translation):
 	if !isNetwork:
 		print("Cannot send transformation over an unitialized network!")
 		return
-	connection.put_var([REMOTE_BLOCK_TRANSFORM, scale, translation])
-
+	connection.put_var([REMOTE_BLOCK_TRANSFORM, translation])
+	print("it got here")
 
 
 func changeScene(scene):
 	root.get_child( root.get_child_count() - 1 ).queue_free()
-	#root.get_child( 0).queue_free()
 	root.add_child( ResourceLoader.load( scene ).instance() )

@@ -13,35 +13,48 @@ func _ready():
 func remove(node, key):
 	remove_and_skip()
 
-func fire(extent):
-	tweenNode = Tween.new()
-	add_child(tweenNode)
+func fire(start,end):
+	#tweenNode = Tween.new()
+	#add_child(tweenNode)
 	tweenNodeScale = Tween.new()
 	add_child(tweenNodeScale)
+	
+	set_translation( ( start * 2 + end * 2 ) / 2 )
 
-	var gridMan = get_parent().get_parent()
+	var gridMan = get_parent()
 
 	# shrink, expand along one axis
 	# assumes blocks are 1 unit
 	var timeToFade = 0.5
-	extent = extent + extent.normalized()
+	#end = end + end.normalized()
+	
+	# destroy blocks between the two lasers
+	var alongAxis = 0
+	if( end.y != start.y ):
+		alongAxis = 1
+	if( end.z != start.z ):
+		alongAxis = 2
+		
+	var initScale = Vector3( 1, 1, 1 )
+	var finalScale = Vector3( 0, 0, 0 )
+	initScale[alongAxis] = abs( start[alongAxis] - end[alongAxis] ) * 2
+	finalScale[alongAxis] = initScale[alongAxis]
+		
+	set_scale( initScale )
 
 	tweenNodeScale.interpolate_method( self, "set_scale", \
-		self.get_scale(), extent, \
+		self.get_scale(), Vector3( 0, 0, 0 ), \
 		timeToFade, Tween.TRANS_BOUNCE, Tween.EASE_OUT )
+		
+	var r = 1
+	if end[alongAxis] - start[alongAxis] < 0:
+		r = -1
 
-	# destroy blocks between the two lasers
-	var alongAxis = extent.abs().max_axis()
-	var r
-	if extent[alongAxis] < 0:
-		r = range(extent[alongAxis] + 2, 0)
-	else:
-		r = range(1, extent[alongAxis] - 1)
-
-	var pt = get_parent().blockPos
-	for i in r:
-		pt += extent.normalized()
+	var pt = start
+	pt[alongAxis] += r
+	while pt[alongAxis] != end[alongAxis]:
 		var pn = gridMan.get_block(pt)
+		pt[alongAxis] += r
 		if pn == null:
 			continue
 		var pn_go_away = pn.scaleTweenNode(0, randf() + 0.5, Tween.TRANS_EXPO)
@@ -53,10 +66,10 @@ func fire(extent):
 	tweenNodeScale.connect("tween_complete", self, "remove")
 
 	# keep one end on parent. without this, the beam will be centered
-	tweenNode.interpolate_method( self, "set_translation", \
-			self.get_translation(), extent, \
-			timeToFade, Tween.TRANS_CIRC, Tween.EASE_IN_OUT )
+	#tweenNode.interpolate_method( self, "set_translation", \
+	#		self.get_translation(), end * 2, \
+	#		timeToFade, Tween.TRANS_CIRC, Tween.EASE_IN_OUT )
 
-	tweenNode.start()
+	#tweenNode.start()
 	tweenNodeScale.start()
 
