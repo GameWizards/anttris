@@ -69,9 +69,9 @@ func _ready():
 	Globals.set("Network", load("res://scripts/Network.gd").new())
 	network = Globals.get("Network")
 	
-	#get_tree().get_root().add_child(network)
+	var scn = load("res://networkProxy.scn")
+	add_child(scn.instance())
 	network.root = get_tree().get_root()
-	
 
 	# Load the config.
 	var config = preload( "res://scripts/DataManager.gd" ).new().loadConfig()
@@ -79,7 +79,6 @@ func _ready():
 	get_node("OptionsMenu/Panel/OnlineName/LineEdit").set_text( config.name )
 	get_node("OptionsMenu/Panel/SoundVolume/SoundSlider").set_value( config.soundvolume )
 	get_node("OptionsMenu/Panel/MusicVolume/MusicSlider").set_value( config.musicvolume )
-	#get_node("OptionsMenu/Panel/PortField/LineEdit").set_text( config.portnumber )
 	
 	network.port = config.portnumber
 

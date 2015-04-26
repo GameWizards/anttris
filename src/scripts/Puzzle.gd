@@ -1,7 +1,6 @@
-extends Spatial
+# Provides functionality for the puzzle itself
 
-# proposed script manager:
-# var PuzzleManScript = get_node("Globals").get("PuzzleManScript")
+extends Spatial
 
 var DataMan = preload( "res://scripts/DataManager.gd" ).new()
 var PuzzleManScript = preload( "res://scripts/PuzzleManager.gd" )
@@ -48,6 +47,10 @@ func _ready():
 	puzzleMan = PuzzleManScript.new()
 	var puzzle = puzzleMan.generatePuzzle( 2, puzzleMan.DIFF_EASY )
 	puzzle.puzzleMan = puzzleMan
+	
+	#set up network stuffs
+	add_child(load("res://networkProxy.scn").instance())
+	Globals.get("Network").proxy.set_process(true)
 
 	print("Generated ", puzzle.blocks.size(), " blocks." )
 
