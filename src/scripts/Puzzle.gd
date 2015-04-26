@@ -52,14 +52,14 @@ func _ready():
 	puzzle.puzzleMan = puzzleMan
 
 	print("Generated ", puzzle.blocks.size(), " blocks." )
-	
+
 	print( "Saving..." )
 	DataMan.savePuzzle( "TestPuzzle.pzl", puzzle )
-	
+
 	puzzle = 0
-	
+
 	puzzle = DataMan.loadPuzzle( "TestPuzzle.pzl" )
-	
+
 	var steps = puzzle.solvePuzzleSteps()
 	print( "PUZZLE IS SOLVEABLE?: ", steps.solveable )
 
@@ -73,8 +73,6 @@ func _ready():
 		# Create a block node, add it to the tree
 		var b = block.toNode()
 		gridMan.add_block(b)
-		gridMan.get_child(block.name) \
-			.set_translation(block.blockPos * 2 )
 
 	# make a new puzzle, embed using Viewport
 	if mainPuzzle:
