@@ -12,12 +12,10 @@ var mainPuzzle = true
 var time = {
 		on = true,
 		val = 0.0,
-		label = null,
-		tween = null }
+		label = Label.new(),
+		tween = Tween.new() }
 
 func addTimer():
-	time.label = Label.new()
-	time.tween = Tween.new()
 	add_child(time.label)
 	add_child(time.tween)
 	time.label.set_pos(Vector2(15,15))
@@ -52,17 +50,17 @@ func _ready():
 	
 	#set up network stuffs
 	add_child(load("res://networkProxy.scn").instance())
-	Globals.get("Network").proxy.set_process(true)
+	Globals.get("Network").proxy.set_process(Globals.get("Network").isClient or Globals.get("Network").isHost)
 
 	print("Generated ", puzzle.blocks.size(), " blocks." )
-	
+
 	print( "Saving..." )
 	DataMan.savePuzzle( "TestPuzzle.pzl", puzzle )
-	
+
 	puzzle = 0
-	
+
 	puzzle = DataMan.loadPuzzle( "TestPuzzle.pzl" )
-	
+
 	var steps = puzzle.solvePuzzleSteps()
 	print( "PUZZLE IS SOLVEABLE?: ", steps.solveable )
 
@@ -74,14 +72,12 @@ func _ready():
 	gridMan.set_puzzle(puzzle)
 	for block in puzzle.blocks:
 		# Create a block node, add it to the tree
-		var b = block.toNode()
-		gridMan.add_block(b)
-		gridMan.get_child(block.name) \
-			.set_translation(block.blockPos * 2 )
+		gridMan.add_block(block.toNode())
 
 	# make a new puzzle, embed using Viewport
 	if mainPuzzle:
 		var p = PuzzleScn.instance()
+		p.remove_and_delete_child(p.get_node("Lights"))
 		p.get_node("GridView").active = false
 		p.mainPuzzle = false
 		p.set_scale(Vector3(0.5, 0.5, 0.5))

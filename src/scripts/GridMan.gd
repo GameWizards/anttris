@@ -27,6 +27,15 @@ var samplePlayer = SamplePlayer.new()
 
 func add_block(b):
 	shape[b.blockPos] = b
+
+	if b.getBlockType() == 2:
+		var layer = calcBlockLayerVec(b.blockPos)
+		while pairCount.size() <= layer:
+				pairCount.append(0)
+	
+		# preload("res://trust")
+		pairCount[layer] += 0.5
+
 	add_child(b)
 
 func get_block(pos):
@@ -49,11 +58,11 @@ var wildBlockSelected = null
 func set_puzzle(puzz):
 	# Store the puzzle.
 	puzzle = puzz
-	
+
 	# Initalization here
 	samplePlayer.set_voice_count(puzzle.puzzleLayers * 2)
 	samplePlayer.set_sample_library(ResourceLoader.load("new_samplelibrary.xml"))
-	
+
 	# Set the camera range to be relative to the layer count.
 	var cam = get_parent().get_parent().get_node( "Camera" )
 	var totalSize = ( puzzle.puzzleLayers * 2 + 1 )
@@ -61,10 +70,7 @@ func set_puzzle(puzz):
 	cam.distance.min_ = 3 * totalSize
 	cam.distance.max_ = 10 * totalSize
 	cam.recalculate_camera()
-	
-	# Gather important info from the puzzle.
-	pairCount = [] + puzzle.pairCount	# Make a copy, don't use the same array.
-	
+
 # Clears any selected blocks. WE SHOULD FIX THIS, THERE CAN ONLY BE ONE BLOCK SELECTED AT ANY ONE TIME, NO NEED FOR AN ARRAY!
 func clearSelection():
 	for bl in selectedBlocks:
@@ -72,11 +78,11 @@ func clearSelection():
 		blo.setSelected(false)
 		blo.scaleTweenNode(1.0).start()
 	selectedBlocks = []
-	
+
 # Add the selected block to the selected list. WE SHOULD FIX THIS, IT ONLY NEEDS TO STORE IT, NOT AN ARRAY!
 func addSelected(bl):
 	selectedBlocks.append(bl)
-	
+
 # Used for the multiplayer mode to force click a block on their side.
 func forceClickBlock( pos ):
 	shape[pos].forceClick()
@@ -101,32 +107,33 @@ func calcBlockLayerVec( pos ):
 
 # Handles keeping track of pairs being removed.
 func popPair( pos ):
-	var blayer = calcBlockLayer( pos.x, pos.y, pos.z )
+	var blayer = calcBlockLayerVec( pos )
 	pairCount[blayer] -= 1
 
 	if( pairCount[blayer] == 0 ):
+		print("LAYER CLEARED")
 		if blayer == 1:
 			print( "GAME OVER!" )
-	
+
 		for b in shape:
 			if not ( shape[b] == null ):
 				if calcBlockLayerVec( b ) == blayer:
 					if shape[b].getBlockType() == BLOCK_LASER:
 						shape[b].forceActivate()
-					
+
 		# Fire beams.
 		var beamNum = 0
 		for l in range( puzzle.lasers.size() ):
 			if calcBlockLayerVec( puzzle.lasers[l][0] ) == blayer:
 				# Firin mah lazerz!
 				var beam = beamScn.instance()
-			
+
 				beam.set_name( str(blayer) + "_beam_" + str(beamNum) )
 				beamNum += 1
 				beam.set_script( Beam )
-			
+
 				add_child( beam )
 				beam.fire( puzzle.lasers[l][0], puzzle.lasers[l][1] )
-			
+
 				samplePlayer.play( "soundslikewillem_hitting_slinky" )
-		
+

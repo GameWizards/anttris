@@ -1,114 +1,136 @@
 extends Spatial
 
-
-
 var puzzleScn = preload("res://puzzle.scn")
 var cursorScn = preload("res://cursor.scn")
 
 var cursorPos = Vector3(1,6,0)
 var cursor
 var puzzle = puzzleScn.instance()
-var puzzleMan = puzzle.puzzleMan
+
 var gridMan
-var selectedBlock = null
+var prevBlock = null
 
-var gui = {
-	add=Button.new(),
-	rm=Button.new(),
-	save_pzl=Button.new(),
-	load_pzl=Button.new()
-}
-var gui_text = {
-	add="Add Block",
-	rm="Remove Block",
-	save_pzl="Save",
-	load_pzl="Load"
-}
+var fileDialog = FileDialog.new()
+var gui = [
+	["status", Label.new()], # plz keep me as first element, referenced as gui[0] later
+	["save_pzl", Button.new()],
+	["load_pzl", Button.new()],
+	["remove_layer", Button.new()],
+	["random_layer", Button.new()],
+	# THESE SHOULD BE Options instead of left, label, right
+	["class_toggle", {
+		left=Button.new(),
+		right=Button.new(),
+		label=Label.new(),
+		values=["LZR", "WILD", "PAIR", "GOAL"],
+		value="PAIR"
+	}],
+	["color_toggle", {
+		left=Button.new(),
+		right=Button.new(),
+		label=Label.new(),
+		values=preload("res://scripts/PuzzleManager.gd").blockColors,
+		value="Red"
+	}],
+	["action_toggle", {
+		left=Button.new(),
+		right=Button.new(),
+		label=Label.new(),
+		values=["Add", "Remove", "Replace"],
+		value="Add"
+	}],
+]
 
+func shouldAddNeighbor():
+	return false
 
-func cursor_move(dir):
-	var tween = Tween.new()
-	var N = 2
-	add_child(tween)
-	tween.interpolate_method( cursor, "set_global_transform", \
-		cursor.get_global_transform(), cursor.get_global_transform().translated(dir * N), \
-		0.25, Tween.TRANS_EXPO, Tween.EASE_OUT )
-	tween.start()
-	cursorPos += dir
-	selectedBlock = gridMan.get_block(cursorPos / 2)
+func shouldReplaceSelf():
+	return true
 
-func _input(ev):
-	if ev.type == InputEvent.KEY:
-		if ev.is_pressed():
-			if Input.is_action_pressed("ui_up"):
-				cursor_move(Vector3(0,1,0))
-			if Input.is_action_pressed("ui_down"):
-				cursor_move(Vector3(0,-1,0))
-			if Input.is_action_pressed("ui_left"):
-				cursor_move(Vector3(1,0,0))
-			if Input.is_action_pressed("ui_right"):
-				cursor_move(Vector3(-1,0,0))
-			if Input.is_action_pressed("ui_page_up"):
-				cursor_move(Vector3(0,0,1))
-			if Input.is_action_pressed("ui_page_down"):
-				cursor_move(Vector3(0,0,-1))
-			if Input.is_action_pressed("ui_accept"):
-				delete_block()
+func shouldRemoveSelf():
+	return false
 
-func delete_block():
-	if not selectedBlock == null:
-		gridMan.remove_block(selectedBlock)
-	selectedBlock = null
+func newPickledBlock():
+	var b = puzzleMan.PickledBlock.new()\
+		.setName(gridMan.shape.keys().size())\
+	if prevBlock != null:
+		b.setPairName(prevBlock.name)
+		gridMan.get_node(prevBlock.toNode().name).setPairName(b.name)
+		prevBlock = null
+		gui[0][1].set_text("STATUS: ERROR, ADD PAIR")
+	else:
+		prevBlock = b
+		gui[0][1].set_text("STATUS: NOMINAL")
+	return b
 
-func cursor_action():
-	if not selectedBlock == null:
-		print("CHILDREN:",gridMan.get_child_count())
-		print("CHILDREN:",gridMan.get_child_count())
-		delete_block()
-		selectedBlock = null
+func updateToggle(togg, increase):
+	if increase:
+		var next_ix = togg.values.find(togg.value) + 1
+		if (next_ix >= togg.values.size()):
+			next_ix = 0
+		togg.value = togg.values[next_ix]
+	else:
+		var next_ix = togg.values.find(togg.value) - 1
+		if (next_ix < 0):
+			next_ix = togg.values.size() - 1
+		togg.value =  togg.values[next_ix]
+	togg.label.set_text(togg.value)
 
-func add_block():
-	if gridMan.get_block(cursorPos) != null:
-		return
+func puzzleSave(loadInstead=false):
+	fileDialog.popup_centered()
 
-	var pickled = preload("PuzzleManager.gd").PickledBlock.new()
-	pickled.blockPos = cursorPos * 2
-	pickled.name = 300
-	
-	pickled.setBlockClass( preload("PuzzleManager.gd").BLOCK_PAIR) \
-					.setTextureName("Red")
-				
-	var n = pickled.toNode()
-
-	gridMan.add_block(n)
-	print(n.name, gridMan.get_node(n.name))
-	gridMan.print_tree()
-	gridMan.get_node(n.name) \
-			.set_translation(pickled.blockPos)
 
 
 func _ready():
-	gridMan = puzzle.get_node("GridView/GridMan")
-	cursor = cursorScn.instance()
+	gridMan = pMan.get_node("GridView/GridMan")
 	puzzle.mainPuzzle = false
-	puzzle.time.on = false
+	puzzle.time.on = false;
+	puzzle.time.val = ''
 	puzzle.set_as_toplevel(true)
 
-	var pos = Vector2(10, 10)
-	for k in gui.keys():
-		pos.y += 45
-		gui[k].set_theme(preload("res://themes/MainTheme.thm"))
-		gui[k].set_text(gui_text[k])
-		gui[k].set_pos(pos)
-		add_child(gui[k]);
-	gui.add.connect("pressed", self, "add_block")
-	gui.rm.connect("pressed", self, "delete_block")
-	
-	gridMan.add_child(cursor)
-	
-	add_child(puzzle)
-	cursor.set_owner(puzzle)
+	add_child(pMan)
+	puzzleMan = puzzle.puzzleMan
 
 	set_process_input(true)
+
+	fileDialog.set_title("Select Puzzle Filename")
+	fileDialog.set_access(FileDialog.ACCESS_USERDATA)
+	fileDialog.set_theme(preload("res://themes/MainTheme.thm"))
+	add_child(fileDialog)
+	var y = 0
+	for control in gui:
+		y += 45
+		if control[0].rfind('_toggle') > 0:
+			var togg = control[1]
+			for cont in togg.keys():
+				if not cont.begins_with('value'):
+					var e = togg[cont]
+					e.set_pos(Vector2(10, y))
+					e.set_theme(preload("res://themes/MainTheme.thm"))
+					add_child(e)
+
+			togg.left.set_text("<")
+			togg.left.connect('pressed', self, 'updateToggle', [togg, false])
+
+			togg.label.set_pos(Vector2(90, y + 4))
+			togg.label.set_text(togg.value)
+
+			togg.right.set_pos(Vector2(55, y))
+			togg.right.set_text(">")
+			togg.right.connect('pressed', self, 'updateToggle', [togg, true])
+
+		else:
+			var e = control[1]
+			e.set_pos(Vector2(10, y))
+			e.set_theme(load('res://themes/MainTheme.thm'))
+			if e extends Button:
+				e.set_text(control[0])
+			if control[0] == 'save_pzl' :
+				e.connect('pressed', self, 'puzzleSave')
+			if control[0] == 'load_pzl' :
+				e.connect('pressed', self, 'puzzleSave', [true])
+			if control[0] == 'status':
+				control[1].set_text('STATUS: NOMINAL')
+			add_child(e)
 
 
