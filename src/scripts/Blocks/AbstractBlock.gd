@@ -1,17 +1,22 @@
+
 extends RigidBody
 
+var name_int
 var name
 var pairName
 var selected = false
 var blockPos
 var blockLayer
 var blockType
-const far_away_corner = Vector3(80, 80, 80)
+const far_away_corner = Vector3(110, 110, 110)
+
+var editor
 
 static func nameToNodeName(n):
 	return "block" + str(n)
 
 func setName(n):
+	name_int = n
 	name = nameToNodeName(n)
 	set_name(nameToNodeName(n))
 	return self
@@ -26,11 +31,11 @@ func setBlockLayer(n):
 
 func getBlockLayer():
 	return blockLayer
-	
+
 func setBlockType( blockT ):
 	blockType = blockT
 	return self
-	
+
 func getBlockType():
 	return blockType
 
@@ -42,19 +47,28 @@ func forceClick():
 	activate()
 	get_parent().clickBlock( name )
 
+func addNeighbor(editor, click_normal):
+	var t = get_parent().get_parent().get_transform().inverse()
+	var b = editor.newPickledBlock().setBlockPos(blockPos + t * click_normal)
+	get_parent().add_block(b.toNode())
+
+
 # catch clicks/taps
 func _input_event( camera, ev, click_pos, click_normal, shape_idx ):
 	if ((ev.type==InputEvent.MOUSE_BUTTON and ev.button_index==BUTTON_LEFT)
 	or (ev.type==InputEvent.SCREEN_TOUCH)):
 		if (get_parent().get_parent().active and ev.is_pressed()):
-			forceClick()
+			if editor != null and editor.shouldAddNeighbor():
+				addNeighbor(editor, click_normal)
+			else:
+				forceClick()
 
 # returns this block's pairNode or null
 func pairActivate():
 	selected = true
 
 	# is my pair Nil?
-	if pairName == null or get_parent() == null or not get_parent().has_node(str(pairName)):
+	if pairName == null or get_parent() == null or not get_parent().has_node(pairName):
 		scaleTweenNode(0.9, 0.2, Tween.TRANS_EXPO).start()
 		return null
 
@@ -88,6 +102,5 @@ func remove_with_pop(node, key):
 	get_parent().remove_block(self)
 
 func _ready():
+	editor = get_tree().get_root().get_node("Editor")
 	set_ray_pickable(true)
-	#var img;
-	#img.load("res://textures/Block_" + textureName + ".png")
