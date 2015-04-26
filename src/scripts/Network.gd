@@ -1,3 +1,4 @@
+# Core networking
 
 extends Node
 
@@ -58,8 +59,6 @@ func host(pt):
 		print("Failed to start server on port " + str(pt));
 
 func _process(delta):
-	#print("Spam")
-	#self.omg()
 	if (isHost):
 		#server processing stuff
 		#use isNetwork to determine if we're still listening
@@ -149,7 +148,7 @@ func ProcessServerData(dataArray):
 	#have an array of data. First element should be identifying int
 	var ID = dataArray[0]
 	print(ID)
-	#no swithc statement. I'm crying right now while i type this. My fingers are bleeding
+	#no switch statement. I'm crying right now while i type this. My fingers are bleeding
 	if ID == REMOTE_START:
 		#do start something or something whut
 		print("remote_stuff")
@@ -215,5 +214,4 @@ func sendTransform(translation):
 
 func changeScene(scene):
 	root.get_child( root.get_child_count() - 1 ).queue_free()
-	#root.get_child( 0).queue_free()
 	root.add_child( ResourceLoader.load( scene ).instance() )
