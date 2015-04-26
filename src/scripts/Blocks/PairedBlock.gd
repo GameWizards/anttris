@@ -13,10 +13,7 @@ func setTexture(textureName="Red"):
 	var img = Image()
 	self.textureName = textureName
 
-	# TODO preload
 	var mat = load("res://materials/block_" + textureName + ".mtl")
-
-	# TODO color the texture: mat.set_parameter(FixedMaterial.PARAM_DIFFUSE, Color(0.5, 0.5, 0))
 
 	self.get_node("MeshInstance").set_material_override(mat)
 	return self
