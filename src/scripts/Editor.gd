@@ -1,11 +1,8 @@
 extends Spatial
 
 var puzzleScn = preload("res://puzzle.scn")
-var cursorScn = preload("res://cursor.scn")
-
-var cursorPos = Vector3(1,6,0)
-var cursor
-var puzzle = puzzleScn.instance()
+var puzzle
+var puzzleMan
 
 var gridMan
 var prevBlock = null
@@ -82,13 +79,14 @@ func puzzleSave(loadInstead=false):
 
 
 func _ready():
-	gridMan = pMan.get_node("GridView/GridMan")
+	puzzle = puzzleScn.instance()
+	gridMan = puzzle.get_node("GridView/GridMan")
 	puzzle.mainPuzzle = false
 	puzzle.time.on = false;
 	puzzle.time.val = ''
 	puzzle.set_as_toplevel(true)
 
-	add_child(pMan)
+	add_child(puzzle)
 	puzzleMan = puzzle.puzzleMan
 
 	set_process_input(true)
