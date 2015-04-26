@@ -301,12 +301,12 @@ class PickledBlock:
 		n.set_script(blockScripts[blockClass])
 
 		n.set_translation(blockPos * 2)
+		n.blockPos = blockPos
+
+		n.setName(str(name)).setTexture()
 
 		n.setBlockType( blockClass )
 
-		# configure block node
-		n.setName(str(name)).setTexture()
-		n.blockPos = blockPos
 		if blockClass == BLOCK_PAIR:
 			n.setPairName(pairName).setTexture(textureName)
 
@@ -316,6 +316,24 @@ class PickledBlock:
 		if blockClass == BLOCK_LASER:
 			n.setPairName(pairName).setExtent(laserExtent)
 		return n
+
+	# test me plz
+	func fromNode(n):
+		blockPos = n.blockPos
+
+		name = n.name_int
+
+		blockClass = n.getBlockType()
+
+		if blockClass == BLOCK_PAIR:
+			pairName = n.pairName
+			textureName = n.textureName
+
+		if blockClass == BLOCK_WILD:
+			textureName = n.textureName
+
+		if blockClass == BLOCK_LASER:
+			pairName = n.pairName
 
 	# Convert this object to a dictionary.
 	func toDict():
