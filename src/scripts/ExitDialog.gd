@@ -7,6 +7,9 @@ var Dialog = ConfirmationDialog.new()
 func _on_ok_button_pressed():
 	goto_scene("res://menus.scn")
 
+func show_dialog():
+	Dialog.show()
+
 func _ready():
 	Dialog.set_script(self)
 	Dialog.set_text("Really quit? All unsaved progress will be lost!")
