@@ -46,7 +46,9 @@ func _input(ev):
 			distance.val += zoom_rate * get_process_delta_time()
    # if a cancel action is input close the application
 	elif (ev.is_action("ui_cancel")):
-		OS.get_main_loop().quit()
+		#OS.get_main_loop().quit()
+		var exit = load("res://scripts/ExitDialog.gd").new()
+		exit.show_dialog() # no bueno
 	else:
 		return
 
