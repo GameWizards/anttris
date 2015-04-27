@@ -50,7 +50,7 @@ func _input(ev):
 		get_tree().set_pause(true)
 		print("caught exit action!")
 		var exit = load("res://scripts/ExitDialog.gd").new()
-		add_child(exit)
+		get_parent().add_child(exit)
 		exit.show_dialog()
 		get_tree().set_pause(false)
 	else:
