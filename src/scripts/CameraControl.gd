@@ -48,7 +48,6 @@ func _input(ev):
 	elif (ev.is_action("ui_cancel")):
 		#OS.get_main_loop().quit()
 		var exit = load("res://scripts/ExitDialog.gd").new()
-		exit.show_dialog() # no bueno
 	else:
 		return
 
