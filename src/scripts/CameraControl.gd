@@ -47,7 +47,9 @@ func _input(ev):
    # if a cancel action is input close the application
 	elif (ev.is_action("ui_cancel")):
 		#OS.get_main_loop().quit()
+		print("caught exit action!")
 		var exit = load("res://scripts/ExitDialog.gd").new()
+		exit.show_dialog()
 	else:
 		return
 
