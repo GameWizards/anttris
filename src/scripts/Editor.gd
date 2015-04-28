@@ -123,7 +123,7 @@ func _ready():
 	get_tree().get_root().add_child(puzzle)
 
 	gridMan = puzzle.get_node("GridView/GridMan")
-	id = gridMan.shape.size()
+	id = gridMan.puzzle.shape.size()
 
 	puzzleMan = puzzle.puzzleMan
 
