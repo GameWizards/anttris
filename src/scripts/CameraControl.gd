@@ -23,18 +23,35 @@ var target_move_rate = 1.0      # the rate the target look at point moves
 # Pause menu GUI item.
 var pauseMenu
 
-
 # called once after node is setup
 func _ready():
 	set_process_input(true)      # process user input events here
 	# Input.set_mouse_mode(2)      # mouse mode captured
-	
+
 	# Setup the pause menu.
 	pauseMenu = preload( "res://dialog.scn" ).instance()
 	get_tree().get_root().add_child( pauseMenu )
 	pauseMenu.hide()
-	pauseMenu.get_ok().connect("pressed", self, "_on_ok_button_pressed")
-	
+
+	pauseMenu.set_pause_mode(PAUSE_MODE_PROCESS)
+	pauseMenu.set_text("PAUSE. QUIT? CANCEL TO RETURN TO GAME.\nSCORE:12101239\nSteps taken:9001")
+
+	pauseMenu.get_ok().connect("pressed", OS.get_main_loop(), "quit")
+	pauseMenu.get_cancel().connect("pressed", pauseMenu, "hide")
+
+	pauseMenu.get_ok().set_text("Quit")
+	pauseMenu.get_cancel().set_text("Return to game")
+
+	pauseMenu.get_ok().set_pause_mode(PAUSE_MODE_PROCESS)
+	pauseMenu.get_cancel().set_pause_mode(PAUSE_MODE_PROCESS)
+
+	# pause when shown
+	pauseMenu.connect("about_to_show", get_tree(), "set_pause", [true])
+	# unpause when gone
+	pauseMenu.connect("popup_hide", get_tree(), "set_pause", [false])
+	pauseMenu.connect("hide", get_tree(), "set_pause", [false])
+
+
 	# Add the puzzle.
 	get_tree().get_root().add_child( preload( "res://puzzle.scn" ).instance() )
 	print( get_parent() )
@@ -59,11 +76,8 @@ func _input(ev):
    # if a cancel action is input close the application
 	elif (ev.is_action("ui_cancel")):
 		#OS.get_main_loop().quit()
-		pauseMenu.show()
+		pauseMenu.popup_centered()
 	else:
 		return
 
 	recalculate_camera()
-
-func _on_ok_button_pressed():
-	OS.get_main_loop().quit()

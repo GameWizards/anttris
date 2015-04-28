@@ -99,8 +99,6 @@ func getPrevBlockErrors():
 
 
 func showFileDialog(loadInstead=false):
-	get_tree().set_pause(true)
-
 	if loadInstead:
 		fileDialog.connect("confirmed", self, "puzzleLoad")
 		fileDialog.set_mode(FileDialog.MODE_OPEN_FILE)
@@ -162,6 +160,8 @@ func _ready():
 
 	# unpause if user cancels
 	fileDialog.connect("popup_hide", get_tree(), "set_pause", [false])
+	fileDialog.connect("hide", get_tree(), "set_pause", [false])
+	fileDialog.connect("about_to_show", get_tree(), "set_pause", [true])
 	fileDialog.hide()
 	add_child(fileDialog)
 
