@@ -43,9 +43,23 @@ func setSelected(sel):
 	selected = sel
 	return self
 
-func forceClick():
-	activate()
-	get_parent().clickBlock( name )
+func forceClick(click_normal):
+	if editor != null:
+		if editor.shouldAddNeighbor():
+			addNeighbor(editor, click_normal)
+			return
+		if editor.shouldReplaceSelf():
+			addNeighbor(editor, 0 * click_normal)
+		if editor.shouldReplaceSelf() or editor.shouldRemoveSelf():
+			if pairName != null:
+				var pair = get_parent().get_node(pairName)
+				if pair != null:
+					pair.request_remove()
+			request_remove()
+			return
+	else:
+		activate()
+		get_parent().clickBlock( name )
 
 func addNeighbor(editor, click_normal):
 	var t = get_parent().get_parent().get_transform().inverse()
@@ -58,19 +72,7 @@ func _input_event( camera, ev, click_pos, click_normal, shape_idx ):
 	if ((ev.type==InputEvent.MOUSE_BUTTON and ev.button_index==BUTTON_LEFT)
 	or (ev.type==InputEvent.SCREEN_TOUCH)):
 		if (get_parent().get_parent().active and ev.is_pressed()):
-			if editor != null:
-				if editor.shouldAddNeighbor():
-					addNeighbor(editor, click_normal)
-					return
-				if editor.shouldReplaceSelf():
-					addNeighbor(editor, 0 * click_normal)
-					remove_with_pop(self, null)
-					return
-				if editor.shouldRemoveSelf():
-					remove_with_pop(self, null)
-					return
-			else:
-				forceClick()
+			forceClick(click_normal)
 
 # returns this block's pairNode or null
 func pairActivate():
