@@ -31,7 +31,7 @@ func popBlock( pairNode, justFly=false ):
 	tweenNode.connect("tween_complete", self, "request_remove")
 
 	var network = Globals.get("Network")
-	if (not network == null and get_parent().get_parent().active):
+	if (not network == null and get_parent().get_parent().active and network.isNetwork):
 			network.sendBlockUpdate(blockPos)
 
 	tweenNode.start()

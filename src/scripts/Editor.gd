@@ -53,7 +53,7 @@ func newPickledBlock():
 		.setName(gridMan.shape.keys().size()) \
 		.setTextureName(curColor)
 	var pb = prevBlockByColor[curColor]
-		
+
 	if pb != null:
 		b.setPairName(pb.name)
 		gridMan.get_node(pb.toNode().name).setPairName(b.name)
@@ -95,6 +95,7 @@ func changeValue(ix, togg):
 func _ready():
 	for k in blockColors:
 		prevBlockByColor[k] = null
+	get_tree().get_root().add_child( preload( "res://puzzleView.scn" ).instance() )
 
 	puzzle = puzzleScn.instance()
 	gridMan = puzzle.get_node("GridView/GridMan")
