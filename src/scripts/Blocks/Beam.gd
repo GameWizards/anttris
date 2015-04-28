@@ -18,34 +18,34 @@ func fire(start,end):
 	#add_child(tweenNode)
 	tweenNodeScale = Tween.new()
 	add_child(tweenNodeScale)
-	
+
 	set_translation( ( start * 2 + end * 2 ) / 2 )
 
 	var gridMan = get_parent()
 
 	# shrink, expand along one axis
 	# assumes blocks are 1 unit
-	var timeToFade = 0.5
+	var timeToFade = 0.2
 	#end = end + end.normalized()
-	
+
 	# destroy blocks between the two lasers
 	var alongAxis = 0
 	if( end.y != start.y ):
 		alongAxis = 1
 	if( end.z != start.z ):
 		alongAxis = 2
-		
+
 	var initScale = Vector3( 1, 1, 1 )
 	var finalScale = Vector3( 0, 0, 0 )
 	initScale[alongAxis] = abs( start[alongAxis] - end[alongAxis] ) * 2
 	finalScale[alongAxis] = initScale[alongAxis]
-		
+
 	set_scale( initScale )
 
 	tweenNodeScale.interpolate_method( self, "set_scale", \
-		self.get_scale(), Vector3( 0, 0, 0 ), \
+		self.get_scale(), Vector3( 0.01, 0.01, 0.01 ), \
 		timeToFade, Tween.TRANS_BOUNCE, Tween.EASE_OUT )
-		
+
 	var r = 1
 	if end[alongAxis] - start[alongAxis] < 0:
 		r = -1
@@ -57,7 +57,7 @@ func fire(start,end):
 		pt[alongAxis] += r
 		if pn == null:
 			continue
-		var pn_go_away = pn.scaleTweenNode(0, randf() + 0.5, Tween.TRANS_EXPO)
+		var pn_go_away = pn.scaleTweenNode(0.001, randf() * 0.2 + 0.2, Tween.TRANS_EXPO)
 		pn_go_away.start()
 		pn_go_away.connect("tween_complete", pn, "remove_with_pop")
 

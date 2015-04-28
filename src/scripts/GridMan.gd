@@ -14,6 +14,7 @@ var selectedBlocks = []
 # Puzzle vars.
 var puzzle
 var puzzleLoaded = false
+var blockNodes = {}
 
 # Beam stuff.
 const beamScn = preload( "res://blocks/block.scn" )
@@ -27,6 +28,7 @@ func addPickledBlock(block):
 
 	# TODO  any special treatment for the wild blocks?
 	# TODO  keep track of puzzle.lasers ? How to?
+	blockNodes[block.blockPos] = b
 
 	if puzzleLoaded:
 		# keep pickled block
@@ -37,6 +39,7 @@ func addPickledBlock(block):
 		if b.getBlockType() == 2:
 			while puzzle.pairCount.size() <= layer:
 				puzzle.pairCount.append(0)
+			puzzle.puzzleLayers = puzzle.pairCount.size() - 1
 			puzzle.pairCount[layer] += 0.5
 
 
@@ -44,15 +47,18 @@ func addPickledBlock(block):
 	return b
 
 func get_block(pos):
-	if puzzle.shape.has(pos):
-		return puzzle.shape[pos]
+	if blockNodes.has(pos):
+		return blockNodes[pos]
 	else:
 		return null
 
 # unused key argument needed for the tween_complete signal
 func remove_block(block, key=null):
-	var block_node = puzzle.shape[block_node.blockPos]
+	var block_node = blockNodes[block.blockPos]
+
 	puzzle.shape[block_node.blockPos] = null
+	blockNodes[block_node.blockPos] = null
+
 	if block_node == null:
 		return
 
@@ -97,7 +103,7 @@ func addSelected(bl):
 
 # Used for the multiplayer mode to force click a block on their side.
 func forceClickBlock( pos ):
-	puzzle.shape[pos].forceClick()
+	blockNodes[pos].forceClick()
 
 func clickBlock( name ):
 	#now check if that was the second block we picked. If it was, we want to
@@ -134,8 +140,8 @@ func popPair( pos ):
 		for b in puzzle.shape:
 			if not ( puzzle.shape[b] == null ):
 				if calcBlockLayerVec( b ) == blayer:
-					if puzzle.shape[b].getBlockType() == BLOCK_LASER:
-						puzzle.shape[b].forceActivate()
+					if blockNodes[b].getBlockType() == BLOCK_LASER:
+						blockNodes[b].forceActivate()
 
 		# Fire beams.
 		var beamNum = 0

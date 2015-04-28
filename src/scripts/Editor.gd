@@ -73,8 +73,15 @@ func addBlock(pos):
 	var pb = prevBlocks[layer][curColor]
 
 	if pb != null:
+		var prevName = pb.toNode().name
+		print("PAIR ", b.name, " ", pb.name, " IS ", prevName)
+		var pbNode = gridMan.get_node(prevName)
+
 		b.setPairName(pb.name)
-		gridMan.get_node(pb.toNode().name).setPairName(b.name)
+		pb.setPairName(b.name)
+		# readd prev
+		gridMan.remove_block(pb)
+		gridMan.addPickledBlock(pb)
 		prevBlocks[layer][curColor] = null
 	else:
 		# TODO SUPPORT GLYPHS HERE, SET PAIRWISE GLYPH

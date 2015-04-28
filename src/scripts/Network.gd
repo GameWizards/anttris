@@ -40,13 +40,13 @@ func connectTo(ip, pt):
 	stream = StreamPeerTCP.new()
 	connection.set_stream_peer(stream)
 	stream.connect(ip, pt);
-	
+
 	if stream.get_status() == stream.STATUS_CONNECTED or stream.get_status() == stream.STATUS_CONNECTING:
 		print("Connecting to " + ip + ":" + str(port));
 		proxy.set_process(true)
 		#leave is_network as false to indicate we're still waiting for connection
-	
-	
+
+
 func host(pt):
 	server = TCP_Server.new()
 	#connection = PacketPeerStream.new()
@@ -70,8 +70,10 @@ func _process(delta):
 				print("Connecting with player...")
 				isNetwork = true
 				server.stop()
-				changeScene("res://puzzle.scn")
-				remotePuzzle = root.get_node("Spatial")
+
+				gotoPuzzle()
+
+				remotePuzzle = root.get_node("Puzzle")
 				#MAKE CALL TO PUZZLE SELECTER
 		else: #not listening anymore, have a client
 			#do quick check to make sure we're still
@@ -88,7 +90,7 @@ func _process(delta):
 				for i in range(connection.get_available_packet_count()):
 					var dataArray = connection.get_var()
 					ProcessServerData(dataArray)
-					
+
 	else:
 		#client processing stuff
 		if !isNetwork:
@@ -96,8 +98,10 @@ func _process(delta):
 			if stream.get_status() == stream.STATUS_CONNECTED:
 				print("Connection established!")
 				isNetwork = true
-				changeScene("res://puzzle.scn")
-				remotePuzzle = root.get_node("Spatial")
+
+				gotoPuzzle()
+
+				remotePuzzle = root.get_node("Puzzle")
 				return
 			if stream.get_status() == stream.STATUS_NONE or stream.get_status() == stream.STATUS_ERROR:
 				print("Error establishing connection!")
@@ -132,16 +136,16 @@ func disconnect():
 		#connected to server already
 		stream.disconnect()
 		print("Disconnecting from server...")
-	
+
 	#no matter where we wre before disconnect, set network to false and return to beginning screen!
 	isNetwork = false;
 	isHost = false;
 	isClient = false;
-	
-	proxy.set_process(false)
-	
-	changeScene("res://menus.scn")
 
+	proxy.set_process(false)
+
+
+	gotoMenu()
 
 
 func ProcessServerData(dataArray):
@@ -173,7 +177,7 @@ func ProcessServerData(dataArray):
 	elif ID == REMOTE_BLOCK_UPDATE:
 		#sent an updated block pair
 		print("block update")
-		var puzzle = root.get_node( "Spatial" )
+		var puzzle = root.get_node( "Puzzle" )
 		var pos = dataArray[1]
 		puzzle.otherPuzzle.get_node("GridView/GridMan").forceClickBlock(pos)
 
@@ -210,6 +214,10 @@ func sendTransform(translation):
 	print("it got here")
 
 
-func changeScene(scene):
+func gotoMenu():
 	root.get_child( root.get_child_count() - 1 ).queue_free()
-	root.add_child( ResourceLoader.load( scene ).instance() )
+	root.add_child( load("res://menus.scn") )
+
+func gotoPuzzle():
+	var guiMan = preload("GUIManager.gd").new()
+	guiMan.gotoPuzzleScene(root, true) # network = true
