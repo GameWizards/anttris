@@ -76,7 +76,8 @@ func _ready():
 	# make a new puzzle, embed using Viewport
 	if mainPuzzle:
 		var p = PuzzleScn.instance()
-		p.remove_and_delete_child(p.get_node("Lights"))
+		#p.remove_and_delete_child(p.get_node("Lights"))
+		#.remove_and_delete_child(p.get_node("Camera"))
 		p.get_node("GridView").active = false
 		p.mainPuzzle = false
 		p.set_scale(Vector3(0.5, 0.5, 0.5))
@@ -88,7 +89,7 @@ func _ready():
 		v.set_world(p.get_world())
 		v.set_rect(Rect2(0, 0, 100, 100))
 		v.set_physics_object_picking(false)
-		get_node("Camera").add_child(p)
+		get_tree().get_root().get_node( "Spatial" ).get_node( "Camera" ).add_child(p)
 		v.add_child(p)
 		add_child(c)
 		c.add_child(v)

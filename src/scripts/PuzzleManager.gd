@@ -2,6 +2,7 @@ const DIFF_EASY		= 0
 const DIFF_MEDIUM	= 1
 const DIFF_HARD		= 2
 
+# this order is important
 const BLOCK_LASER	= 0
 const BLOCK_WILD	= 1
 const BLOCK_PAIR	= 2
@@ -25,10 +26,10 @@ const blockScripts = [ preload( "Blocks/LaserBlock.gd" )
 var shape = {}
 
 # Calculates the layer that a block is on.
-func calcBlockLayer( x, y, z ):
+static func calcBlockLayer( x, y, z ):
 	return max( max( abs( x ), abs( y ) ), abs( z ) )
 # THIS IS EVERYWHERE, ANY BETTER WAY TO HAVE FUNCTIONS BETWEEN SCRIPTS?
-func calcBlockLayerVec( pos ):
+static func calcBlockLayerVec( pos ):
 	return max( max( abs( pos.x ), abs( pos.y ) ), abs( pos.z ) )
 
 # Stores a puzzle in a convenient class.

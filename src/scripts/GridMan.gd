@@ -24,7 +24,10 @@ const Beam = preload("res://scripts/Blocks/Beam.gd")
 # sounds
 var samplePlayer = SamplePlayer.new()
 
-func add_block(b):
+func addPickledBlock(block):
+	# TODO add to puzzle
+	var b = block.toNode()
+
 	print ("ADDED")
 	shape[b.blockPos] = b
 
@@ -51,8 +54,7 @@ func remove_block(block_node, key=null):
 	if block_node == null:
 		return
 	print ("REMOVED")
-	if block_node.get_script() == preload("Blocks/PairedBlock.gd"):
-		print("PAIRED RM")
+
 	shape[block_node.blockPos] = null
 	for child in block_node.get_children():
 		block_node.remove_and_delete_child(child)
@@ -68,7 +70,8 @@ func set_puzzle(puzz):
 	puzzle = puzz
 
 	# Set the camera range to be relative to the layer count.
-	var cam = get_parent().get_parent().get_node( "Camera" )
+	var cam = get_tree().get_root().get_node( "Spatial" ).get_node( "Camera" )
+	print( cam )
 	var totalSize = ( puzzle.puzzleLayers * 2 + 1 )
 	cam.distance.val = 4.5 * totalSize
 	cam.distance.min_ = 3 * totalSize
@@ -80,7 +83,7 @@ func set_puzzle(puzz):
 	puzzle.pairCount = []
 	for block in puzzle.blocks:
 		# Create a block node, add it to the tree
-		add_block(block.toNode())
+		addPickledBlock(block)
 
 # Clears any selected blocks. WE SHOULD FIX THIS, THERE CAN ONLY BE ONE BLOCK SELECTED AT ANY ONE TIME, NO NEED FOR AN ARRAY!
 func clearSelection():
