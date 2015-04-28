@@ -128,6 +128,10 @@ func popPair( pos ):
 		print("LAYER CLEARED")
 		if blayer == 1:
 			print( "GAME OVER!" )
+			var pauseMenu = get_tree().get_root().get_node( "Spatial" ).get_node( "Camera" ).pauseMenu
+			pauseMenu.set_text("GAME OVER\nSCORE:1,000,000")
+			# TODO set timeout!!!
+			pauseMenu.popup_centered()
 
 		for b in shape:
 			if not ( shape[b] == null ):
