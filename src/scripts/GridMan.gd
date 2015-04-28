@@ -66,7 +66,8 @@ func set_puzzle(puzz):
 	samplePlayer.set_sample_library(ResourceLoader.load("new_samplelibrary.xml"))
 
 	# Set the camera range to be relative to the layer count.
-	var cam = get_parent().get_parent().get_node( "Camera" )
+	var cam = get_tree().get_root().get_node( "Spatial" ).get_node( "Camera" )
+	print( cam )
 	var totalSize = ( puzzle.puzzleLayers * 2 + 1 )
 	cam.distance.val = 4.5 * totalSize
 	cam.distance.min_ = 3 * totalSize

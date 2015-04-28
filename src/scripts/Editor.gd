@@ -92,6 +92,8 @@ func puzzleLoad():
 	get_tree().set_pause(false)
 
 func _ready():
+	get_tree().get_root().add_child( preload( "res://puzzleView.scn" ).instance() )
+
 	puzzle = puzzleScn.instance()
 	gridMan = puzzle.get_node("GridView/GridMan")
 	puzzle.mainPuzzle = false
