@@ -7,9 +7,6 @@ const BLOCK_PAIR	= 2
 const BLOCK_GOAL	= 3
 const BLOCK_BLOCK   = 4
 
-# Shape dictionary to access blocks quickly by position.
-var puzzle.shape = {}
-
 # Block selection handling.
 var offClick = false
 var selectedBlocks = []
@@ -28,14 +25,12 @@ var samplePlayer = SamplePlayer.new()
 func addPickledBlock(block):
 	var b = block.toNode()
 
-	puzzle.shape[b.blockPos] = b
-
 	# TODO  any special treatment for the wild blocks?
 	# TODO  keep track of puzzle.lasers ? How to?
 
 	if puzzleLoaded:
 		# keep pickled block
-		puzzle.blocks.append(block)
+		puzzle.shape[block.blockPos] = block
 
 		# keep track of puzzle.pairCounts
 		var layer = calcBlockLayerVec(b.blockPos)
@@ -55,16 +50,12 @@ func get_block(pos):
 		return null
 
 # unused key argument needed for the tween_complete signal
-func remove_block(block_node, key=null):
+func remove_block(block, key=null):
+	var block_node = puzzle.shape[block_node.blockPos]
+	puzzle.shape[block_node.blockPos] = null
 	if block_node == null:
 		return
 
-	# need better way
-	for i in range(puzzle.blocks.size()):
-		if block_node.blockPos == puzzle.blocks[i].blockPos:
-			puzzle.blocks.remove(i)
-
-	puzzle.shape[block_node.blockPos] = null
 	for child in block_node.get_children():
 		block_node.remove_and_delete_child(child)
 	remove_and_delete_child(block_node)
@@ -77,8 +68,9 @@ func set_puzzle(puzz):
 		return
 
 	# delete all current nodes
-	for pos in puzzle.shape:
-		remove_block(puzzle.shape[pos])
+	if puzzle != null:
+		for pos in puzzle.shape:
+			remove_block(puzzle.shape[pos])
 	puzzleLoaded = false
 
 	# Store the puzzle.
@@ -86,9 +78,9 @@ func set_puzzle(puzz):
 
 		# # I can do my own counting!
 	# needed for adding blocks in the editor
-	for block in puzzle.blocks:
+	for k in puzzle.shape:
 		# Create a block node, add it to the tree
-		addPickledBlock(block)
+		addPickledBlock(puzzle.shape[k])
 	puzzleLoaded = true
 
 # Clears any selected blocks. WE SHOULD FIX THIS, THERE CAN ONLY BE ONE BLOCK SELECTED AT ANY ONE TIME, NO NEED FOR AN ARRAY!
