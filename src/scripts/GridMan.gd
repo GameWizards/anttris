@@ -51,8 +51,7 @@ func remove_block(block_node, key=null):
 	if block_node == null:
 		return
 	print ("REMOVED")
-	if block_node.get_script() == preload("Blocks/PairedBlock.gd"):
-		print("PAIRED RM")
+
 	shape[block_node.blockPos] = null
 	for child in block_node.get_children():
 		block_node.remove_and_delete_child(child)
