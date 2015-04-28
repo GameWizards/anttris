@@ -5,7 +5,7 @@ var puzzle
 var puzzleMan
 
 var gridMan
-var prevBlockByColor = {} # keeps track of prevous color for pairs
+var prevBlock = [] # keeps track of prevous color for pairs by layer
 var blockColors = preload("res://scripts/PuzzleManager.gd").blockColors
 var id
 
@@ -49,28 +49,54 @@ func shouldRemoveSelf():
 	return gui[action_ix][1].value == "Remove"
 
 # called in AbstractBlock to add a new block
-func newPickledBlock():
+func addBlock(pos):
 	var curColor = gui[color_ix][1].value
 	var b = puzzleMan.PickledBlock.new() \
 		.setName(id) \
-		.setTextureName(curColor)
-	var pb = prevBlockByColor[curColor]
+		.setTextureName(curColor) \
+		.setBlockPos(pos)
+	var layer = puzzleMan.calcBlockLayerVec(pos)
 	id += 1
+
+	# expand prevblocks index
+	while prevBlock.size() <= layer:
+		var d = {}
+		for k in blockColors:
+			d[k] = null
+		prevBlock.append(d)
+
+	var pb = prevBlock[layer][curColor]
 
 	if pb != null:
 		b.setPairName(pb.name)
 		gridMan.get_node(pb.toNode().name).setPairName(b.name)
-		prevBlockByColor[curColor] = null
-		gui[0][1].set_text("STATUS: NOMINAL")
+		prevBlock[layer][curColor] = null
 	else:
 		# TODO SUPPORT GLYPHS HERE, SET PAIRWISE GLYPH
-		prevBlockByColor[curColor] = b
-		var missing = ""
-		for k in prevBlockByColor.keys():
-			if prevBlockByColor[k] != null:
-				missing += k.to_upper() + " " # bad way of constructing strings
-		gui[0][1].set_text("STATUS: ERROR, ADD PAIR " + missing)
+		prevBlock[layer][curColor] = b
+
+	gui[0][1].set_text(getPrevBlockErrors())
+	gridMan.addPickledBlock(b)
 	return b
+
+func getPrevBlockErrors():
+	# hahaha, so bad
+	var missing = "STATUS: "
+	# check every layer
+	for l in range(prevBlock.size()):
+		# check every color
+		for k in prevBlock[l].keys():
+			var missed = false
+			if prevBlock[l][k] != null:
+				# one message about the current layer
+				if not missed:
+					missing += " L" + str(l) + " "
+					missed = true
+				missing += k.to_upper() + " " # bad way of constructing strings
+	if missing == "":
+		missing += "NOMINAL"
+	return missing
+
 
 func showFileDialog(loadInstead=false):
 	get_tree().set_pause(true)
@@ -96,14 +122,11 @@ func changeValue(ix, togg):
 	togg.value = togg.values[ix]
 
 func _ready():
-	for k in blockColors:
-		prevBlockByColor[k] = null
+	# lights!
+	get_tree().get_root().add_child( preload( "res://puzzleView.scn" ).instance() )
 
 	puzzle = puzzleScn.instance()
-	gridMan = puzzle.get_node("GridView/GridMan")
-	id = gridMan.shape.size()
 	puzzle.mainPuzzle = false
-	get_tree().get_root().add_child( preload( "res://puzzleView.scn" ).instance() )
 
 	# hide and disable timer
 	puzzle.time.on = false;
@@ -112,6 +135,10 @@ func _ready():
 	puzzle.set_as_toplevel(true)
 
 	add_child(puzzle)
+
+	gridMan = puzzle.get_node("GridView/GridMan")
+	id = gridMan.shape.size()
+
 
 	puzzleMan = puzzle.puzzleMan
 
