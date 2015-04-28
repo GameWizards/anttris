@@ -50,7 +50,9 @@ func _ready():
 	
 	#set up network stuffs
 	add_child(load("res://networkProxy.scn").instance())
-	Globals.get("Network").proxy.set_process(Globals.get("Network").isClient or Globals.get("Network").isHost)
+	var Network = Globals.get("Network")
+	if Network != null:
+		Network.proxy.set_process(Network.isClient or Network.isHost)
 
 	print("Generated ", puzzle.blocks.size(), " blocks." )
 
@@ -70,9 +72,6 @@ func _ready():
 	var gridMan = get_node( "GridView/GridMan" )
 	gridMan.shape = puzzleMan.shape
 	gridMan.set_puzzle(puzzle)
-	for block in puzzle.blocks:
-		# Create a block node, add it to the tree
-		gridMan.add_block(block.toNode())
 
 	# make a new puzzle, embed using Viewport
 	if mainPuzzle:
