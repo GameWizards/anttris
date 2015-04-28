@@ -8,7 +8,7 @@ const BLOCK_GOAL	= 3
 const BLOCK_BLOCK   = 4
 
 # Shape dictionary to access blocks quickly by position.
-var shape = {}
+var puzzle.shape = {}
 
 # Block selection handling.
 var offClick = false
@@ -26,11 +26,9 @@ const Beam = preload("res://scripts/Blocks/Beam.gd")
 var samplePlayer = SamplePlayer.new()
 
 func addPickledBlock(block):
-	# TODO add to puzzle
 	var b = block.toNode()
 
-	print ("ADDED")
-	shape[b.blockPos] = b
+	puzzle.shape[b.blockPos] = b
 
 	# TODO  any special treatment for the wild blocks?
 	# TODO  keep track of puzzle.lasers ? How to?
@@ -51,8 +49,8 @@ func addPickledBlock(block):
 	return b
 
 func get_block(pos):
-	if shape.has(pos):
-		return shape[pos]
+	if puzzle.shape.has(pos):
+		return puzzle.shape[pos]
 	else:
 		return null
 
@@ -60,31 +58,31 @@ func get_block(pos):
 func remove_block(block_node, key=null):
 	if block_node == null:
 		return
-	print ("REMOVED")
 
-	shape[block_node.blockPos] = null
+	# need better way
+	for i in range(puzzle.blocks.size()):
+		if block_node.blockPos == puzzle.blocks[i].blockPos:
+			puzzle.blocks.remove(i)
+
+	puzzle.shape[block_node.blockPos] = null
 	for child in block_node.get_children():
 		block_node.remove_and_delete_child(child)
 	remove_and_delete_child(block_node)
 
 # Sets the puzzle for this GridMan.
 func set_puzzle(puzz):
+	# verify puzzle
+	if puzz == null:
+		print("INVALID PUZZLE")
+		return
+
 	# delete all current nodes
-	for pos in shape:
-		remove_block(shape[pos])
+	for pos in puzzle.shape:
+		remove_block(puzzle.shape[pos])
 	puzzleLoaded = false
 
 	# Store the puzzle.
 	puzzle = puzz
-
-	# Set the camera range to be relative to the layer count.
-	var cam = get_tree().get_root().get_node( "Spatial" ).get_node( "Camera" )
-	print( cam )
-	var totalSize = ( puzzle.puzzleLayers * 2 + 1 )
-	cam.distance.val = 4.5 * totalSize
-	cam.distance.min_ = 3 * totalSize
-	cam.distance.max_ = 10 * totalSize
-	cam.recalculate_camera()
 
 		# # I can do my own counting!
 	# needed for adding blocks in the editor
@@ -107,7 +105,7 @@ func addSelected(bl):
 
 # Used for the multiplayer mode to force click a block on their side.
 func forceClickBlock( pos ):
-	shape[pos].forceClick()
+	puzzle.shape[pos].forceClick()
 
 func clickBlock( name ):
 	#now check if that was the second block we picked. If it was, we want to
@@ -141,11 +139,11 @@ func popPair( pos ):
 			# TODO set timeout!!!
 			pauseMenu.popup_centered()
 
-		for b in shape:
-			if not ( shape[b] == null ):
+		for b in puzzle.shape:
+			if not ( puzzle.shape[b] == null ):
 				if calcBlockLayerVec( b ) == blayer:
-					if shape[b].getBlockType() == BLOCK_LASER:
-						shape[b].forceActivate()
+					if puzzle.shape[b].getBlockType() == BLOCK_LASER:
+						puzzle.shape[b].forceActivate()
 
 		# Fire beams.
 		var beamNum = 0
@@ -169,4 +167,18 @@ func _init():
 	samplePlayer.set_voice_count(10)
 	samplePlayer.set_sample_library(ResourceLoader.load("new_samplelibrary.xml"))
 	print("GridMan initialized")
+
+func _ready():
+	setupCam()
+
+func setupCam():
+	var cam = get_tree().get_root().get_node( "Spatial/Camera" )
+	if cam == null or puzzle == null:
+		return
+	var totalSize = ( puzzle.puzzleLayers * 2 + 1 )
+	cam.distance.val = 4.5 * totalSize
+	cam.distance.min_ = 3 * totalSize
+	cam.distance.max_ = 10 * totalSize
+	cam.recalculate_camera()
+
 
