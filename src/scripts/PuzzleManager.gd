@@ -2,6 +2,7 @@ const DIFF_EASY		= 0
 const DIFF_MEDIUM	= 1
 const DIFF_HARD		= 2
 
+# this order is important
 const BLOCK_LASER	= 0
 const BLOCK_WILD	= 1
 const BLOCK_PAIR	= 2
