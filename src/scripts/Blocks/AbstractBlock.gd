@@ -70,6 +70,10 @@ func _input_event( camera, ev, click_pos, click_normal, shape_idx ):
 					remove_with_pop(self, null)
 					return
 			else:
+				#Block clicked
+				#if networking is on, send the click note to other puzzle
+				if (Globals.get("Network").isNetwork):
+					Globals.get("Network").sendBlockUpdate(blockPos)
 				forceClick()
 
 # returns this block's pairNode or null
