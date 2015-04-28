@@ -5,7 +5,8 @@ var puzzle
 var puzzleMan
 
 var gridMan
-var prevBlock = null
+var prevBlockByColor = {} # keeps track of prevous color for pairs
+var blockColors = preload("res://scripts/PuzzleManager.gd").blockColors
 
 var fileDialog = load("res://fileDialog.scn").instance()
 var gui = [
@@ -22,8 +23,8 @@ var gui = [
 	}],
 	["color_toggle", {
 		optionButt=OptionButton.new(),
-		values=preload("res://scripts/PuzzleManager.gd").blockColors,
-		value="Red"
+		values=blockColors,
+		value="Blue"
 	}],
 	["action_toggle", {
 		optionButt=OptionButton.new(),
@@ -36,6 +37,7 @@ var action_ix = gui.size() - 1 - 1
 var color_ix = gui.size() - 1 - 2
 var class_ix = gui.size() - 1 - 3
 
+# gross style, cannot , but clean enough
 func shouldAddNeighbor():
 	return gui[action_ix][1].value == "Add"
 
@@ -46,16 +48,25 @@ func shouldRemoveSelf():
 	return gui[action_ix][1].value == "Remove"
 
 func newPickledBlock():
-	var b = puzzleMan.PickledBlock.new()\
-		.setName(gridMan.shape.keys().size())\
-	if prevBlock != null:
-		b.setPairName(prevBlock.name)
-		gridMan.get_node(prevBlock.toNode().name).setPairName(b.name)
-		prevBlock = null
-		gui[0][1].set_text("STATUS: ERROR, ADD PAIR")
-	else:
-		prevBlock = b
+	var curColor = gui[color_ix][1].value
+	var b = puzzleMan.PickledBlock.new() \
+		.setName(gridMan.shape.keys().size()) \
+		.setTextureName(curColor)
+	var pb = prevBlockByColor[curColor]
+		
+	if pb != null:
+		b.setPairName(pb.name)
+		gridMan.get_node(pb.toNode().name).setPairName(b.name)
+		prevBlockByColor[curColor] = null
 		gui[0][1].set_text("STATUS: NOMINAL")
+	else:
+		# TODO SUPPORT GLYPHS HERE, SET PAIRWISE GLYPH
+		prevBlockByColor[curColor] = b
+		var missing = ""
+		for k in prevBlockByColor.keys():
+			if prevBlockByColor[k] != null:
+				missing += k.to_upper() + " " # bad way of constructing strings
+		gui[0][1].set_text("STATUS: ERROR, ADD PAIR " + missing)
 	return b
 
 func showFileDialog(loadInstead=false):
@@ -82,6 +93,9 @@ func changeValue(ix, togg):
 	togg.value = togg.values[ix]
 
 func _ready():
+	for k in blockColors:
+		prevBlockByColor[k] = null
+
 	puzzle = puzzleScn.instance()
 	gridMan = puzzle.get_node("GridView/GridMan")
 	puzzle.mainPuzzle = false
