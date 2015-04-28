@@ -24,7 +24,10 @@ const Beam = preload("res://scripts/Blocks/Beam.gd")
 # sounds
 var samplePlayer = SamplePlayer.new()
 
-func add_block(b):
+func addPickledBlock(block):
+	# TODO add to puzzle
+	var b = block.toNode()
+
 	print ("ADDED")
 	shape[b.blockPos] = b
 
@@ -80,7 +83,7 @@ func set_puzzle(puzz):
 	puzzle.pairCount = []
 	for block in puzzle.blocks:
 		# Create a block node, add it to the tree
-		add_block(block.toNode())
+		addPickledBlock(block)
 
 # Clears any selected blocks. WE SHOULD FIX THIS, THERE CAN ONLY BE ONE BLOCK SELECTED AT ANY ONE TIME, NO NEED FOR AN ARRAY!
 func clearSelection():

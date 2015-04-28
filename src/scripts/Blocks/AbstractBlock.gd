@@ -63,8 +63,7 @@ func forceClick(click_normal):
 
 func addNeighbor(editor, click_normal):
 	var t = get_parent().get_parent().get_transform().inverse()
-	var b = editor.newPickledBlock().setBlockPos(blockPos + t * click_normal)
-	get_parent().add_block(b.toNode())
+	editor.addBlock(blockPos + t * click_normal)
 
 
 # catch clicks/taps
