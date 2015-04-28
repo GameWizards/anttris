@@ -234,16 +234,18 @@ func _on_MainMenuJG_pressed():
 	if (network.isClient):
 		network.disconnect()
 
-func _on_RandomPuzzle_pressed(puzzle):
+func _on_RandomPuzzle_pressed(puzzle=null):
 	var root = get_tree().get_root()
 	root.get_child( root.get_child_count() - 1 ).queue_free()
 	root.add_child( ResourceLoader.load( "res://puzzleView.scn" ).instance() )
-
 	var p = ResourceLoader.load( "res://puzzle.scn" ).instance()
-	p.generateRandom = false
-	p.get_node("GridView/GridMan").set_puzzle(puzzle)
+
+	if puzzle != null:
+		p.generateRandom = false
+		p.get_node("GridView/GridMan").set_puzzle(puzzle)
+		p.get_node("GridView/GridMan").setupCam()
+
 	root.add_child( p )
-	p.get_node("GridView/GridMan").setupCam()
 
 
 func _on_Join_pressed():
