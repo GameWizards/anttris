@@ -8,6 +8,7 @@ var PuzzleScn = preload("res://puzzle.scn")
 var puzzleMan
 var seed
 var otherPuzzle
+var generateRandom = true
 var mainPuzzle = false
 
 var time = {
@@ -43,19 +44,9 @@ func _process(dTime):
 
 # Called for initialization
 func _ready():
-	seed = OS.get_unix_time() # unix time
-	seed *= OS.get_ticks_msec() # initial time
-	seed *= 1 + OS.get_time().second
-	seed *= 1 + OS.get_date().weekday
-	seed = abs(seed) % 7919 # 1000th prime
-
 	if time.on:
 		set_process(true) # needed for time keeping
-
-	# generate puzzle
-	puzzleMan = PuzzleManScript.new()
-	var puzzle = puzzleMan.generatePuzzle( 1, puzzleMan.DIFF_EASY )
-	puzzle.puzzleMan = puzzleMan
+	addTimer()
 
 	#set up network stuffs
 	add_child(load("res://networkProxy.scn").instance())
@@ -63,23 +54,24 @@ func _ready():
 	if Network != null:
 		Network.proxy.set_process(Network.isClient or Network.isHost)
 
-	print("Generated ", puzzle.blocks.size(), " blocks." )
 
-	print( "Saving seed " + str(seed) + "..." )
-	DataMan.savePuzzle( "SavedPuzzles/RandomPuzzle" + str(seed) + ".pzl", puzzle )
+	# generate puzzle
+	puzzleMan = PuzzleManScript.new()
+	var puzzle = puzzleMan.generatePuzzle( 1, puzzleMan.DIFF_EASY )
+	puzzle.puzzleMan = puzzleMan
 
-	puzzle = 0
+	if generateRandom:
+		seed = OS.get_unix_time() # unix time
+		seed *= OS.get_ticks_msec() # initial time
+		seed *= 1 + OS.get_time().second
+		seed *= 1 + OS.get_date().weekday
+		seed = abs(seed) % 7919 # 1000th prime
 
-	puzzle = DataMan.loadPuzzle( "SavedPuzzles/RandomPuzzle" + str(seed) + ".pzl" )
+		print("Generated ", puzzle.blocks.size(), " blocks." )
+		var steps = puzzle.solvePuzzleSteps()
+		print( "PUZZLE IS SOLVEABLE?: ", steps.solveable )
 
-	var steps = puzzle.solvePuzzleSteps()
-	print( "PUZZLE IS SOLVEABLE?: ", steps.solveable )
-
-	addTimer()
-
-	# Place the blocks in the puzzle.
-	var gridMan = get_node( "GridView/GridMan" )
-	gridMan.set_puzzle(puzzle)
+		get_node( "GridView/GridMan" ).set_puzzle(puzzle)
 
 	# make a new puzzle, embed using Viewport
 	if mainPuzzle:
