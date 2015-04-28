@@ -16,37 +16,34 @@ var gui = [
 	["random_layer", Button.new()],
 	# THESE SHOULD BE Options instead of left, label, right
 	["class_toggle", {
-		left=Button.new(),
-		right=Button.new(),
-		label=Label.new(),
+		optionButt=OptionButton.new(),
 		values=["LZR", "WILD", "PAIR", "GOAL"],
 		value="PAIR"
 	}],
 	["color_toggle", {
-		left=Button.new(),
-		right=Button.new(),
-		label=Label.new(),
+		optionButt=OptionButton.new(),
 		values=preload("res://scripts/PuzzleManager.gd").blockColors,
 		value="Red"
 	}],
 	["action_toggle", {
-		left=Button.new(),
-		right=Button.new(),
-		label=Label.new(),
+		optionButt=OptionButton.new(),
 		values=["Add", "Remove", "Replace"],
 		value="Add"
 	}],
 	["test_pzl", Button.new()],
 ]
+var action_ix = gui.size() - 1 - 1
+var color_ix = gui.size() - 1 - 2
+var class_ix = gui.size() - 1 - 3
 
 func shouldAddNeighbor():
-	return true
+	return gui[action_ix][1].value == "Add"
 
 func shouldReplaceSelf():
-	return false
+	return gui[action_ix][1].value == "Replace"
 
 func shouldRemoveSelf():
-	return false
+	return gui[action_ix][1].value == "Remove"
 
 func newPickledBlock():
 	var b = puzzleMan.PickledBlock.new()\
@@ -61,19 +58,6 @@ func newPickledBlock():
 		gui[0][1].set_text("STATUS: NOMINAL")
 	return b
 
-func updateToggle(togg, increase):
-	if increase:
-		var next_ix = togg.values.find(togg.value) + 1
-		if (next_ix >= togg.values.size()):
-			next_ix = 0
-		togg.value = togg.values[next_ix]
-	else:
-		var next_ix = togg.values.find(togg.value) - 1
-		if (next_ix < 0):
-			next_ix = togg.values.size() - 1
-		togg.value =  togg.values[next_ix]
-	togg.label.set_text(togg.value)
-
 func showFileDialog(loadInstead=false):
 	get_tree().set_pause(true)
 
@@ -83,9 +67,9 @@ func showFileDialog(loadInstead=false):
 	else:
 		fileDialog.connect("confirmed", self, "puzzleSave")
 		fileDialog.set_mode(FileDialog.MODE_SAVE_FILE)
-		
+
 	fileDialog.popup_centered()
-	
+
 func puzzleSave():
 	print("SAVING TO ", fileDialog.get_current_file() )
 	get_tree().set_pause(false)
@@ -94,37 +78,40 @@ func puzzleLoad():
 	print("LOADING FROM ", fileDialog.get_current_file() )
 	get_tree().set_pause(false)
 
+func changeValue(ix, togg):
+	togg.value = togg.values[ix]
+
 func _ready():
 	puzzle = puzzleScn.instance()
 	gridMan = puzzle.get_node("GridView/GridMan")
 	puzzle.mainPuzzle = false
-	
+
 	# hide and disable timer
 	puzzle.time.on = false;
 	puzzle.time.val = ''
-	
+
 	puzzle.set_as_toplevel(true)
 
 	add_child(puzzle)
-	
+
 	print(puzzle.get_tree() == get_tree())
 	puzzleMan = puzzle.puzzleMan
 
 	set_process_input(true)
 
 	var theme = preload("res://themes/MainTheme.thm")
-	
+
 
 	fileDialog.set_title("Select Puzzle Filename")
 	fileDialog.set_access(FileDialog.ACCESS_USERDATA)
 	fileDialog.set_current_dir("PuzzleSaves")
 	fileDialog.add_filter("*.pzl ; Anttris Puzzle")
-	
+
 	# MainTheme leaks on bottom
 	var dialogTheme = Theme.new()
 	dialogTheme.copy_default_theme()
 	fileDialog.set_theme(dialogTheme)
-	
+
 	# work even if game is paused
 	fileDialog.set_pause_mode(PAUSE_MODE_PROCESS)
 
@@ -132,28 +119,22 @@ func _ready():
 	fileDialog.connect("popup_hide", get_tree(), "set_pause", [false])
 	fileDialog.hide()
 	add_child(fileDialog)
-	
+
 	var y = 0
 	for control in gui:
 		y += 45
 		if control[0].rfind('_toggle') > 0:
 			var togg = control[1]
-			for cont in togg.keys():
-				if not cont.begins_with('value'):
-					var e = togg[cont]
-					e.set_pos(Vector2(10, y))
-					e.set_theme(theme)
-					add_child(e)
+			var e = togg.optionButt
+			e.set_pos(Vector2(10, y))
+			e.set_theme(theme)
+			add_child(e)
 
-			togg.left.set_text("<")
-			togg.left.connect('pressed', self, 'updateToggle', [togg, false])
-
-			togg.label.set_pos(Vector2(90, y + 4))
-			togg.label.set_text(togg.value)
-
-			togg.right.set_pos(Vector2(55, y))
-			togg.right.set_text(">")
-			togg.right.connect('pressed', self, 'updateToggle', [togg, true])
+			# index of items needed
+			for i in range(togg.values.size()):
+				e.add_item(togg.values[i], i)
+				e.connect("item_selected", self, "changeValue", [togg])
+				# e.add_icon_item(togg.values[i], i)
 
 		else:
 			var e = control[1]
