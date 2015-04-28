@@ -28,15 +28,14 @@ func add_block(b):
 	print ("ADDED")
 	shape[b.blockPos] = b
 
-	# any special treatment for the wild blocks?
-	# keep track of puzzle.lasers
-	# keep track of puzzle.pairCounts
-	if b.getBlockType() == 2:
-		var layer = calcBlockLayerVec(b.blockPos)
-		while puzzle.pairCount.size() <= layer:
-				puzzle.pairCount.append(0)
+	# TODO  any special treatment for the wild blocks?
+	# TODO  keep track of puzzle.lasers ? How to?
 
-		# preload("res://trust")
+	# keep track of puzzle.pairCounts
+	var layer = calcBlockLayerVec(b.blockPos)
+	if b.getBlockType() == 2:
+		while puzzle.pairCount.size() <= layer:
+			puzzle.pairCount.append(0)
 		puzzle.pairCount[layer] += 0.5
 
 	add_child(b)
@@ -64,7 +63,6 @@ func set_puzzle(puzz):
 	# delete all current nodes
 	for pos in shape:
 		remove_block(shape[pos])
-	print(shape)
 
 	# Store the puzzle.
 	puzzle = puzz
@@ -77,6 +75,9 @@ func set_puzzle(puzz):
 	cam.distance.max_ = 10 * totalSize
 	cam.recalculate_camera()
 
+		# # I can do my own counting!
+	# needed for adding blocks in the editor
+	puzzle.pairCount = []
 	for block in puzzle.blocks:
 		# Create a block node, add it to the tree
 		add_block(block.toNode())
@@ -119,7 +120,6 @@ func calcBlockLayerVec( pos ):
 func popPair( pos ):
 	var blayer = calcBlockLayerVec( pos )
 	puzzle.pairCount[blayer] -= 1
-	print("POP, ", puzzle.pairCount)
 
 	if( puzzle.pairCount[blayer] == 0 ):
 		print("LAYER CLEARED")
