@@ -23,6 +23,11 @@ static func loadConfig():
 		config.musicvolume = file.get_var()
 		config.portnumber = file.get_var()
 		file.close()
+	else:
+		config.name = "Testificate"
+		config.soundvolume = 0.5
+		config.musicvolume = 0.5
+		config.portnumber = 54321
 
 	return config
 
