@@ -235,10 +235,13 @@ func _on_MainMenuJG_pressed():
 		network.disconnect()
 
 func _on_RandomPuzzle_pressed(puzzle=null):
-	var root = get_tree().get_root()
+	gotoPuzzleScene(get_tree().get_root(), false, puzzle)
+
+static func gotoPuzzleScene(root, networked=false, puzzle=null):
 	root.get_child( root.get_child_count() - 1 ).queue_free()
-	root.add_child( ResourceLoader.load( "res://puzzleView.scn" ).instance() )
-	var p = ResourceLoader.load( "res://puzzle.scn" ).instance()
+	root.add_child( preload( "res://puzzleView.scn" ).instance() )
+	var p = preload( "res://puzzle.scn" ).instance()
+	p.mainPuzzle = networked
 
 	if puzzle != null:
 		p.generateRandom = false
