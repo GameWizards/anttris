@@ -1,6 +1,5 @@
 extends Spatial
 
-var puzzleScn = preload("res://puzzle.scn")
 var puzzle
 var puzzleMan
 
@@ -9,7 +8,7 @@ var prevBlock = [] # keeps track of prevous color for pairs by layer
 var blockColors = preload("res://scripts/PuzzleManager.gd").blockColors
 var id
 
-var fileDialog = load("res://fileDialog.scn").instance()
+var fd
 var gui = [
 	["status", Label.new()], # plz keep me as first element, referenced as gui[0] later
 	["save_pzl", Button.new()],
@@ -97,73 +96,32 @@ func getPrevBlockErrors():
 		missing += "NOMINAL"
 	return missing
 
-
-func showFileDialog(loadInstead=false):
-	if loadInstead:
-		fileDialog.connect("confirmed", self, "puzzleLoad")
-		fileDialog.set_mode(FileDialog.MODE_OPEN_FILE)
-	else:
-		fileDialog.connect("confirmed", self, "puzzleSave")
-		fileDialog.set_mode(FileDialog.MODE_SAVE_FILE)
-
-	fileDialog.popup_centered()
-
-func puzzleSave():
-	print("SAVING TO ", fileDialog.get_current_file() )
-	get_tree().set_pause(false)
-
-func puzzleLoad():
-	print("LOADING FROM ", fileDialog.get_current_file() )
-	get_tree().set_pause(false)
-
 func changeValue(ix, togg):
 	togg.value = togg.values[ix]
 
 func _ready():
 	# lights!
-	get_tree().get_root().add_child( preload( "res://puzzleView.scn" ).instance() )
-
-	puzzle = puzzleScn.instance()
+	get_tree().get_root().add_child(preload( "res://puzzleView.scn" ).instance())
+	puzzle = preload( "res://puzzle.scn" ).instance()
 	puzzle.mainPuzzle = false
 
 	# hide and disable timer
 	puzzle.time.on = false;
 	puzzle.time.val = ''
+	print(puzzle.time)
 
 	puzzle.set_as_toplevel(true)
-
-	add_child(puzzle)
+	get_tree().get_root().add_child(puzzle)
 
 	gridMan = puzzle.get_node("GridView/GridMan")
 	id = gridMan.shape.size()
-
 
 	puzzleMan = puzzle.puzzleMan
 
 	set_process_input(true)
 
 	var theme = preload("res://themes/MainTheme.thm")
-
-
-	fileDialog.set_title("Select Puzzle Filename")
-	fileDialog.set_access(FileDialog.ACCESS_USERDATA)
-	fileDialog.set_current_dir("PuzzleSaves")
-	fileDialog.add_filter("*.pzl ; Anttris Puzzle")
-
-	# MainTheme leaks on bottom
-	var dialogTheme = Theme.new()
-	dialogTheme.copy_default_theme()
-	fileDialog.set_theme(dialogTheme)
-
-	# work even if game is paused
-	fileDialog.set_pause_mode(PAUSE_MODE_PROCESS)
-
-	# unpause if user cancels
-	fileDialog.connect("popup_hide", get_tree(), "set_pause", [false])
-	fileDialog.connect("hide", get_tree(), "set_pause", [false])
-	fileDialog.connect("about_to_show", get_tree(), "set_pause", [true])
-	fileDialog.hide()
-	add_child(fileDialog)
+	initLoadSaveDialog(self)
 
 	var y = 0
 	for control in gui:
@@ -188,11 +146,58 @@ func _ready():
 			if e extends Button:
 				e.set_text(control[0])
 			if control[0] == 'save_pzl' :
-				e.connect('pressed', self, 'showFileDialog')
+				e.connect('pressed', self, 'showSaveDialog')
 			if control[0] == 'load_pzl' :
-				e.connect('pressed', self, 'showFileDialog', [true])
+				e.connect('pressed', self, 'showLoadDialog')
 			if control[0] == 'status':
 				control[1].set_text('STATUS: NOMINAL')
 			add_child(e)
 
 
+func puzzleSave():
+	print("SAVING TO ", fd.get_current_file() )
+
+func puzzleLoad():
+	print("LOADING FROM ", fd.get_current_file() )
+
+func showLoadDialog():
+	showSaveDialog(true)
+
+func showSaveDialog(loadInstead=false):
+	if loadInstead:
+		if fd.is_connected("confirmed", self, "puzzleSave"):
+			fd.disconnect("confirmed", self, "puzzleSave")
+		fd.connect("confirmed", self, "puzzleLoad")
+		fd.set_mode(FileDialog.MODE_OPEN_FILE)
+	else:
+		if fd.is_connected("confirmed", self, "puzzleLoad"):
+			fd.disconnect("confirmed", self, "puzzleLoad")
+		fd.connect("confirmed", self, "puzzleSave")
+		fd.set_mode(FileDialog.MODE_SAVE_FILE)
+
+	fd.popup_centered()
+
+func initLoadSaveDialog(parent):
+	# setup text in the file dialog
+	parent.fd = load("res://fileDialog.scn").instance()
+	parent.fd.set_title("Select Puzzle Filename")
+	parent.fd.set_access(FileDialog.ACCESS_USERDATA)
+	parent.fd.set_current_dir("PuzzleSaves")
+	parent.fd.add_filter("*.pzl ; Anttris Puzzle")
+
+	# MainTheme leaks on bottom
+	var dialogTheme = Theme.new()
+	dialogTheme.copy_default_theme()
+	parent.fd.set_theme(dialogTheme)
+
+	# work even if game is paused
+	parent.fd.set_pause_mode(PAUSE_MODE_PROCESS)
+
+	# unpause if user cancels
+	parent.fd.connect("popup_hide", get_tree(), "set_pause", [false])
+	parent.fd.connect("hide", get_tree(), "set_pause", [false])
+	parent.fd.connect("about_to_show", get_tree(), "set_pause", [true])
+	parent.fd.hide()
+
+	parent.add_child(fd)
+	fd.set_owner(parent)
