@@ -34,12 +34,17 @@ func addPickledBlock(block):
 	# TODO  any special treatment for the wild blocks?
 	# TODO  keep track of puzzle.lasers ? How to?
 
-	# keep track of puzzle.pairCounts
-	var layer = calcBlockLayerVec(b.blockPos)
-	if b.getBlockType() == 2:
-		while puzzle.pairCount.size() <= layer:
-			puzzle.pairCount.append(0)
-		puzzle.pairCount[layer] += 0.5
+	if not puzzleLoaded:
+		# keep pickled block
+		puzzle.blocks.append(block)
+
+		# keep track of puzzle.pairCounts
+		var layer = calcBlockLayerVec(b.blockPos)
+		if b.getBlockType() == 2:
+			while puzzle.pairCount.size() <= layer:
+				puzzle.pairCount.append(0)
+			puzzle.pairCount[layer] += 0.5
+
 
 	add_child(b)
 
@@ -65,6 +70,7 @@ func set_puzzle(puzz):
 	# delete all current nodes
 	for pos in shape:
 		remove_block(shape[pos])
+	puzzleLoaded = false
 
 	# Store the puzzle.
 	puzzle = puzz
@@ -80,10 +86,10 @@ func set_puzzle(puzz):
 
 		# # I can do my own counting!
 	# needed for adding blocks in the editor
-	puzzle.pairCount = []
 	for block in puzzle.blocks:
 		# Create a block node, add it to the tree
 		addPickledBlock(block)
+	puzzleLoaded = true
 
 # Clears any selected blocks. WE SHOULD FIX THIS, THERE CAN ONLY BE ONE BLOCK SELECTED AT ANY ONE TIME, NO NEED FOR AN ARRAY!
 func clearSelection():
