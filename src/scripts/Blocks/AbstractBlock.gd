@@ -111,5 +111,6 @@ func request_remove(node=null, key=null):
 	get_parent().remove_block(self)
 
 func _ready():
-	editor = get_tree().get_root().get_node("EditorSpatial")
+	if get_tree().get_root().has_node("EditorSpatial"):
+		editor = get_tree().get_root().get_node("EditorSpatial")
 	set_ray_pickable(true)
