@@ -7,6 +7,7 @@ var puzzleMan
 var gridMan
 var prevBlockByColor = {} # keeps track of prevous color for pairs
 var blockColors = preload("res://scripts/PuzzleManager.gd").blockColors
+var id
 
 var fileDialog = load("res://fileDialog.scn").instance()
 var gui = [
@@ -47,12 +48,14 @@ func shouldReplaceSelf():
 func shouldRemoveSelf():
 	return gui[action_ix][1].value == "Remove"
 
+# called in AbstractBlock to add a new block
 func newPickledBlock():
 	var curColor = gui[color_ix][1].value
 	var b = puzzleMan.PickledBlock.new() \
-		.setName(gridMan.shape.keys().size()) \
+		.setName(id) \
 		.setTextureName(curColor)
 	var pb = prevBlockByColor[curColor]
+	id += 1
 
 	if pb != null:
 		b.setPairName(pb.name)
@@ -95,11 +98,12 @@ func changeValue(ix, togg):
 func _ready():
 	for k in blockColors:
 		prevBlockByColor[k] = null
-	get_tree().get_root().add_child( preload( "res://puzzleView.scn" ).instance() )
 
 	puzzle = puzzleScn.instance()
 	gridMan = puzzle.get_node("GridView/GridMan")
+	id = gridMan.shape.size()
 	puzzle.mainPuzzle = false
+	get_tree().get_root().add_child( preload( "res://puzzleView.scn" ).instance() )
 
 	# hide and disable timer
 	puzzle.time.on = false;
@@ -109,7 +113,6 @@ func _ready():
 
 	add_child(puzzle)
 
-	print(puzzle.get_tree() == get_tree())
 	puzzleMan = puzzle.puzzleMan
 
 	set_process_input(true)
@@ -146,9 +149,9 @@ func _ready():
 			add_child(e)
 
 			# index of items needed
+			e.connect("item_selected", self, "changeValue", [togg])
 			for i in range(togg.values.size()):
 				e.add_item(togg.values[i], i)
-				e.connect("item_selected", self, "changeValue", [togg])
 				# e.add_icon_item(togg.values[i], i)
 
 		else:
