@@ -1,24 +1,23 @@
-extends Spatial
+# Provides functionality for the puzzle itself
 
-# proposed script manager:
-# var PuzzleManScript = get_node("Globals").get("PuzzleManScript")
+extends Spatial
 
 var DataMan = preload( "res://scripts/DataManager.gd" ).new()
 var PuzzleManScript = preload( "res://scripts/PuzzleManager.gd" )
 var PuzzleScn = preload("res://puzzle.scn")
 var puzzleMan
+var seed
 var otherPuzzle
-var mainPuzzle = true
+var generateRandom = true
+var mainPuzzle = false
 
 var time = {
 		on = true,
 		val = 0.0,
-		label = null,
-		tween = null }
+		label = Label.new(),
+		tween = Tween.new() }
 
 func addTimer():
-	time.label = Label.new()
-	time.tween = Tween.new()
 	add_child(time.label)
 	add_child(time.tween)
 	time.label.set_pos(Vector2(15,15))
@@ -47,41 +46,43 @@ func _process(dTime):
 func _ready():
 	if time.on:
 		set_process(true) # needed for time keeping
-	puzzleMan = PuzzleManScript.new()
-	var puzzle = puzzleMan.generatePuzzle( 2, puzzleMan.DIFF_EASY )
-	puzzle.puzzleMan = puzzleMan
-
-	print("Generated ", puzzle.blocks.size(), " blocks." )
-	
-	print( "Saving..." )
-	DataMan.savePuzzle( "TestPuzzle.pzl", puzzle )
-	
-	puzzle = 0
-	
-	puzzle = DataMan.loadPuzzle( "TestPuzzle.pzl" )
-	
-	print( puzzle.puzzleName )
-	print( puzzle.blocks.size() )
-
 	addTimer()
 
-	# Place the blocks in the puzzle.
-	var gridMan = get_node( "GridView/GridMan" )
-	gridMan.shape = puzzleMan.shape
-	gridMan.set_puzzle(puzzle)
-	for block in puzzle.blocks:
-		# Create a block node, add it to the tree
-		var b = block.toNode()
-		gridMan.add_block(b)
-		gridMan.get_child(block.name) \
-			.set_translation(block.blockPos * 2 )
+	#set up network stuffs
+	add_child(load("res://networkProxy.scn").instance())
+	var Network = Globals.get("Network")
+	if Network != null:
+		Network.proxy.set_process(Network.isClient or Network.isHost)
+
+
+	# generate puzzle
+	puzzleMan = PuzzleManScript.new()
+
+	if generateRandom:
+		seed = OS.get_unix_time() # unix time
+		seed *= OS.get_ticks_msec() # initial time
+		seed *= 1 + OS.get_time().second
+		seed *= 1 + OS.get_date().weekday
+		seed = abs(seed) % 7919 # 1000th prime
+
+		var puzzle = puzzleMan.generatePuzzle( 1, puzzleMan.DIFF_EASY )
+		puzzle.puzzleMan = puzzleMan
+		var steps = puzzle.solvePuzzleSteps()
+		print("Generated ", puzzle.shape.size(), " blocks." )
+		print( "PUZZLE IS SOLVEABLE?: ", steps.solveable )
+
+		var gridMan = get_node( "GridView/GridMan" )
+		DataMan.savePuzzle("test.pzl", puzzle)
+		var pCopy = DataMan.loadPuzzle("test.pzl")
+		gridMan.set_puzzle(puzzle)
 
 	# make a new puzzle, embed using Viewport
 	if mainPuzzle:
 		var p = PuzzleScn.instance()
+		p.get_node("GridView").active = false
 		p.mainPuzzle = false
 		p.set_scale(Vector3(0.5, 0.5, 0.5))
-		p.set_translation(Vector3(20, 0, 0))
+		p.set_translation(Vector3(10, 5, -20))
 
 		var v = Viewport.new()
 		var c = Control.new()
@@ -89,10 +90,10 @@ func _ready():
 		v.set_world(p.get_world())
 		v.set_rect(Rect2(0, 0, 100, 100))
 		v.set_physics_object_picking(false)
+		add_child(p)
 		v.add_child(p)
 		add_child(c)
 		c.add_child(v)
 		otherPuzzle = p #for use with network
-# child of control? easier input
 
 

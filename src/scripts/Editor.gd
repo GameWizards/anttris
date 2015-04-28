@@ -1,65 +1,231 @@
 extends Spatial
 
-var cursorPos = Vector3(1,0,0)
-var cursor
-var puzzleMan
 var puzzle
+var puzzleMan
+var DataMan = preload("res://scripts/DataManager.gd")
+
 var gridMan
-var selectedBlock = null
+var prevBlocks = [] # keeps track of prevous color for pairs by layer
+var blockColors = preload("res://scripts/PuzzleManager.gd").blockColors
+var id
 
-var puzzleScn = preload("res://puzzle.scn")
-var cursorScn = preload("res://cursor.scn")
+var saveDir = OS.get_data_dir() + "/PuzzleSaves"
 
-func cursor_move(dir):
-	var tween = Tween.new()
-	var N = 2
-	add_child(tween)
-	tween.interpolate_method( cursor, "set_global_transform", \
-		cursor.get_global_transform(), cursor.get_global_transform().translated(dir * N), \
-		0.25, Tween.TRANS_EXPO, Tween.EASE_OUT )
-	tween.start()
-	cursorPos += dir
-	selectedBlock = gridMan.get_block(cursorPos)
-	
-func _input(ev):
-	if ev.type == InputEvent.KEY:
-		if ev.is_pressed():
-			if Input.is_action_pressed("ui_up"):
-				cursor_move(Vector3(0,1,0))
-			if Input.is_action_pressed("ui_down"):
-				cursor_move(Vector3(0,-1,0))
-			if Input.is_action_pressed("ui_left"):
-				cursor_move(Vector3(1,0,0))
-			if Input.is_action_pressed("ui_right"):
-				cursor_move(Vector3(-1,0,0))
-			if Input.is_action_pressed("ui_page_up"):
-				cursor_move(Vector3(0,0,1))
-			if Input.is_action_pressed("ui_page_down"):
-				cursor_move(Vector3(0,0,-1))
-			if Input.is_action_pressed("ui_accept"):
-				cursor_action()
+var fd
+var gui = [
+	["status", Label.new()], # plz keep me as first element, referenced as gui[0] later
+	["save_pzl", Button.new()],
+	["load_pzl", Button.new()],
+	["remove_layer", Button.new()],
+	["random_layer", Button.new()],
+	# THESE SHOULD BE Options instead of left, label, right
+	["class_toggle", {
+		optionButt=OptionButton.new(),
+		values=["LZR", "WILD", "PAIR", "GOAL"],
+		value="PAIR"
+	}],
+	["color_toggle", {
+		optionButt=OptionButton.new(),
+		values=blockColors,
+		value="Blue"
+	}],
+	["action_toggle", {
+		optionButt=OptionButton.new(),
+		values=["Add", "Remove", "Replace"],
+		value="Add"
+	}],
+	["test_pzl", Button.new()],
+]
+var action_ix = gui.size() - 1 - 1
+var color_ix = gui.size() - 1 - 2
+var class_ix = gui.size() - 1 - 3
 
-func cursor_action():
-	if not selectedBlock == null:
-		print("CHILDREN:",gridMan.get_child_count())
-		gridMan.remove_block(selectedBlock)
-		print("CHILDREN:",gridMan.get_child_count())
-		
-		selectedBlock = null
+# gross style, cannot , but clean enough
+func shouldAddNeighbor():
+	return gui[action_ix][1].value == "Add"
+
+func shouldReplaceSelf():
+	return gui[action_ix][1].value == "Replace"
+
+func shouldRemoveSelf():
+	return gui[action_ix][1].value == "Remove"
+
+# called in AbstractBlock to add a new block
+func addBlock(pos):
+	var curColor = gui[color_ix][1].value
+	var b = puzzleMan.PickledBlock.new() \
+		.setName(id) \
+		.setTextureName(curColor) \
+		.setBlockPos(pos)
+	var layer = puzzleMan.calcBlockLayerVec(pos)
+	id += 1
+
+	if layer == 0 and not gui[class_ix][1].value == "GOAL":
+		return
+
+	# expand prevblocks index
+	while prevBlocks.size() <= layer:
+		var d = {}
+		for k in blockColors:
+			d[k] = null
+		prevBlocks.append(d)
+
+	var pb = prevBlocks[layer][curColor]
+
+	if pb != null:
+		var prevName = pb.toNode().name
+		print("PAIR ", b.name, " ", pb.name, " IS ", prevName)
+		var pbNode = gridMan.get_node(prevName)
+
+		b.setPairName(pb.name)
+		pb.setPairName(b.name)
+		# readd prev
+		gridMan.remove_block(pb)
+		gridMan.addPickledBlock(pb)
+		prevBlocks[layer][curColor] = null
+	else:
+		# TODO SUPPORT GLYPHS HERE, SET PAIRWISE GLYPH
+		prevBlocks[layer][curColor] = b
+
+	gui[0][1].set_text(getPrevBlockErrors())
+	var block = gridMan.addPickledBlock(b)
+	var v = 0.01
+	block.set_scale(Vector3(v,v,v))
+	block.scaleTweenNode(1, 0.25, Tween.TRANS_QUART).start()
+	return b
+
+func getPrevBlockErrors():
+	# hahaha, so bad
+	var missing = "STATUS: "
+	# check every layer
+	for l in range(prevBlocks.size()):
+		# check every color
+		for k in prevBlocks[l].keys():
+			var missed = false
+			if prevBlocks[l][k] != null:
+				# one message about the current layer
+				if not missed:
+					missing += " L" + str(l) + " "
+					missed = true
+				missing += k.to_upper() + " " # bad way of constructing strings
+	if missing == "":
+		missing += "NOMINAL"
+	return missing
+
+func changeValue(ix, togg):
+	togg.value = togg.values[ix]
 
 func _ready():
-	var pMan = puzzleScn.instance()
-	gridMan = pMan.get_node("GridView/GridMan")
-	cursor = cursorScn.instance()
-	pMan.mainPuzzle = false
-	pMan.time.on = false
-	puzzleMan = pMan.puzzleMan
-	pMan.set_as_toplevel(true)
-	
-	gridMan.add_child(cursor)
-	add_child(pMan)
-	cursor.set_owner(pMan)
+	# lights!
+	get_tree().get_root().add_child(preload( "res://puzzleView.scn" ).instance())
+	puzzle = preload( "res://puzzle.scn" ).instance()
+	puzzle.mainPuzzle = false
+
+	# hide and disable timer
+	puzzle.time.on = false;
+	puzzle.time.val = ''
+	print(puzzle.time)
+
+	puzzle.set_as_toplevel(true)
+	get_tree().get_root().add_child(puzzle)
+
+	gridMan = puzzle.get_node("GridView/GridMan")
+	id = gridMan.puzzle.shape.size()
+
+	puzzleMan = puzzle.puzzleMan
 
 	set_process_input(true)
 
+	var theme = preload("res://themes/MainTheme.thm")
+	fd = initLoadSaveDialog(self, get_tree(), saveDir)
 
+	var y = 0
+	for control in gui:
+		y += 45
+		if control[0].rfind('_toggle') > 0:
+			var togg = control[1]
+			var e = togg.optionButt
+			e.set_pos(Vector2(10, y))
+			e.set_theme(theme)
+			add_child(e)
+
+			# index of items needed
+			e.connect("item_selected", self, "changeValue", [togg])
+			for i in range(togg.values.size()):
+				e.add_item(togg.values[i], i)
+				# e.add_icon_item(togg.values[i], i)
+
+		else:
+			var e = control[1]
+			e.set_pos(Vector2(10, y))
+			e.set_theme(theme)
+			if e extends Button:
+				e.set_text(control[0])
+			if control[0] == 'save_pzl' :
+				e.connect('pressed', self, 'showSaveDialog', [fd, self])
+			if control[0] == 'load_pzl' :
+				e.connect('pressed', self, 'showLoadDialog', [fd, self])
+			if control[0] == 'status':
+				control[1].set_text('STATUS: NOMINAL')
+			add_child(e)
+
+
+func puzzleSave():
+	var f = fd.get_current_path()
+	if f == null or f == "":
+		return
+	print("SAVING TO ", f)
+	DataMan.savePuzzle( f, gridMan.puzzle )
+
+func puzzleLoad():
+	var f = fd.get_current_path()
+	if f == null or f == "":
+		return
+	print("LOADING FROM ", f)
+	prevBlocks = []
+	gridMan.set_puzzle(DataMan.loadPuzzle( f ))
+
+static func showLoadDialog(fileD, parent):
+	if fileD.is_connected("confirmed", parent, "puzzleSave"):
+		fileD.disconnect("confirmed", parent, "puzzleSave")
+	fileD.connect("confirmed", parent, "puzzleLoad")
+	fileD.set_mode(FileDialog.MODE_OPEN_FILE)
+
+	fileD.popup_centered()
+
+static func showSaveDialog(fileD, parent):
+	if fileD.is_connected("confirmed", parent, "puzzleLoad"):
+		fileD.disconnect("confirmed", parent, "puzzleLoad")
+	fileD.connect("confirmed", parent, "puzzleSave")
+	fileD.set_mode(FileDialog.MODE_SAVE_FILE)
+
+	fileD.popup_centered()
+
+static func initLoadSaveDialog(parent, tree, saveDir):
+	# setup text in the file dialog
+	var fileDialog = load("res://fileDialog.scn").instance()
+	fileDialog.set_title("Select Puzzle Filename")
+	fileDialog.set_access(FileDialog.ACCESS_FILESYSTEM)
+	fileDialog.add_filter("*.pzl ; Anttris Puzzle")
+
+	Directory.new().make_dir_recursive(saveDir)
+	fileDialog.set_current_dir(saveDir)
+	print("Saves in ", saveDir)
+
+	# MainTheme leaks on bottom
+	var dialogTheme = Theme.new()
+	dialogTheme.copy_default_theme()
+	fileDialog.set_theme(dialogTheme)
+
+	# work even if game is paused
+	fileDialog.set_pause_mode(PAUSE_MODE_PROCESS)
+
+	# unpause if user cancels
+	fileDialog.connect("popup_hide", tree, "set_pause", [false])
+	fileDialog.connect("hide", tree, "set_pause", [false])
+	fileDialog.connect("about_to_show", tree, "set_pause", [true])
+	fileDialog.hide()
+
+	parent.add_child(fileDialog)
+	fileDialog.set_owner(parent)
+	return fileDialog
