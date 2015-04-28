@@ -65,6 +65,8 @@ func _ready():
 		seed *= 1 + OS.get_date().weekday
 		seed = abs(seed) % 7919 # 1000th prime
 
+		rand_seed(seed)
+
 		var puzzle = puzzleMan.generatePuzzle( 1, puzzleMan.DIFF_EASY )
 		puzzle.puzzleMan = puzzleMan
 		var steps = puzzle.solvePuzzleSteps()
@@ -88,7 +90,6 @@ func _ready():
 		var c = Control.new()
 
 		v.set_world(p.get_world())
-		v.set_rect(Rect2(0, 0, 100, 100))
 		v.set_physics_object_picking(false)
 		add_child(p)
 		v.add_child(p)
