@@ -106,8 +106,7 @@ func newTweenNode():
 	add_child(tween)
 	return tween
 
-func remove_with_pop(node, key=null):
-	get_parent().samplePlayer.play("deraj_pop_sound")
+func request_remove(node=null, key=null):
 	get_parent().remove_block(self)
 
 func _ready():
