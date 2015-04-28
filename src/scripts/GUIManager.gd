@@ -43,6 +43,10 @@ var MENU_OPTIONS		= 8
 var samplePlayer = StreamPlayer.new()
 var songs = [load("res://main_theme_antris.ogg")]
 
+# Loader dialog
+var saveDir
+var fileDialog
+
 func skipTitle(skip):
 	if skip:
 		initialWait  = 0.01
@@ -87,6 +91,10 @@ func _ready():
 	get_node("OptionsMenu/Panel/MusicVolume/MusicSlider").set_value( config.musicvolume )
 
 	network.port = config.portnumber
+
+	# Prepare puzzle loader dialog
+	saveDir = OS.get_data_dir() + "/PuzzleSaves"
+	fileDialog = preload("Editor.gd").initLoadSaveDialog(self, get_tree(), saveDir)
 
 	# Main Menu Theme
 	add_child(samplePlayer)
@@ -226,11 +234,16 @@ func _on_MainMenuJG_pressed():
 	if (network.isClient):
 		network.disconnect()
 
-func _on_RandomPuzzle_pressed():
+func _on_RandomPuzzle_pressed(puzzle):
 	var root = get_tree().get_root()
 	root.get_child( root.get_child_count() - 1 ).queue_free()
 	root.add_child( ResourceLoader.load( "res://puzzleView.scn" ).instance() )
-	root.add_child( ResourceLoader.load( "res://puzzle.scn" ).instance() )
+
+	var p = ResourceLoader.load( "res://puzzle.scn" ).instance()
+	p.generateRandom = false
+	p.get_node("GridView/GridMan").set_puzzle(puzzle)
+	root.add_child( p )
+	p.get_node("GridView/GridMan").setupCam()
 
 
 func _on_Join_pressed():
@@ -249,3 +262,14 @@ func _on_Editor_pressed():
 	root.get_child( root.get_child_count() - 1 ).queue_free()
 	root.add_child( ResourceLoader.load( "res://editor.scn" ).instance() )
 
+
+func _on_LoadPuzzle_pressed():
+	preload("Editor.gd").showLoadDialog(fileDialog, self)
+
+# called by the fileDialog
+func puzzleLoad():
+	var f = fileDialog.get_current_path()
+	if f == null or f == "":
+		return
+	print("LOADING FROM ", f)
+	_on_RandomPuzzle_pressed(preload("DataManager.gd").loadPuzzle( f ))
