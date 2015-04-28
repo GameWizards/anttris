@@ -2,6 +2,7 @@
 # catch InputEventScreenDrag, InputEventScreenTouch
 #   write two-finger zoom
 
+
 # camera function that uses the mouse wheel to zoom
 extends Camera
 
@@ -23,6 +24,14 @@ var target_move_rate = 1.0      # the rate the target look at point moves
 # Pause menu GUI item.
 var pauseMenu
 
+func toMenu():
+	var root = get_tree().get_root()
+	var menus = preload( "res://menus.scn" ).instance()
+	menus.skipTitle(true)
+	for child in root.get_children():
+		child.queue_free()
+	root.add_child(menus)
+
 # called once after node is setup
 func _ready():
 	set_process_input(true)      # process user input events here
@@ -34,12 +43,12 @@ func _ready():
 	pauseMenu.hide()
 
 	pauseMenu.set_pause_mode(PAUSE_MODE_PROCESS)
-	pauseMenu.set_text("PAUSE. QUIT? CANCEL TO RETURN TO GAME.\nSCORE:12101239\nSteps taken:9001")
+	pauseMenu.set_text("PAUSE")
 
-	pauseMenu.get_ok().connect("pressed", OS.get_main_loop(), "quit")
+	pauseMenu.get_ok().connect("pressed", self, "toMenu")
 	pauseMenu.get_cancel().connect("pressed", pauseMenu, "hide")
 
-	pauseMenu.get_ok().set_text("Quit")
+	pauseMenu.get_ok().set_text("Menu")
 	pauseMenu.get_cancel().set_text("Return to game")
 
 	pauseMenu.get_ok().set_pause_mode(PAUSE_MODE_PROCESS)
@@ -51,10 +60,6 @@ func _ready():
 	pauseMenu.connect("popup_hide", get_tree(), "set_pause", [false])
 	pauseMenu.connect("hide", get_tree(), "set_pause", [false])
 
-
-	# Add the puzzle.
-	get_tree().get_root().add_child( preload( "res://puzzle.scn" ).instance() )
-	print( get_parent() )
 
 # Repositions the camera based on the zoom level.
 func recalculate_camera():
