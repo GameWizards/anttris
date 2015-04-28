@@ -74,31 +74,57 @@ func updateToggle(togg, increase):
 		togg.value =  togg.values[next_ix]
 	togg.label.set_text(togg.value)
 
-func puzzleSave(loadInstead=false):
+func showFileDialog(loadInstead=false):
+	get_tree().set_pause(true)
 	fileDialog.popup_centered()
+	
+	if loadInstead:
+		fileDialog.connect("confirmed", self, "puzzleLoad")
+	else:
+		fileDialog.connect("confirmed", self, "puzzleSave")
+	
+func puzzleSave():
+	print("SAVING TO ", fileDialog.get_current_file() )
+	get_tree().set_pause(false)
 
-
+func puzzleLoad():
+	print("LOADING FROM ", fileDialog.get_current_file() )
+	get_tree().set_pause(false)
 
 func _ready():
 	puzzle = puzzleScn.instance()
 	gridMan = puzzle.get_node("GridView/GridMan")
 	puzzle.mainPuzzle = false
+	
+	# hide and disable timer
 	puzzle.time.on = false;
 	puzzle.time.val = ''
+	
 	puzzle.set_as_toplevel(true)
 
 	add_child(puzzle)
+	
+	print(puzzle.get_tree() == get_tree())
 	puzzleMan = puzzle.puzzleMan
 
 	set_process_input(true)
 
 	var theme = preload("res://themes/MainTheme.thm")
-	var dialogTheme = Theme.new()
-	dialogTheme.copy_default_theme()
+	
 
 	fileDialog.set_title("Select Puzzle Filename")
 	fileDialog.set_access(FileDialog.ACCESS_USERDATA)
+	
+	# MainTheme leaks on bottom
+	var dialogTheme = Theme.new()
+	dialogTheme.copy_default_theme()
 	fileDialog.set_theme(dialogTheme)
+	
+	# work even if game is paused
+	fileDialog.set_pause_mode(PAUSE_MODE_PROCESS)
+
+	# unpause if user cancels
+	fileDialog.connect("popup_hide", get_tree(), "set_pause", [false])
 	fileDialog.hide()
 	add_child(fileDialog)
 	
@@ -131,9 +157,9 @@ func _ready():
 			if e extends Button:
 				e.set_text(control[0])
 			if control[0] == 'save_pzl' :
-				e.connect('pressed', self, 'puzzleSave')
+				e.connect('pressed', self, 'showFileDialog')
 			if control[0] == 'load_pzl' :
-				e.connect('pressed', self, 'puzzleSave', [true])
+				e.connect('pressed', self, 'showFileDialog', [true])
 			if control[0] == 'status':
 				control[1].set_text('STATUS: NOMINAL')
 			add_child(e)
