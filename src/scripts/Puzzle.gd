@@ -71,13 +71,14 @@ func _ready():
 		print("Generated ", puzzle.shape.size(), " blocks." )
 		print( "PUZZLE IS SOLVEABLE?: ", steps.solveable )
 
-		get_node( "GridView/GridMan" ).set_puzzle(puzzle)
+		var gridMan = get_node( "GridView/GridMan" )
+		DataMan.savePuzzle("test.pzl", puzzle)
+		var pCopy = DataMan.loadPuzzle("test.pzl")
+		gridMan.set_puzzle(puzzle)
 
 	# make a new puzzle, embed using Viewport
 	if mainPuzzle:
 		var p = PuzzleScn.instance()
-		#p.remove_and_delete_child(p.get_node("Lights"))
-		#.remove_and_delete_child(p.get_node("Camera"))
 		p.get_node("GridView").active = false
 		p.mainPuzzle = false
 		p.set_scale(Vector3(0.5, 0.5, 0.5))
@@ -89,11 +90,10 @@ func _ready():
 		v.set_world(p.get_world())
 		v.set_rect(Rect2(0, 0, 100, 100))
 		v.set_physics_object_picking(false)
-		get_tree().get_root().get_node( "Spatial" ).get_node( "Camera" ).add_child(p)
+		add_child(p)
 		v.add_child(p)
 		add_child(c)
 		c.add_child(v)
 		otherPuzzle = p #for use with network
-# child of control? easier input
 
 
