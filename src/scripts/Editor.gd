@@ -76,12 +76,15 @@ func updateToggle(togg, increase):
 
 func showFileDialog(loadInstead=false):
 	get_tree().set_pause(true)
-	fileDialog.popup_centered()
-	
+
 	if loadInstead:
 		fileDialog.connect("confirmed", self, "puzzleLoad")
+		fileDialog.set_mode(FileDialog.MODE_OPEN_FILE)
 	else:
 		fileDialog.connect("confirmed", self, "puzzleSave")
+		fileDialog.set_mode(FileDialog.MODE_SAVE_FILE)
+		
+	fileDialog.popup_centered()
 	
 func puzzleSave():
 	print("SAVING TO ", fileDialog.get_current_file() )
@@ -116,6 +119,8 @@ func _ready():
 
 	fileDialog.set_title("Select Puzzle Filename")
 	fileDialog.set_access(FileDialog.ACCESS_USERDATA)
+	fileDialog.set_current_dir("PuzzleSaves")
+	fileDialog.add_filter("*.pzl ; Anttris Puzzle")
 	
 	# MainTheme leaks on bottom
 	var dialogTheme = Theme.new()

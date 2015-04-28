@@ -16,7 +16,6 @@ var selectedBlocks = []
 
 # Puzzle vars.
 var puzzle
-var pairCount = []
 
 # Beam stuff.
 const beamScn = preload( "res://blocks/block.scn" )
@@ -26,15 +25,18 @@ const Beam = preload("res://scripts/Blocks/Beam.gd")
 var samplePlayer = SamplePlayer.new()
 
 func add_block(b):
+	print ("ADDED")
 	shape[b.blockPos] = b
 
+	# TODO  any special treatment for the wild blocks?
+	# TODO  keep track of puzzle.lasers ? How to?
+
+	# keep track of puzzle.pairCounts
+	var layer = calcBlockLayerVec(b.blockPos)
 	if b.getBlockType() == 2:
-		var layer = calcBlockLayerVec(b.blockPos)
-		while pairCount.size() <= layer:
-				pairCount.append(0)
-	
-		# preload("res://trust")
-		pairCount[layer] += 0.5
+		while puzzle.pairCount.size() <= layer:
+			puzzle.pairCount.append(0)
+		puzzle.pairCount[layer] += 0.5
 
 	add_child(b)
 
@@ -44,26 +46,26 @@ func get_block(pos):
 	else:
 		return null
 
-func remove_block(block_node):
+# unused key argument needed for the tween_complete signal
+func remove_block(block_node, key=null):
+	if block_node == null:
+		return
+	print ("REMOVED")
+	if block_node.get_script() == preload("Blocks/PairedBlock.gd"):
+		print("PAIRED RM")
 	shape[block_node.blockPos] = null
-	# TODO scan_layer, fire lasers if empty
 	for child in block_node.get_children():
 		block_node.remove_and_delete_child(child)
 	remove_and_delete_child(block_node)
 
-# TODO wild block selected? can click any pair. can deselect wild block.
-var wildBlockSelected = null
-
 # Sets the puzzle for this GridMan.
 func set_puzzle(puzz):
-	# TODO delete current puzzle
-	
+	# delete all current nodes
+	for pos in shape:
+		remove_block(shape[pos])
+
 	# Store the puzzle.
 	puzzle = puzz
-
-	# Initalization here
-	samplePlayer.set_voice_count(puzzle.puzzleLayers * 2)
-	samplePlayer.set_sample_library(ResourceLoader.load("new_samplelibrary.xml"))
 
 	# Set the camera range to be relative to the layer count.
 	var cam = get_tree().get_root().get_node( "Spatial" ).get_node( "Camera" )
@@ -73,7 +75,10 @@ func set_puzzle(puzz):
 	cam.distance.min_ = 3 * totalSize
 	cam.distance.max_ = 10 * totalSize
 	cam.recalculate_camera()
-	
+
+		# # I can do my own counting!
+	# needed for adding blocks in the editor
+	puzzle.pairCount = []
 	for block in puzzle.blocks:
 		# Create a block node, add it to the tree
 		add_block(block.toNode())
@@ -115,9 +120,9 @@ func calcBlockLayerVec( pos ):
 # Handles keeping track of pairs being removed.
 func popPair( pos ):
 	var blayer = calcBlockLayerVec( pos )
-	pairCount[blayer] -= 1
+	puzzle.pairCount[blayer] -= 1
 
-	if( pairCount[blayer] == 0 ):
+	if( puzzle.pairCount[blayer] == 0 ):
 		print("LAYER CLEARED")
 		if blayer == 1:
 			print( "GAME OVER!" )
@@ -143,4 +148,11 @@ func popPair( pos ):
 				beam.fire( puzzle.lasers[l][0], puzzle.lasers[l][1] )
 
 				samplePlayer.play( "soundslikewillem_hitting_slinky" )
+
+
+func _init():
+	# Load sound
+	samplePlayer.set_voice_count(10)
+	samplePlayer.set_sample_library(ResourceLoader.load("new_samplelibrary.xml"))
+	print("GridMan initialized")
 

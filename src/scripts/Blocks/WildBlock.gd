@@ -28,6 +28,8 @@ func popBlock():
 		self.get_translation(), self.get_translation().normalized() * far_away_corner, \
 		1, Tween.TRANS_CIRC, Tween.EASE_IN_OUT )
 
+	tweenNode.connect("tween_complete", self, "request_remove")
+
 	tweenNode.start()
 
 # THIS IS EVERYWHERE, ANY BETTER WAY TO HAVE FUNCTIONS BETWEEN SCRIPTS?
@@ -40,7 +42,7 @@ func activate(justFly=false):
 
 	if gridMan.selectedBlocks.size() > 0:
 		var selBlock = gridMan.get_node( gridMan.selectedBlocks[0] )
-		
+
 		if selBlock.getBlockType() == BLOCK_PAIR:
 			if selBlock.textureName == textureName:
 				if calcBlockLayerVec( selBlock.blockPos ) == calcBlockLayerVec( blockPos ):

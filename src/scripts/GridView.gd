@@ -27,7 +27,7 @@ func _input(ev):
 		currentTransform = Matrix3( Vector3(1, 0, 0), PI * turn.y * dtime ) * currentTransform
 		set_transform( Transform( currentTransform ) )
 		var Network = Globals.get("Network")
-		if Network != null:
+		if (Network != null and Network.isNetwork):
 			Network.sendTransform(currentTransform)
 	
 	
