@@ -57,8 +57,6 @@ func _ready():
 
 	# generate puzzle
 	puzzleMan = PuzzleManScript.new()
-	var puzzle = puzzleMan.generatePuzzle( 1, puzzleMan.DIFF_EASY )
-	puzzle.puzzleMan = puzzleMan
 
 	if generateRandom:
 		seed = OS.get_unix_time() # unix time
@@ -67,8 +65,10 @@ func _ready():
 		seed *= 1 + OS.get_date().weekday
 		seed = abs(seed) % 7919 # 1000th prime
 
-		print("Generated ", puzzle.blocks.size(), " blocks." )
+		var puzzle = puzzleMan.generatePuzzle( 1, puzzleMan.DIFF_EASY )
+		puzzle.puzzleMan = puzzleMan
 		var steps = puzzle.solvePuzzleSteps()
+		print("Generated ", puzzle.shape.size(), " blocks." )
 		print( "PUZZLE IS SOLVEABLE?: ", steps.solveable )
 
 		get_node( "GridView/GridMan" ).set_puzzle(puzzle)
