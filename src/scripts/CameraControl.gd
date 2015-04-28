@@ -20,12 +20,24 @@ var zoom_rate = 100            # the rate at which the camera zooms in and out o
 var orbitrate = 20        # the rate the camera orbits the target when the mouse is moved
 var target_move_rate = 1.0      # the rate the target look at point moves
 
+# Pause menu GUI item.
+var pauseMenu
+
 
 # called once after node is setup
 func _ready():
 	set_process_input(true)      # process user input events here
 	# Input.set_mouse_mode(2)      # mouse mode captured
-
+	
+	# Setup the pause menu.
+	pauseMenu = preload( "res://dialog.scn" ).instance()
+	get_tree().get_root().add_child( pauseMenu )
+	pauseMenu.hide()
+	pauseMenu.get_ok().connect("pressed", self, "_on_ok_button_pressed")
+	
+	# Add the puzzle.
+	get_tree().get_root().add_child( preload( "res://puzzle.scn" ).instance() )
+	print( get_parent() )
 
 # Repositions the camera based on the zoom level.
 func recalculate_camera():
@@ -46,9 +58,12 @@ func _input(ev):
 			distance.val += zoom_rate * get_process_delta_time()
    # if a cancel action is input close the application
 	elif (ev.is_action("ui_cancel")):
-		OS.get_main_loop().quit()
+		#OS.get_main_loop().quit()
+		pauseMenu.show()
 	else:
 		return
 
 	recalculate_camera()
 
+func _on_ok_button_pressed():
+	OS.get_main_loop().quit()
