@@ -16,6 +16,7 @@ var selectedBlocks = []
 
 # Puzzle vars.
 var puzzle
+var puzzleLoaded = false
 
 # Beam stuff.
 const beamScn = preload( "res://blocks/block.scn" )
@@ -34,7 +35,7 @@ func addPickledBlock(block):
 	# TODO  any special treatment for the wild blocks?
 	# TODO  keep track of puzzle.lasers ? How to?
 
-	if not puzzleLoaded:
+	if puzzleLoaded:
 		# keep pickled block
 		puzzle.blocks.append(block)
 
@@ -47,6 +48,7 @@ func addPickledBlock(block):
 
 
 	add_child(b)
+	return b
 
 func get_block(pos):
 	if shape.has(pos):
