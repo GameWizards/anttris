@@ -7,7 +7,7 @@ var puzzleMan
 var gridMan
 var prevBlock = null
 
-var fileDialog = FileDialog.new()
+var fileDialog = load("res://fileDialog.scn").instance()
 var gui = [
 	["status", Label.new()], # plz keep me as first element, referenced as gui[0] later
 	["save_pzl", Button.new()],
@@ -36,13 +36,14 @@ var gui = [
 		values=["Add", "Remove", "Replace"],
 		value="Add"
 	}],
+	["test_pzl", Button.new()],
 ]
 
 func shouldAddNeighbor():
-	return false
+	return true
 
 func shouldReplaceSelf():
-	return true
+	return false
 
 func shouldRemoveSelf():
 	return false
@@ -91,10 +92,16 @@ func _ready():
 
 	set_process_input(true)
 
+	var theme = preload("res://themes/MainTheme.thm")
+	var dialogTheme = Theme.new()
+	dialogTheme.copy_default_theme()
+
 	fileDialog.set_title("Select Puzzle Filename")
 	fileDialog.set_access(FileDialog.ACCESS_USERDATA)
-	fileDialog.set_theme(preload("res://themes/MainTheme.thm"))
+	fileDialog.set_theme(dialogTheme)
+	fileDialog.hide()
 	add_child(fileDialog)
+	
 	var y = 0
 	for control in gui:
 		y += 45
@@ -104,7 +111,7 @@ func _ready():
 				if not cont.begins_with('value'):
 					var e = togg[cont]
 					e.set_pos(Vector2(10, y))
-					e.set_theme(preload("res://themes/MainTheme.thm"))
+					e.set_theme(theme)
 					add_child(e)
 
 			togg.left.set_text("<")
@@ -120,7 +127,7 @@ func _ready():
 		else:
 			var e = control[1]
 			e.set_pos(Vector2(10, y))
-			e.set_theme(load('res://themes/MainTheme.thm'))
+			e.set_theme(theme)
 			if e extends Button:
 				e.set_text(control[0])
 			if control[0] == 'save_pzl' :
