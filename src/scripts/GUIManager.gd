@@ -14,8 +14,8 @@ var splashTween
 
 # Timers.
 var timer
-var initialWait = .5
-var splashTimer = 2.0
+var initialWait  = 0.5
+var splashTimer  = 2.0
 var warningTimer = 5.0
 
 # GUI pieces.
@@ -43,6 +43,12 @@ var MENU_OPTIONS		= 8
 var samplePlayer = StreamPlayer.new()
 var songs = [load("res://main_theme_antris.ogg")]
 
+func skipTitle(skip):
+	if skip:
+		initialWait  = 0.01
+		splashTimer  = 0.01
+		warningTimer = 0.01
+
 # Function to be called once for setup.
 func _ready():
 	# Initial setup.
@@ -65,28 +71,28 @@ func _ready():
 	Menu_HostGame = get_node( "HostGame" )
 	Menu_JoinGame = get_node( "JoinGame" )
 	Menu_Options = get_node( "OptionsMenu" )
-	
+
 	Globals.set("Network", load("res://scripts/Network.gd").new())
 	network = Globals.get("Network")
-	
+
 	var scn = load("res://networkProxy.scn")
 	add_child(scn.instance())
 	network.root = get_tree().get_root()
 
 	# Load the config.
 	var config = preload( "res://scripts/DataManager.gd" ).new().loadConfig()
-	
+
 	get_node("OptionsMenu/Panel/OnlineName/LineEdit").set_text( config.name )
 	get_node("OptionsMenu/Panel/SoundVolume/SoundSlider").set_value( config.soundvolume )
 	get_node("OptionsMenu/Panel/MusicVolume/MusicSlider").set_value( config.musicvolume )
-	
+
 	network.port = config.portnumber
 
 	# Main Menu Theme
 	add_child(samplePlayer)
 	samplePlayer.set_stream(songs[0])
 	samplePlayer.play()
-	
+
 # Function to update the GUI.
 func _process( delta ):
 	# Handle the initial wait.
@@ -150,7 +156,7 @@ func _on_Cancel_pressed():
 
 func _on_SaveQuit_pressed():
 	# Save the options.
-	
+
 	var config = { name = get_node("OptionsMenu/Panel/OnlineName/LineEdit").get_text()
 				  , soundvolume = get_node("OptionsMenu/Panel/SoundVolume/SoundSlider").get_value()
 				  , musicvolume = get_node("OptionsMenu/Panel/MusicVolume/MusicSlider").get_value()
@@ -158,7 +164,7 @@ func _on_SaveQuit_pressed():
 				  }
 
 	preload( "res://scripts/DataManager.gd" ).new().saveConfig( config )
-	
+
 	var field = get_node("OptionsMenu/Panel/PortField/LineEdit")
 	network.setPort(field.get_text())
 	network.setPort(field.get_text())
@@ -200,7 +206,7 @@ func _on_HostGame_pressed():
 	Menu_HostGame.guiIn()
 	timer = 0.0
 	menuOn = MENU_HOSTGAME
-	
+
 	if !network.isHost and !network.isNetwork:
 		print("calling!")
 		network.host(network.port)
@@ -224,15 +230,16 @@ func _on_RandomPuzzle_pressed():
 	var root = get_tree().get_root()
 	root.get_child( root.get_child_count() - 1 ).queue_free()
 	root.add_child( ResourceLoader.load( "res://puzzleView.scn" ).instance() )
+	root.add_child( ResourceLoader.load( "res://puzzle.scn" ).instance() )
 
 
 func _on_Join_pressed():
 	var IPPanel = get_node("JoinGame/Panel/IPAddress")
 	var ip = IPPanel.get_text();
-	
+
 	if (ip.empty()):
 		return
-	
+
 	if !network.isClient:
 		network.connectTo(ip, network.port)
 
