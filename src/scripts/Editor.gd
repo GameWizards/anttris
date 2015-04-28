@@ -75,7 +75,10 @@ func addBlock(pos):
 		prevBlock[layer][curColor] = b
 
 	gui[0][1].set_text(getPrevBlockErrors())
-	gridMan.addPickledBlock(b)
+	var block = gridMan.addPickledBlock(b)
+	var v = 0.01
+	block.set_scale(Vector3(v,v,v))
+	block.scaleTweenNode(1, 0.25, Tween.TRANS_QUART).start()
 	return b
 
 func getPrevBlockErrors():
