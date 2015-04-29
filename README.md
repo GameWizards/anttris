@@ -22,7 +22,7 @@ Additionally, Godot's source code is available from their [Github repository](ht
 1.  Clone this repository to your own filesystem. Via https at the command line: `git clone https://github.com/GameWizards/anttris.git`
 2. Launch the appropriate Godot executable.
 3. You will be greeted with Godot's project manager. Click "import" at the right, and navigate to the Anttris top level directory using the file browser that comes up.
-4. Find `engine.cfg` and open it. Godot should open the project now. At this point, you can click the "play" button at the top of the screen to start up the game immediately. 
+4. Find `src/engine.cfg` and open it. Godot should open the project now. At this point, you can click the "play" button at the top of the screen to start up the game immediately. 
 5. See Godot's [own documentation](https://github.com/okamstudio/godot/wiki) for more!
 
 ## Exporting a Standalone App
