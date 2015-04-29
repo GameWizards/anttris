@@ -19,7 +19,7 @@ var client
 var connection
 var proxy
 
-var thisPuzzle
+var thisPuzzle = null
 
 #Store the peer stream used by both the lcient and server
 var stream
@@ -74,7 +74,8 @@ func _process(delta):
 
 				gotoPuzzle()
 
-				thisPuzzle = root.get_node("Puzzle")
+				if thisPuzzle != null:
+					thisPuzzle = root.get_node("Puzzle")
 				#MAKE CALL TO PUZZLE SELECTER
 		else: #not listening anymore, have a client
 			#do quick check to make sure we're still
@@ -102,7 +103,8 @@ func _process(delta):
 
 				gotoPuzzle()
 
-				thisPuzzle = root.get_node("Puzzle")
+				if thisPuzzle != null:
+					thisPuzzle = root.get_node("Puzzle")
 				return
 			if stream.get_status() == stream.STATUS_NONE or stream.get_status() == stream.STATUS_ERROR:
 				print("Error establishing connection!")

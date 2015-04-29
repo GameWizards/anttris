@@ -50,10 +50,6 @@ func _ready():
 
 	#set up network stuffs
 	add_child(load("res://networkProxy.scn").instance())
-	var Network = Globals.get("Network")
-	if Network != null:
-		Network.proxy.set_process(Network.isClient or Network.isHost)
-
 
 	# generate puzzle
 	puzzleMan = PuzzleManScript.new()
@@ -81,7 +77,11 @@ func _ready():
 		var pCopy = DataMan.loadPuzzle("test.pzl")
 		gridMan.set_puzzle(puzzle)
 
-
+		var Network = Globals.get("Network")
+		if Network != null:
+			Network.thisPuzzle = self
+			Network.root = get_tree().get_root()
+			Network.proxy.set_process(Network.isClient or Network.isHost)
 
 	# make a new puzzle, embed using Viewport
 	if mainPuzzle:
@@ -107,7 +107,6 @@ func _ready():
 		var c = Control.new()
 
 		v.set_world(p.get_world())
-		v.set_render_target_to_screen_rect(Rect2(20,20,40,40))
 		v.set_physics_object_picking(false)
 		v.add_child(p)
 		c.add_child(v)

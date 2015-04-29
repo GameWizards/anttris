@@ -57,6 +57,7 @@ func get_block(pos):
 # unused key argument needed for the tween_complete signal
 func remove_block(block=null, key=null):
 	var block_node = blockNodes[block.blockPos]
+	print("REMOVE")
 	puzzle.shape[block_node.blockPos] = null
 
 	if block_node == null:
@@ -82,18 +83,17 @@ func set_puzzle(puzz):
 	puzzleLoaded = false
 	#print( puzzDict.type() )
 	print("This is puzz: ", puzz )
-	
+
 	puzzle = puzz
 
 	# Load in the puzzle from dictionary
 	#puzzle.fromDict(puzzDict)
 
-		# # I can do my own counting!
-	# needed for adding blocks in the editor
 	for k in puzzle.shape:
 		# Create a block node, add it to the tree
 		addPickledBlock(puzzle.shape[k])
 	puzzleLoaded = true
+	print("GridMan loaded ", blockNodes.size())
 
 # Clears any selected blocks. WE SHOULD FIX THIS, THERE CAN ONLY BE ONE BLOCK SELECTED AT ANY ONE TIME, NO NEED FOR AN ARRAY!
 func clearSelection():
@@ -183,7 +183,6 @@ func _init():
 
 func _ready():
 	setupCam()
-
 	puzzleScn = get_parent().get_parent()
 
 
