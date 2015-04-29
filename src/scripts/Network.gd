@@ -163,6 +163,7 @@ func ProcessServerData(dataArray):
 		rand_seed(dataArray[1])
 		var newPuz = puzzleMan.generatePuzzle( 2, puzzleMan.DIFF_HARD )
 		newPuz.puzzleMan = puzzleMan
+		puzzle.otherPuzzle.puzzleMan = puzzleMan
 		gridMan.set_puzzle(newPuz)
 	elif ID == REMOTE_FINISH:
 		#again, do ending stuff
