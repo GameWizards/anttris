@@ -4,14 +4,12 @@ const NO_ERRORS = "STATUS NOMINAL"
 
 var puzzle
 var puzzleMan
-var DataMan = preload("res://scripts/DataManager.gd")
+var DataMan = load("res://scripts/DataManager.gd").new()
 
 var gridMan
 var prevBlocks = [] # keeps track of prevous color for pairs by layer
 var blockColors = preload("res://scripts/PuzzleManager.gd").blockColors
 var id
-
-var saveDir = OS.get_data_dir() + "/PuzzleSaves"
 
 var glyphIx = 0
 
@@ -132,7 +130,7 @@ func getPrevBlockErrors():
 					missing += " L" + str(l) + " "
 					missed = true
 				missing += k.to_upper() + " " # bad way of constructing strings
-	if missing == "":
+	if missing == "STATUS: ":
 		missing += "NOMINAL"
 	return missing
 
@@ -160,7 +158,7 @@ func _ready():
 	set_process_input(true)
 
 	var theme = preload("res://themes/MainTheme.thm")
-	fd = initLoadSaveDialog(self, get_tree(), saveDir)
+	fd = initLoadSaveDialog(self, get_tree(), DataMan.saveDir)
 
 	var y = 0
 	var x = 60 # these are unrelated
@@ -201,9 +199,9 @@ func puzzleSave():
 	var f = fd.get_current_path()
 	if f == null or f == "":
 		return
-	if getPrevBlockErrors() != NO_ERRORS:
-		gui[status_ix][1].set_text(getPrevBlockErrors() + " SAVING DISABLED! BANG HEAD ON KEYBOARD ")
-		return
+	# if getPrevBlockErrors() != NO_ERRORS:
+	# 	gui[status_ix][1].set_text(getPrevBlockErrors() + " SAVING DISABLED! BANG HEAD ON KEYBOARD ")
+	# 	return
 	print("SAVING TO ", f)
 	DataMan.savePuzzle( f, gridMan.puzzle )
 

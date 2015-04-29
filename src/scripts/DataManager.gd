@@ -1,3 +1,5 @@
+var saveDir = OS.get_data_dir() + "/PuzzleSaves/"
+
 # Saves the config settings to a file.
 static func saveConfig( config ):
 	var file = File.new()
