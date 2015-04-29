@@ -66,7 +66,9 @@ func _ready():
 		seed *= 1 + OS.get_date().weekday
 		seed = abs(seed) % 7919 # 1000th prime
 
-		rand_seed(seed)
+		#rand_seed(seed)
+		#Static seed for testing
+		seed = 0
 
 		puzzle = puzzleMan.generatePuzzle( 2, puzzleMan.DIFF_HARD )
 		puzzle.puzzleMan = puzzleMan
