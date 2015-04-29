@@ -69,9 +69,9 @@ func remove_block(block, key=null):
 	remove_and_delete_child(block_node)
 
 # Sets the puzzle for this GridMan.
-func set_puzzle(puzzDict):
+func set_puzzle(puzz):
 	# verify puzzle
-	if puzzDict == null:
+	if puzz == null:
 		print("INVALID PUZZLE")
 		return
 
@@ -82,11 +82,13 @@ func set_puzzle(puzzDict):
 	else:
 		puzzle = get_parent().get_parent().puzzleMan.Puzzle.new()
 	puzzleLoaded = false
-	print( puzzDict.type() )
+	#print( puzzDict.type() )
 	print("This is puzz: ", puzzDict )
+	
+	puzzle = puzz
 
 	# Load in the puzzle from dictionary
-	puzzle.fromDict(puzzDict)
+	#puzzle.fromDict(puzzDict)
 
 		# # I can do my own counting!
 	# needed for adding blocks in the editor
