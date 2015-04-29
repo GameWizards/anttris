@@ -1,5 +1,7 @@
 extends Spatial
 
+const NO_ERRORS = "STATUS NOMINAL"
+
 var puzzle
 var puzzleMan
 var DataMan = preload("res://scripts/DataManager.gd")
@@ -11,6 +13,8 @@ var id
 
 var saveDir = OS.get_data_dir() + "/PuzzleSaves"
 
+var glyphIx = 0
+
 var fd
 var gui = [
 	["status", Label.new()], # plz keep me as first element, referenced as gui[0] later
@@ -18,10 +22,14 @@ var gui = [
 	["load_pzl", Button.new()],
 	["remove_layer", Button.new()],
 	["random_layer", Button.new()],
-	# THESE SHOULD BE Options instead of left, label, right
 	["class_toggle", {
 		optionButt=OptionButton.new(),
-		values=["LZR", "WILD", "PAIR", "GOAL"],
+		values=["WILD", "PAIR"],
+		# const BLOCK_LASER	= 0
+		# const BLOCK_WILD	= 1
+		# const BLOCK_PAIR	= 2
+		# const BLOCK_GOAL	= 3
+		# const BLOCK_BLOCK   = 4
 		value="PAIR"
 	}],
 	["color_toggle", {
@@ -53,41 +61,56 @@ func shouldRemoveSelf():
 # called in AbstractBlock to add a new block
 func addBlock(pos):
 	var curColor = gui[color_ix][1].value
+	var selected = gui[class_ix][1].value
 	var b = puzzleMan.PickledBlock.new() \
 		.setName(id) \
-		.setTextureName(curColor) \
-		.setBlockPos(pos)
+		.setBlockPos(pos) \
+		.setBlockClass(gui[class_ix][1].optionButt.get_selected() + 1)
+		# VERY FRAGILE INDEX STUFF
 	var layer = puzzleMan.calcBlockLayerVec(pos)
-	id += 1
-
-	if layer == 0 and not gui[class_ix][1].value == "GOAL":
+	if layer == 0 and not selected == "GOAL":
 		return
 
-	# expand prevblocks index
-	while prevBlocks.size() <= layer:
-		var d = {}
-		for k in blockColors:
-			d[k] = null
-		prevBlocks.append(d)
+	if selected == "LZR" or selected == "GOAL":
+		print("CANNOT MK ", str(selected))
+		return
 
-	var pb = prevBlocks[layer][curColor]
+	if selected == "WILD":
+		b.setTextureName(curColor)
+	# must be a paired block
 
-	if pb != null:
-		var prevName = pb.toNode().name
-		print("PAIR ", b.name, " ", pb.name, " IS ", prevName)
-		var pbNode = gridMan.get_node(prevName)
-
-		b.setPairName(pb.name)
-		pb.setPairName(b.name)
-		# readd prev
-		gridMan.remove_block(pb)
-		gridMan.addPickledBlock(pb)
-		prevBlocks[layer][curColor] = null
 	else:
-		# TODO SUPPORT GLYPHS HERE, SET PAIRWISE GLYPH
-		prevBlocks[layer][curColor] = b
+		id += 1
 
-	gui[0][1].set_text(getPrevBlockErrors())
+		# expand prevblocks index
+		while prevBlocks.size() <= layer:
+			var d = {}
+			for k in blockColors:
+				d[k] = null
+			prevBlocks.append(d)
+
+		var pb = prevBlocks[layer][curColor]
+
+		if pb != null:
+			var prevName = pb.toNode().name
+			var pbNode = gridMan.get_node(prevName)
+
+			b.setPairName(pb.name)
+			pb.setPairName(b.name)
+
+			b.setTextureName(pb.textureName)
+
+			gridMan.remove_block(pb)
+			gridMan.addPickledBlock(pb)
+			prevBlocks[layer][curColor] = null
+		else:
+			prevBlocks[layer][curColor] = b
+			glyphIx += 1
+			glyphIx %= 3
+			b.setTextureName(curColor + str(glyphIx + 1))
+
+		gui[0][1].set_text(getPrevBlockErrors())
+
 	var block = gridMan.addPickledBlock(b)
 	var v = 0.01
 	block.set_scale(Vector3(v,v,v))
@@ -124,7 +147,6 @@ func _ready():
 	# hide and disable timer
 	puzzle.time.on = false;
 	puzzle.time.val = ''
-	print(puzzle.time)
 
 	puzzle.set_as_toplevel(true)
 	get_tree().get_root().add_child(puzzle)
@@ -153,6 +175,8 @@ func _ready():
 			e.connect("item_selected", self, "changeValue", [togg])
 			for i in range(togg.values.size()):
 				e.add_item(togg.values[i], i)
+				if togg.value == togg.values[i]:
+					e.select(i)
 				# e.add_icon_item(togg.values[i], i)
 
 		else:
@@ -173,6 +197,9 @@ func _ready():
 func puzzleSave():
 	var f = fd.get_current_path()
 	if f == null or f == "":
+		return
+	if getPrevBlockErrors() != NO_ERRORS:
+		gui[0][1].set_text(getPrevBlockErrors() + " SAVING DISABLED! BANG HEAD ON KEYBOARD ")
 		return
 	print("SAVING TO ", f)
 	DataMan.savePuzzle( f, gridMan.puzzle )
