@@ -43,7 +43,7 @@ func setSelected(sel):
 	selected = sel
 	return self
 
-func forceClick(click_normal):
+func forceClick(click_normal = null):
 	if editor != null:
 		if editor.shouldAddNeighbor():
 			addNeighbor(editor, click_normal)
@@ -76,6 +76,7 @@ func _input_event( camera, ev, click_pos, click_normal, shape_idx ):
 	if ((ev.type==InputEvent.MOUSE_BUTTON and ev.button_index==BUTTON_LEFT)
 	or (ev.type==InputEvent.SCREEN_TOUCH)):
 		if (get_parent().get_parent().active and ev.is_pressed()):
+			Globals.get("Network").sendBlockUpdate(blockPos)
 			forceClick(click_normal)
 
 # returns this block's pairNode or null
