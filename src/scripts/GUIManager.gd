@@ -239,9 +239,7 @@ func _on_RandomPuzzle_pressed(puzzle=null):
 	gotoPuzzleScene(get_tree().get_root(), false, puzzle)
 
 static func gotoPuzzleScene(root, networked=false, puzzle=null):
-	root.get_child( root.get_child_count() - 1 ).queue_free()
-	root.add_child( preload( "res://puzzleView.scn" ).instance() )
-	var p = preload( "res://puzzle.scn" ).instance()
+	var p = load( "res://puzzle.scn" ).instance()
 	p.mainPuzzle = networked
 
 	if puzzle != null:
@@ -249,8 +247,20 @@ static func gotoPuzzleScene(root, networked=false, puzzle=null):
 		p.get_node("GridView/GridMan").set_puzzle(puzzle)
 		p.get_node("GridView/GridMan").setupCam()
 
-	root.add_child( p )
+	# called on idle time
+	goto_scene(root.get_tree(), [load("res://puzzleView.scn").instance(), p])
 
+static func goto_scene(tree, scenes, freeAll=false):
+	var root = tree.get_root()
+	root.print_tree()
+	if freeAll:
+		for child in root.get_children():
+			child.queue_free()
+	else:
+		root.get_child( root.get_child_count() - 1 ).queue_free()
+	for scn in scenes:
+		scn.set_owner(root)
+		root.call_deferred("add_child", scn )
 
 func _on_Join_pressed():
 	var IPPanel = get_node("JoinGame/Panel/IPAddress")
@@ -264,10 +274,8 @@ func _on_Join_pressed():
 
 
 func _on_Editor_pressed():
-	var root = get_tree().get_root()
-	root.get_child( root.get_child_count() - 1 ).queue_free()
-	root.add_child( ResourceLoader.load( "res://editor.scn" ).instance() )
-
+	# called on idle time
+	goto_scene(get_tree(), [load("res://editor.scn").instance()])
 
 func _on_LoadPuzzle_pressed():
 	preload("Editor.gd").showLoadDialog(fileDialog, self)
