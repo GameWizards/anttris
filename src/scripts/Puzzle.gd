@@ -56,36 +56,38 @@ func _ready():
 		Network.proxy.set_process(Network.isClient or Network.isHost)
 
 
-	# generate puzzle
-	puzzleMan = PuzzleManScript.new()
-	var puzzle
-
-	if generateRandom:
-		seed = OS.get_unix_time() # unix time
-		seed *= OS.get_ticks_msec() # initial time
-		seed *= 1 + OS.get_time().second
-		seed *= 1 + OS.get_date().weekday
-		seed = abs(seed) % 7919 # 1000th prime
-		
-		#store the seed used to generate this puzzle for Network communications
-		initSeed = seed
-		rand_seed(seed)
-
-		puzzle = puzzleMan.generatePuzzle( 2, puzzleMan.DIFF_HARD )
-		puzzle.puzzleMan = puzzleMan
-		var steps = puzzle.solvePuzzleSteps()
-		print("Generated ", puzzle.shape.size(), " blocks." )
-		print( "PUZZLE IS SOLVEABLE?: ", steps.solveable )
-
-		var gridMan = get_node( "GridView/GridMan" )
-		DataMan.savePuzzle("test.pzl", puzzle)
-		var pCopy = DataMan.loadPuzzle("test.pzl")
-		gridMan.set_puzzle(puzzle)
+	
 
 
 
 	# make a new puzzle, embed using Viewport
 	if mainPuzzle:
+		# generate puzzle
+		puzzleMan = PuzzleManScript.new()
+		var puzzle
+	
+		if generateRandom:
+			seed = OS.get_unix_time() # unix time
+			seed *= OS.get_ticks_msec() # initial time
+			seed *= 1 + OS.get_time().second
+			seed *= 1 + OS.get_date().weekday
+			seed = abs(seed) % 7919 # 1000th prime
+			
+			#store the seed used to generate this puzzle for Network communications
+			initSeed = seed
+			rand_seed(seed)
+	
+			puzzle = puzzleMan.generatePuzzle( 2, puzzleMan.DIFF_HARD )
+			puzzle.puzzleMan = puzzleMan
+			var steps = puzzle.solvePuzzleSteps()
+			print("Generated ", puzzle.shape.size(), " blocks." )
+			print( "PUZZLE IS SOLVEABLE?: ", steps.solveable )
+	
+			var gridMan = get_node( "GridView/GridMan" )
+			DataMan.savePuzzle("test.pzl", puzzle)
+			var pCopy = DataMan.loadPuzzle("test.pzl")
+			gridMan.set_puzzle(puzzle)
+	
 		if (not Network == null and Network.isNetwork):
 			print("Sending puzzle")
 			Network.sendStart(initSeed)

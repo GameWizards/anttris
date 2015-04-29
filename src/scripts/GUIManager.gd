@@ -78,6 +78,8 @@ func _ready():
 
 	Globals.set("Network", load("res://scripts/Network.gd").new())
 	network = Globals.get("Network")
+	
+	Globals.set("PuzzleTick", true)
 
 	var scn = load("res://networkProxy.scn")
 	add_child(scn.instance())
