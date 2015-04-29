@@ -30,10 +30,6 @@ func popBlock( pairNode, justFly=false ):
 	# remove on animation end
 	tweenNode.connect("tween_complete", self, "request_remove")
 
-	var network = Globals.get("Network")
-	if (not network == null and get_parent().get_parent().active and network.isNetwork):
-			network.sendBlockUpdate(blockPos)
-
 	tweenNode.start()
 	# just one call to activate...
 	if not justFly:
