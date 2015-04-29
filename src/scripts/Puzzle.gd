@@ -107,11 +107,5 @@ func _ready():
 		p.get_node("GridView").set_process_input(false)
 
 		otherPuzzle = p #for use with network
+		
 
-	#music attempt
-	var musicPlayer = Globals.get("StreamPlayer")
-	var songs = [load("res://main_theme_antris.ogg")]
-	add_child(StreamPlayer)
-	add_child(musicPlayer)
-	musicPlayer.set_stream(songs[0])
-	musicPlayer.play()
