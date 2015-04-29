@@ -158,7 +158,12 @@ func ProcessServerData(dataArray):
 	if ID == REMOTE_START:
 		#read other person's puzzle
 		print("remote_stuff")
-		gridMan.set_puzzle(dataArray[1])
+		#generate new puzzle
+		var puzzleMan = load( "res://scripts/PuzzleManager.gd" ).new()
+		rand_seed(dataArray[1])
+		var newPuz = puzzleMan.generatePuzzle( 2, puzzleMan.DIFF_HARD )
+		newPuz.puzzleMan = puzzleMan
+		gridMan.set_puzzle(newPuz)
 	elif ID == REMOTE_FINISH:
 		#again, do ending stuff
 		print("remote_finish: " + str(dataArray[1]))
