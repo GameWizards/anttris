@@ -17,7 +17,6 @@ var glyphIx = 0
 
 var fd
 var gui = [
-	["status", Label.new()], # plz keep me as first element, referenced as gui[0] later
 	["save_pzl", Button.new()],
 	["load_pzl", Button.new()],
 	["remove_layer", Button.new()],
@@ -42,11 +41,13 @@ var gui = [
 		values=["Add", "Remove", "Replace"],
 		value="Add"
 	}],
-	["test_pzl", Button.new()],
+	["status", Label.new()],
+	["test_pzl", Button.new()]
 ]
-var action_ix = gui.size() - 1 - 1
-var color_ix = gui.size() - 1 - 2
-var class_ix = gui.size() - 1 - 3
+var action_ix = gui.size() - 2 - 1
+var color_ix = gui.size() -  2 - 2
+var class_ix = gui.size() -  2 - 3
+var status_ix = gui.size() - 2
 
 # gross style, cannot , but clean enough
 func shouldAddNeighbor():
@@ -109,7 +110,7 @@ func addBlock(pos):
 			glyphIx %= 3
 			b.setTextureName(curColor + str(glyphIx + 1))
 
-		gui[0][1].set_text(getPrevBlockErrors())
+		gui[status_ix][1].set_text(getPrevBlockErrors())
 
 	var block = gridMan.addPickledBlock(b)
 	var v = 0.01
@@ -162,12 +163,13 @@ func _ready():
 	fd = initLoadSaveDialog(self, get_tree(), saveDir)
 
 	var y = 0
+	var x = 60 # these are unrelated
 	for control in gui:
-		y += 45
 		if control[0].rfind('_toggle') > 0:
+			x += 150
 			var togg = control[1]
 			var e = togg.optionButt
-			e.set_pos(Vector2(10, y))
+			e.set_pos(Vector2(x, 45))
 			e.set_theme(theme)
 			add_child(e)
 
@@ -180,6 +182,7 @@ func _ready():
 				# e.add_icon_item(togg.values[i], i)
 
 		else:
+			y += 45
 			var e = control[1]
 			e.set_pos(Vector2(10, y))
 			e.set_theme(theme)
@@ -199,7 +202,7 @@ func puzzleSave():
 	if f == null or f == "":
 		return
 	if getPrevBlockErrors() != NO_ERRORS:
-		gui[0][1].set_text(getPrevBlockErrors() + " SAVING DISABLED! BANG HEAD ON KEYBOARD ")
+		gui[status_ix][1].set_text(getPrevBlockErrors() + " SAVING DISABLED! BANG HEAD ON KEYBOARD ")
 		return
 	print("SAVING TO ", f)
 	DataMan.savePuzzle( f, gridMan.puzzle )
