@@ -191,6 +191,9 @@ func sendStart(puzzle):
 	if !isNetwork:
 		print("Error sending start packet: not connected!")
 		return
+	if (isNetwork == null):
+		print("Cannot send null puzzle!")
+		return
 	var er = connection.put_var([REMOTE_START, inst2dict(puzzle)])
 	print("sent: ")
 	print(puzzle)
