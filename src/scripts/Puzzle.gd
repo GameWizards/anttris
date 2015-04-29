@@ -57,6 +57,7 @@ func _ready():
 
 	# generate puzzle
 	puzzleMan = PuzzleManScript.new()
+	var puzzle
 
 	if generateRandom:
 		seed = OS.get_unix_time() # unix time
@@ -65,7 +66,9 @@ func _ready():
 		seed *= 1 + OS.get_date().weekday
 		seed = abs(seed) % 7919 # 1000th prime
 
-		var puzzle = puzzleMan.generatePuzzle( 1, puzzleMan.DIFF_EASY )
+		rand_seed(seed)
+
+		puzzle = puzzleMan.generatePuzzle( 1, puzzleMan.DIFF_EASY )
 		puzzle.puzzleMan = puzzleMan
 		var steps = puzzle.solvePuzzleSteps()
 		print("Generated ", puzzle.shape.size(), " blocks." )
@@ -76,10 +79,17 @@ func _ready():
 		var pCopy = DataMan.loadPuzzle("test.pzl")
 		gridMan.set_puzzle(puzzle)
 
+		var network = Globals.get("Network")
+		if (not network == null and network.isNetwork):
+			print("Sending puzzle")
+
 	# make a new puzzle, embed using Viewport
 	if mainPuzzle:
+		network.sendStart(puzzle)
+
 		var p = PuzzleScn.instance()
 		p.get_node("GridView").active = false
+		p.get_node("GridView/GridMan").set_puzzle(puzzle)
 		p.mainPuzzle = false
 		p.set_scale(Vector3(0.5, 0.5, 0.5))
 		p.set_translation(Vector3(10, 5, -20))
@@ -88,12 +98,14 @@ func _ready():
 		var c = Control.new()
 
 		v.set_world(p.get_world())
-		v.set_rect(Rect2(0, 0, 100, 100))
+		v.set_render_target_to_screen_rect(Rect2(20,20,40,40))
 		v.set_physics_object_picking(false)
-		add_child(p)
 		v.add_child(p)
-		add_child(c)
 		c.add_child(v)
+		add_child(c)
+
+		p.get_node("GridView").set_process_input(false)
+
 		otherPuzzle = p #for use with network
 
 
