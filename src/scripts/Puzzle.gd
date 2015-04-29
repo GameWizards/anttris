@@ -29,7 +29,7 @@ func addTimer():
 	time.tween.start()
 	time.label.set_text(str(time.val))
 
-func formatTime(t):
+static func formatTime(t):
 	var mins = floor(t / 60)
 	var secs = fmod(floor(t), 60)
 	var millis = floor((t - floor(t)) * 1000)
@@ -68,7 +68,7 @@ func _ready():
 
 		rand_seed(seed)
 
-		puzzle = puzzleMan.generatePuzzle( 1, puzzleMan.DIFF_EASY )
+		puzzle = puzzleMan.generatePuzzle( 2, puzzleMan.DIFF_HARD )
 		puzzle.puzzleMan = puzzleMan
 		var steps = puzzle.solvePuzzleSteps()
 		print("Generated ", puzzle.shape.size(), " blocks." )
@@ -79,13 +79,13 @@ func _ready():
 		var pCopy = DataMan.loadPuzzle("test.pzl")
 		gridMan.set_puzzle(puzzle)
 
-		var network = Globals.get("Network")
-		if (not network == null and network.isNetwork):
-			print("Sending puzzle")
+	
 
 	# make a new puzzle, embed using Viewport
 	if mainPuzzle:
-		network.sendStart(puzzle)
+		if (not Network == null and Network.isNetwork):
+			print("Sending puzzle")
+			Network.sendStart(puzzle)
 
 		var p = PuzzleScn.instance()
 		p.get_node("GridView").active = false
