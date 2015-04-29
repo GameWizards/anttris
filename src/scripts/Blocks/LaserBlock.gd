@@ -6,7 +6,7 @@ var laserExtent = Vector3()
 # color
 func setTexture(color=Color(0.5, 0, 0)):
 	var mat = load("res://materials/block_Laser.mtl")
-	mat.set_parameter(FixedMaterial.PARAM_EMISSION, color)
+	mat.set_parameter(FixedMaterial.PARAM_EMISSION, Color(0.2, 0.1, 0.1))
 	self.get_node("MeshInstance").set_material_override(mat)
 
 	return self

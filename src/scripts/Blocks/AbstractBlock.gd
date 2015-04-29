@@ -43,8 +43,12 @@ func setSelected(sel):
 	selected = sel
 	return self
 
-func forceClick(click_normal = null):
-	if editor != null:
+func forceClick(click_normal=null):
+	var network = Globals.get("Network")
+	if (not network == null and get_node("../../../../Puzzle").mainPuzzle and network.isNetwork):
+			network.sendBlockUpdate(blockPos)
+
+	if click_normal != null and editor != null:
 		if editor.shouldAddNeighbor():
 			addNeighbor(editor, click_normal)
 			return
