@@ -123,6 +123,19 @@ func calcBlockLayer( x, y, z ):
 func calcBlockLayerVec( pos ):
 	return max( max( abs( pos.x ), abs( pos.y ) ), abs( pos.z ) )
 
+func beatenWithScore(othersScore):
+	print( "BEATEN!" )
+	var pauseMenu = get_tree().get_root().get_node( "Spatial" ).get_node( "Camera" ).pauseMenu
+	pauseMenu.set_text("GAME OVER\nYou've been beaten with time: " + othersScore)
+	pauseMenu.popup_centered()
+
+func win():
+	print( "GAME OVER!" )
+	var pauseMenu = get_tree().get_root().get_node( "Spatial" ).get_node( "Camera" ).pauseMenu
+	pauseMenu.set_text("GAME OVER\nYou win with time: " + get_parent().get_parent().time.val)
+	pauseMenu.popup_centered()
+
+
 # Handles keeping track of pairs being removed.
 func popPair( pos ):
 	var blayer = calcBlockLayerVec( pos )
@@ -131,11 +144,7 @@ func popPair( pos ):
 	if( puzzle.pairCount[blayer] == 0 ):
 		print("LAYER CLEARED")
 		if blayer == 1:
-			print( "GAME OVER!" )
-			var pauseMenu = get_tree().get_root().get_node( "Spatial" ).get_node( "Camera" ).pauseMenu
-			pauseMenu.set_text("GAME OVER\nSCORE:1,000,000")
-			# TODO set timeout!!!
-			pauseMenu.popup_centered()
+			win()
 
 		for b in puzzle.shape:
 			if not ( puzzle.shape[b] == null ):
