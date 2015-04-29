@@ -188,6 +188,8 @@ func sendStart(puzzle):
 		print("Error sending start packet: not connected!")
 		return
 	var er = connection.put_var([REMOTE_START, puzzle])
+	print("sent: ")
+	print(puzzle)
 
 func sendBlockUpdate(pos):
 	if !isNetwork:
