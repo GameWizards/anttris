@@ -178,6 +178,7 @@ func getBlockType( difficulty, pos ):
 
 # Generates a solveable puzzle.
 func generatePuzzle( layers, difficulty ):
+	rand_seed(0)
 	var blockID = 0
 	var puzzle = Puzzle.new()
 	puzzle.puzzleName = "RANDOM PUZZLE"
