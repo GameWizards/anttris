@@ -92,7 +92,7 @@ func _ready():
 
 		var p = PuzzleScn.instance()
 		p.get_node("GridView").active = false
-		p.get_node("GridView/GridMan").set_puzzle(puzzle)
+		#ip.get_node("GridView/GridMan").set_puzzle(puzzle)
 		p.mainPuzzle = false
 		p.set_scale(Vector3(0.5, 0.5, 0.5))
 		p.set_translation(Vector3(10, 5, -20))
