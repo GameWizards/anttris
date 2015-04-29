@@ -9,13 +9,11 @@ const BLOCK_BLOCK   = 4
 
 var textureName
 
-func setTexture(textureName="Red"):
+func setTexture(textureName="Red1"):
+	print(textureName)
 	var img = Image()
 	self.textureName = textureName
-	print( self.textureName )
-	#var mat = load("res://materials/block_" + textureName + ".mtl")
-	print( Globals.get( "MaterialMaker" ) )
-	self.get_node("MeshInstance").set_material_override( Globals.get( "MaterialMaker" ).blockMats[textureName] )
+	get_node("MeshInstance").set_material_override( load("res://glyph_materials/" + textureName + ".mtl") )
 	return self
 
 # Animate the removal of this block and its pair.
