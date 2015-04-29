@@ -82,7 +82,7 @@ func set_puzzle(puzz):
 	puzzleLoaded = false
 	#print( puzzDict.type() )
 	print("This is puzz: ", puzz )
-	
+
 	puzzle = puzz
 
 	# Load in the puzzle from dictionary
@@ -132,12 +132,14 @@ func calcBlockLayerVec( pos ):
 func beatenWithScore(othersScore):
 	print( "BEATEN!" )
 	var pauseMenu = get_tree().get_root().get_node( "Spatial" ).get_node( "Camera" ).pauseMenu
+	pauseMenu.set_title("Game Over")
 	pauseMenu.set_text("GAME OVER\nYou've been beaten with time: " + puzzleScn.formatTime(othersScore))
 	pauseMenu.popup_centered()
 
 func win():
 	print( "GAME OVER!" )
 	var pauseMenu = get_tree().get_root().get_node( "Spatial" ).get_node( "Camera" ).pauseMenu
+	pauseMenu.set_title("Game Over")
 	pauseMenu.set_text("GAME OVER\nYou win with time: " + puzzleScn.formatTime(get_parent().get_parent().time.val))
 	pauseMenu.popup_centered()
 
