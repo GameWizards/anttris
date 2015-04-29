@@ -49,9 +49,9 @@ var fileDialog
 
 func skipTitle(skip):
 	if skip:
-		initialWait  = 0.01
-		splashTimer  = 0.01
-		warningTimer = 0.01
+		initialWait  = 0.2
+		splashTimer  = 0.2
+		warningTimer = 0.2
 
 # Function to be called once for setup.
 func _ready():

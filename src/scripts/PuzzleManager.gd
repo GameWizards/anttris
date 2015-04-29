@@ -22,8 +22,7 @@ const blockScripts = [ preload( "Blocks/LaserBlock.gd" )
 			   	      , preload( "Blocks/LaserBlock.gd" )
 			   	      ]
 
-# Hash map of all possible positions
-var shape = {}
+var glyphOn
 
 # Calculates the layer that a block is on.
 static func calcBlockLayer( x, y, z ):
@@ -182,8 +181,8 @@ func generatePuzzle( layers, difficulty ):
 	var puzzle = Puzzle.new()
 	puzzle.puzzleName = "RANDOM PUZZLE"
 	puzzle.puzzleLayers = layers
-	
-	var glyphOn = []
+
+	glyphOn = []
 	for g in range( blockColors.size() ):
 		glyphOn.append( 0 )
 
@@ -314,7 +313,7 @@ class PickledBlock:
 		n.set_translation(blockPos * 2)
 		n.blockPos = blockPos
 
-		n.setName(str(name)).setTexture( "Red1" )
+		n.setName(str(name))
 
 		n.setBlockType( blockClass )
 
@@ -325,7 +324,7 @@ class PickledBlock:
 			n.setTexture(textureName)
 
 		if blockClass == BLOCK_LASER:
-			n.setPairName(pairName).setExtent(laserExtent)
+			n.setPairName(pairName).setExtent(laserExtent).setTexture()
 		return n
 
 	# test me plz
