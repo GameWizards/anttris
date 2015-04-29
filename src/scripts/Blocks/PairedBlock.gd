@@ -10,7 +10,6 @@ const BLOCK_BLOCK   = 4
 var textureName
 
 func setTexture(textureName="Red1"):
-	print(textureName)
 	var img = Image()
 	self.textureName = textureName
 	get_node("MeshInstance").set_material_override( load("res://glyph_materials/" + textureName + ".mtl") )
@@ -44,8 +43,6 @@ func activate(justFly = false):
 		var selBlock = gridMan.get_node( gridMan.selectedBlocks[0] )
 
 		if selBlock.getBlockType() == BLOCK_WILD:
-			print( selBlock.textureName )
-			print( textureName.substr( 0, selBlock.textureName.length() ) )
 			if selBlock.textureName == textureName.substr( 0, selBlock.textureName.length() ):
 				if calcBlockLayerVec( selBlock.blockPos ) == calcBlockLayerVec( blockPos ):
 					gridMan.clearSelection()
