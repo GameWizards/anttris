@@ -56,13 +56,10 @@ class Puzzle:
 				 , pC = pairCount
 				 , lS = lasers
 			     }
-		#left above in in case this doesn't work
-		var wrappedDict = inst2dict(di)
-		return wrappedDict
+		return di
 
 	# Converts a dictionary to a puzzle.
-	func fromDict( wrappedDict ):
-		var di = dict2inst(wrappedDict)
+	func fromDict( di ):
 		puzzleName = di.pN
 		puzzleLayers = di.pL
 		pairCount = di.pC
