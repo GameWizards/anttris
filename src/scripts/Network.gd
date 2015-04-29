@@ -176,12 +176,16 @@ func ProcessServerData(dataArray):
 		thisPuzzle.otherPuzzle.set_transform(Transform( translation ))
 # better measurements!!!!		thisPuzzle.otherPuzzle.set_translation(Vector3(20, 12, -40))
 ##############3
-		thisPuzzle.otherPuzzle.set_translation(Vector3(10, 5, -20))
+		var otherPosition = Vector3(20,0,10)
+		var tween = Tween.new()
+		tween.interpolate_method(thisPuzzle.otherPuzzle, "set_translation", \
+		thisPuzzle.otherPuzzle.get_translation(), otherPosition, \
+		0.5, Tween.TRANS_SINE, Tween.EASE_OUT )
+
 	elif ID == REMOTE_BLOCK_UPDATE:
 		#sent an updated block pair
 		print("block update")
-		var pos = dataArray[1]
-		gridMan.forceClickBlock(pos)
+		gridMan.forceClickBlock(dataArray[1])
 
 func sendStart(puzzle):
 	if !isNetwork:
@@ -214,7 +218,6 @@ func sendTransform(translation):
 		print("Cannot send transformation over an unitialized network!")
 		return
 	connection.put_var([REMOTE_PUZZLE_TRANSFORM, translation])
-	print("it got here")
 
 
 func gotoMenu():
