@@ -158,7 +158,7 @@ func ProcessServerData(dataArray):
 	if ID == REMOTE_START:
 		#read other person's puzzle
 		print("remote_stuff")
-		gridMan.set_puzzle(dict2inst(dataArray[1]))
+		gridMan.set_puzzle(dataArray[1])
 	elif ID == REMOTE_FINISH:
 		#again, do ending stuff
 		print("remote_finish: " + str(dataArray[1]))
@@ -187,11 +187,11 @@ func ProcessServerData(dataArray):
 		print("block update")
 		gridMan.forceClickBlock(dataArray[1])
 
-func sendStart(puzzle):
+func sendStart(seed):
 	if !isNetwork:
 		print("Error sending start packet: not connected!")
 		return
-	var er = connection.put_var([REMOTE_START, inst2dict(puzzle)])
+	var er = connection.put_var([REMOTE_START, seed])
 	print("sent: ")
 	print(puzzle)
 

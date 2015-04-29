@@ -7,6 +7,7 @@ var PuzzleManScript = preload( "res://scripts/PuzzleManager.gd" )
 var PuzzleScn = preload("res://puzzle.scn")
 var puzzleMan
 var seed
+var initSeed
 var otherPuzzle
 var generateRandom = true
 var mainPuzzle = false
@@ -65,7 +66,9 @@ func _ready():
 		seed *= 1 + OS.get_time().second
 		seed *= 1 + OS.get_date().weekday
 		seed = abs(seed) % 7919 # 1000th prime
-
+		
+		#store the seed used to generate this puzzle for Network communications
+		initSeed = seed
 		rand_seed(seed)
 
 		puzzle = puzzleMan.generatePuzzle( 2, puzzleMan.DIFF_HARD )
@@ -85,7 +88,7 @@ func _ready():
 	if mainPuzzle:
 		if (not Network == null and Network.isNetwork):
 			print("Sending puzzle")
-			Network.sendStart(puzzle)
+			Network.sendStart(initSeed)
 
 		var p = PuzzleScn.instance()
 		p.get_node("GridView").active = false
