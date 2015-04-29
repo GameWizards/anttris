@@ -85,7 +85,8 @@ func _ready():
 	if mainPuzzle:
 		if (not Network == null and Network.isNetwork):
 			print("Sending puzzle")
-			Network.sendStart(puzzle)
+			Network.sendStart(puzzle.toDict())
+			print(puzzle.toDict())
 
 		var p = PuzzleScn.instance()
 		p.get_node("GridView").active = false

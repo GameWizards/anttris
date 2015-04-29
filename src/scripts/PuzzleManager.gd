@@ -60,6 +60,7 @@ class Puzzle:
 
 	# Converts a dictionary to a puzzle.
 	func fromDict( di ):
+		print(di)
 		puzzleName = di.pN
 		puzzleLayers = di.pL
 		pairCount = di.pC
