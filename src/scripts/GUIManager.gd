@@ -97,6 +97,7 @@ func _ready():
 	fileDialog = preload("Editor.gd").initLoadSaveDialog(self, get_tree(), saveDir)
 
 	# Main Menu Theme
+	Globals.set("StreamPlayer", samplePlayer)
 	add_child(samplePlayer)
 	samplePlayer.set_stream(songs[0])
 	samplePlayer.play()
