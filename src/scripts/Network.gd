@@ -182,7 +182,8 @@ func ProcessServerData(dataArray):
 		thisPuzzle.otherPuzzle.set_transform(Transform( translation ))
 # better measurements!!!!		thisPuzzle.otherPuzzle.set_translation(Vector3(20, 12, -40))
 ##############3
-		var otherPosition = Vector3(20,0,10)
+		var otherPosition = Vector3(10, 5, -20)
+		thisPuzzle.otherPuzzle.set_translation( otherPosition )
 		var tween = Tween.new()
 		tween.interpolate_method(thisPuzzle.otherPuzzle, "set_translation", \
 		thisPuzzle.otherPuzzle.get_translation(), otherPosition, \
