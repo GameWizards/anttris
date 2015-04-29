@@ -25,12 +25,10 @@ var target_move_rate = 1.0      # the rate the target look at point moves
 var pauseMenu
 
 func toMenu():
-	var root = get_tree().get_root()
-	var menus = preload( "res://menus.scn" ).instance()
+	var menus = load( "res://menus.scn" ).instance()
 	menus.skipTitle(true)
-	for child in root.get_children():
-		child.queue_free()
-	root.add_child(menus)
+	load("res://scripts/GUIManager.gd").goto_scene(get_tree(), [menus], true)
+
 
 # called once after node is setup
 func _ready():

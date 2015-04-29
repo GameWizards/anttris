@@ -1,7 +1,6 @@
 extends Node
 
-#const blockColors = ["Blue", "Orange", "Red", "Yellow", "Purple", "Green"]
-const blockColors = ["Red", "Green", "Blue", "Purple", "Orange", "Gray"]
+const blockColors = preload("PuzzleManager.gd").blockColors
 
 const COLOR_RED		= 0
 const COLOR_GREEN	= 1
@@ -14,7 +13,6 @@ var blockMats = {}
 
 func _ready():
 	print( "Creating materials." )
-	Globals.set( "MaterialMaker", self )
 
 	# Add new arrays for each material and their glyphs.
 	for r in range( blockColors.size() ):
@@ -25,7 +23,7 @@ func _ready():
 		tex.create_from_image( img )
 		blockMats[blockColors[r]] = FixedMaterial.new()
 		blockMats[blockColors[r]].set_texture( FixedMaterial.PARAM_DIFFUSE, tex )
-	
+
 		# Add the three glyphs.
 		for g in range( 3 ):
 			var tex = ImageTexture.new()
@@ -34,3 +32,7 @@ func _ready():
 			tex.create_from_image( img )
 			blockMats[blockColors[r] + str( g + 1 )] = FixedMaterial.new()
 			blockMats[blockColors[r] + str( g + 1 )].set_texture( FixedMaterial.PARAM_DIFFUSE, tex )
+
+	for k in blockMats.keys():
+		ResourceSaver.save( "res://glyph_materials/" + k + ".mtl", blockMats[k])
+

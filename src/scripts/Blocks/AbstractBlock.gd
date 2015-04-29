@@ -117,9 +117,11 @@ func newTweenNode():
 	return tween
 
 func request_remove(node=null, key=null):
+	if node == null:
+		node = self
 	var n = scaleTweenNode(0.001, 0.25, Tween.TRANS_QUART)
 	n.start()
-	n.connect("tween_complete", get_parent(), "remove_block", [self])
+	n.connect("tween_complete", get_parent(), "remove_block")
 
 func _ready():
 	if get_tree().get_root().has_node("EditorSpatial"):

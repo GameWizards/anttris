@@ -55,14 +55,14 @@ func get_block(pos):
 		return null
 
 # unused key argument needed for the tween_complete signal
-func remove_block(block, key=null):
+func remove_block(block=null, key=null):
 	var block_node = blockNodes[block.blockPos]
-
 	puzzle.shape[block_node.blockPos] = null
-	blockNodes[block_node.blockPos] = null
 
 	if block_node == null:
 		return
+
+	blockNodes[block_node.blockPos] = null
 
 	for child in block_node.get_children():
 		block_node.remove_and_delete_child(child)
@@ -183,7 +183,7 @@ func _init():
 
 func _ready():
 	setupCam()
-	
+
 	puzzleScn = get_parent().get_parent()
 
 

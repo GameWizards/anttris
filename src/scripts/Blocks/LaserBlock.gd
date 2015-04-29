@@ -14,9 +14,11 @@ func setTexture(color=Color(0.5, 0, 0)):
 # sets light emission color
 func setColor(col):
 	mat.set_parameter(FixedMaterial.PARAM_EMISSION, col)
+	return self
 
 func setExtent(laserExtent):
-	 self.laserExtent = laserExtent
+	self.laserExtent = laserExtent
+	return self
 
 # Force a laser to set off at the end of a layer.
 func forceActivate():
