@@ -40,8 +40,10 @@ func _ready():
 	get_tree().get_root().add_child( pauseMenu )
 	pauseMenu.hide()
 
+	pauseMenu.get_label().set_autowrap(true)
+
 	pauseMenu.set_pause_mode(PAUSE_MODE_PROCESS)
-	pauseMenu.set_text("PAUSE")
+	pauseMenu.set_text(easter_eggs[randi() % easter_eggs.size()])
 
 	pauseMenu.get_ok().connect("pressed", self, "toMenu")
 	pauseMenu.get_cancel().connect("pressed", pauseMenu, "hide")
@@ -53,10 +55,22 @@ func _ready():
 	pauseMenu.get_cancel().set_pause_mode(PAUSE_MODE_PROCESS)
 
 	# pause when shown
-	pauseMenu.connect("about_to_show", get_tree(), "set_pause", [true])
+	pauseMenu.connect("about_to_show", self, "preparePauseMenu")
 	# unpause when gone
 	pauseMenu.connect("popup_hide", get_tree(), "set_pause", [false])
 	pauseMenu.connect("hide", get_tree(), "set_pause", [false])
+
+const easter_eggs = ["There are no cheat codes for this game", "Get as much sleep as you can",
+	 "Get out while you still can",
+	 "You are one of a kind, to a certain extent",
+	 "All block abusers report to the incinarator",
+	 "learnyouahaskell.com good for you, promise",
+	 "When storing carrots, take them out of the plastic packaging and wrap them in paper towels. They will last weeks longer. -- junta12"
+	 ]
+
+func preparePauseMenu(arg0=null, arg1=null, arg2=null):
+	pauseMenu.set_text(easter_eggs[randi() % easter_eggs.size()])
+	get_tree().set_pause(true)
 
 
 # Repositions the camera based on the zoom level.
