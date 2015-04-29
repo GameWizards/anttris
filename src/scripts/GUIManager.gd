@@ -49,9 +49,9 @@ var fileDialog
 
 func skipTitle(skip):
 	if skip:
-		initialWait  = 0.01
-		splashTimer  = 0.01
-		warningTimer = 0.01
+		initialWait  = 0.2
+		splashTimer  = 0.2
+		warningTimer = 0.2
 
 # Function to be called once for setup.
 func _ready():
@@ -252,7 +252,6 @@ static func gotoPuzzleScene(root, networked=false, puzzle=null):
 
 static func goto_scene(tree, scenes, freeAll=false):
 	var root = tree.get_root()
-	root.print_tree()
 	if freeAll:
 		for child in root.get_children():
 			child.queue_free()
