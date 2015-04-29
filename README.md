@@ -26,6 +26,6 @@ Additionally, Godot's source code is available from their [Github repository](ht
 5. See Godot's [own documentation](https://github.com/okamstudio/godot/wiki) for more!
 
 ## Exporting a Standalone App
-As Godot is still in beta, this is currently buggy, and we don't recommend trying it for now. For the adventurous, however, it does works best on Windows. OS X exports seem to never work on the computer they were exported on. [More at the wiki](https://github.com/okamstudio/godot/wiki/export).
+As Godot is still in beta, this is currently buggy, and we don't recommend trying it for now. For the adventurous, however, it works best on Windows. OS X exports seem to never work on the computer they were exported on. [More at the wiki](https://github.com/okamstudio/godot/wiki/export).
 
 
