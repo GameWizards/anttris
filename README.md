@@ -9,7 +9,10 @@ anttris is anti-tetris; you destroy things rather than build them!
 Check out [gamewizards.github.io](http://gamewizards.github.io)
 
 ## Obtaining Godot
-You will need to obtain the [Godot game engine](http://www.godotengine.org/wp/download/) for your platform. Portable binaries [app bundle for OS X] are available for: Mac OS X (32-bit only), Microsoft Windows (32- and 64--bit binaries available), and GNU/Linux (32- and 64-bit available, plus 64-bit headless server).
+You will need to obtain the [Godot game engine](http://www.godotengine.org/wp/download/) for your platform. Portable binaries [app bundle for OS X] are available for: 
+* Mac OS X (32-bit only) 
+* Microsoft Windows (32- and 64-bit binaries available) 
+* GNU/Linux (32- and 64-bit available, plus 64-bit headless server).
 
 These are portable, so they can be placed anywhere you want (`~/bin/` might be a good place.)  
 
