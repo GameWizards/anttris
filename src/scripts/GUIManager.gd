@@ -252,7 +252,7 @@ static func gotoPuzzleScene(root, networked=false, puzzle=null):
 
 static func goto_scene(tree, scenes, freeAll=false):
 	var root = tree.get_root()
-	root.print_tree()
+
 	if freeAll:
 		for child in root.get_children():
 			child.queue_free()
