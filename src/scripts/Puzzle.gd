@@ -66,9 +66,9 @@ func _ready():
 		seed *= 1 + OS.get_date().weekday
 		seed = abs(seed) % 7919 # 1000th prime
 
-		#rand_seed(seed)
-		#Static seed for testing
 		seed = 0
+		rand_seed(seed)
+		#Static seed for testing
 
 		puzzle = puzzleMan.generatePuzzle( 2, puzzleMan.DIFF_HARD )
 		puzzle.puzzleMan = puzzleMan
@@ -91,7 +91,14 @@ func _ready():
 
 		var p = PuzzleScn.instance()
 		p.get_node("GridView").active = false
+
+		puzzle = puzzleMan.generatePuzzle( 2, puzzleMan.DIFF_HARD )
+		puzzle.puzzleMan = puzzleMan
+		var steps = puzzle.solvePuzzleSteps()
+		print("SUBGRIDMAN: Generated ", puzzle.shape.size(), " blocks." )
+
 		p.get_node("GridView/GridMan").set_puzzle(puzzle)
+		p.generateRandom = false
 		p.mainPuzzle = false
 		p.set_scale(Vector3(0.5, 0.5, 0.5))
 		p.set_translation(Vector3(10, 5, -20))
@@ -109,5 +116,5 @@ func _ready():
 		p.get_node("GridView").set_process_input(false)
 
 		otherPuzzle = p #for use with network
-		
+
 
