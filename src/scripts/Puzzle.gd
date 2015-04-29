@@ -65,7 +65,7 @@ func _ready():
 		seed *= 1 + OS.get_date().weekday
 		seed = abs(seed) % 7919 # 1000th prime
 
-		var puzzle = puzzleMan.generatePuzzle( 1, puzzleMan.DIFF_EASY )
+		var puzzle = puzzleMan.generatePuzzle( 2, puzzleMan.DIFF_EASY )
 		puzzle.puzzleMan = puzzleMan
 		var steps = puzzle.solvePuzzleSteps()
 		print("Generated ", puzzle.shape.size(), " blocks." )

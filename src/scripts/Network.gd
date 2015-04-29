@@ -25,6 +25,7 @@ var remotePuzzle
 var stream
 
 func _ready():
+	print( "Making network." )
 	isNetwork = false
 	isHost = false
 	var label = get_tree().get_root().get_node("GUIManager/OptionsMenu/Panel/PortField/LineEdit")
