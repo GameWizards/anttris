@@ -82,6 +82,8 @@ func set_puzzle(puzzDict):
 	else:
 		puzzle = get_parent().get_parent().puzzleMan.Puzzle.new()
 	puzzleLoaded = false
+	print( puzzDict.type() )
+	print("This is puzz: ", puzzDict )
 
 	# Load in the puzzle from dictionary
 	puzzle.fromDict(puzzDict)
