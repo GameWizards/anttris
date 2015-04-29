@@ -216,7 +216,7 @@ func sendTransform(translation):
 	if !isNetwork:
 		print("Cannot send transformation over an unitialized network!")
 		return
-	connection.put_var([REMOTE_BLOCK_TRANSFORM, translation])
+	connection.put_var([REMOTE_PUZZLE_TRANSFORM, translation])
 
 
 func gotoMenu():
