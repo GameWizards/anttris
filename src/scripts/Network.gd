@@ -6,7 +6,7 @@ const REMOTE_FINISH = 0
 const REMOTE_START = 1
 const REMOTE_QUIT = 2
 const REMOTE_BLOCK = 4
-const REMOTE_BLOCK_TRANSFORM = 5
+const REMOTE_PUZZLE_TRANSFORM = 5
 const REMOTE_BLOCK_UPDATE = 6
 
 var port = 54321
@@ -19,12 +19,13 @@ var client
 var connection
 var proxy
 
-var remotePuzzle
+var thisPuzzle
 
 #Store the peer stream used by both the lcient and server
 var stream
 
 func _ready():
+	print( "Making network." )
 	isNetwork = false
 	isHost = false
 	var label = get_tree().get_root().get_node("GUIManager/OptionsMenu/Panel/PortField/LineEdit")
@@ -73,7 +74,7 @@ func _process(delta):
 
 				gotoPuzzle()
 
-				remotePuzzle = root.get_node("Puzzle")
+				thisPuzzle = root.get_node("Puzzle")
 				#MAKE CALL TO PUZZLE SELECTER
 		else: #not listening anymore, have a client
 			#do quick check to make sure we're still
@@ -101,7 +102,7 @@ func _process(delta):
 
 				gotoPuzzle()
 
-				remotePuzzle = root.get_node("Puzzle")
+				thisPuzzle = root.get_node("Puzzle")
 				return
 			if stream.get_status() == stream.STATUS_NONE or stream.get_status() == stream.STATUS_ERROR:
 				print("Error establishing connection!")
@@ -151,14 +152,17 @@ func disconnect():
 func ProcessServerData(dataArray):
 	#have an array of data. First element should be identifying int
 	var ID = dataArray[0]
-	print(ID)
+	var puzzle = root.get_node( "Puzzle" )
+	var gridMan = puzzle.otherPuzzle.get_node("GridView/GridMan")
 	#no switch statement. I'm crying right now while i type this. My fingers are bleeding
 	if ID == REMOTE_START:
-		#do start something or something whut
+		#read other person's puzzle
 		print("remote_stuff")
+		gridMan.set_puzzle(dataArray[1])
 	elif ID == REMOTE_FINISH:
 		#again, do ending stuff
 		print("remote_finish: " + str(dataArray[1]))
+		gridMan.beatenWithScore(dataArray[1])
 	elif ID == REMOTE_QUIT:
 		#omg those jerks!
 		print("remote_quit")
@@ -166,26 +170,25 @@ func ProcessServerData(dataArray):
 	elif ID == REMOTE_BLOCK:
 		#get their block ifnormation!
 		print("remote_block")
-	elif ID == REMOTE_BLOCK_TRANSFORM:
+	elif ID == REMOTE_PUZZLE_TRANSFORM:
 		#sent block information
 		#var scale = dataArray[1]
 		var translation = dataArray[1]
-		#remotePuzzle.otherPuzzle.set_scale(scale)
-		remotePuzzle.otherPuzzle.set_transform(Transform( translation ))
-		remotePuzzle.otherPuzzle.set_translation(Vector3(20, 12, -40))
+		thisPuzzle.otherPuzzle.set_transform(Transform( translation ))
+# better measurements!!!!		thisPuzzle.otherPuzzle.set_translation(Vector3(20, 12, -40))
+##############3
+		thisPuzzle.otherPuzzle.set_translation(Vector3(10, 5, -20))
 	elif ID == REMOTE_BLOCK_UPDATE:
 		#sent an updated block pair
 		print("block update")
-		var puzzle = root.get_node( "Puzzle" )
 		var pos = dataArray[1]
-		puzzle.otherPuzzle.get_node("GridView/GridMan").forceClickBlock(pos)
+		gridMan.forceClickBlock(pos)
 
-func sendStart():
+func sendStart(puzzle):
 	if !isNetwork:
 		print("Error sending start packet: not connected!")
 		return
-	var er = connection.put_var([REMOTE_START])
-	print("Sending start and got [" + str(er) + "]")
+	var er = connection.put_var([REMOTE_START, puzzle])
 
 func sendBlockUpdate(pos):
 	if !isNetwork:
@@ -197,7 +200,7 @@ func sendFinish(score):
 	if !isNetwork:
 		print("Error sending finish packet: not connected!")
 		return
-	connection.put_var([REMOTE_FINISH, score])
+	connection.put_var([REMOTE_FINISH, root.get_node("Puzzle").time.val])
 
 func sendQuit():
 	if !isNetwork:

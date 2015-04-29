@@ -12,10 +12,10 @@ var textureName
 func setTexture(textureName="Red"):
 	var img = Image()
 	self.textureName = textureName
-
-	var mat = load("res://materials/block_" + textureName + ".mtl")
-
-	self.get_node("MeshInstance").set_material_override(mat)
+	print( self.textureName )
+	#var mat = load("res://materials/block_" + textureName + ".mtl")
+	print( Globals.get( "MaterialMaker" ) )
+	self.get_node("MeshInstance").set_material_override( Globals.get( "MaterialMaker" ).blockMats[textureName] )
 	return self
 
 # Animate the removal of this block and its pair.
@@ -29,10 +29,6 @@ func popBlock( pairNode, justFly=false ):
 
 	# remove on animation end
 	tweenNode.connect("tween_complete", self, "request_remove")
-
-	var network = Globals.get("Network")
-	if (not network == null and get_parent().get_parent().active and network.isNetwork):
-			network.sendBlockUpdate(blockPos)
 
 	tweenNode.start()
 	# just one call to activate...
@@ -51,7 +47,9 @@ func activate(justFly = false):
 		var selBlock = gridMan.get_node( gridMan.selectedBlocks[0] )
 
 		if selBlock.getBlockType() == BLOCK_WILD:
-			if selBlock.textureName == textureName:
+			print( selBlock.textureName )
+			print( textureName.substr( 0, selBlock.textureName.length() ) )
+			if selBlock.textureName == textureName.substr( 0, selBlock.textureName.length() ):
 				if calcBlockLayerVec( selBlock.blockPos ) == calcBlockLayerVec( blockPos ):
 					gridMan.clearSelection()
 					selBlock.popBlock()
