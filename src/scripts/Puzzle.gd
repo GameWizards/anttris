@@ -85,9 +85,9 @@ func _ready():
 
 	# make a new puzzle, embed using Viewport
 	if mainPuzzle:
-		if (not Network == null and Network.isNetwork):
-			print("Sending puzzle")
-			Network.sendStart(puzzle)
+		#if (not Network == null and Network.isNetwork):
+		#	print("Sending puzzle")
+		#	Network.sendStart(puzzle)
 
 		var p = PuzzleScn.instance()
 		p.get_node("GridView").active = false
