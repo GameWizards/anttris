@@ -193,7 +193,7 @@ func sendStart(seed):
 		return
 	var er = connection.put_var([REMOTE_START, seed])
 	print("sent: ")
-	print(puzzle)
+	print(seed)
 
 func sendBlockUpdate(pos):
 	if !isNetwork:
