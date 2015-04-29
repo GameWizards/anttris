@@ -79,7 +79,7 @@ func _ready():
 		var pCopy = DataMan.loadPuzzle("test.pzl")
 		gridMan.set_puzzle(puzzle)
 
-	
+
 
 	# make a new puzzle, embed using Viewport
 	if mainPuzzle:
