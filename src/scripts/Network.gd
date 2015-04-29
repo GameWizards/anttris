@@ -164,7 +164,7 @@ func ProcessServerData(dataArray):
 		var newPuz = puzzleMan.generatePuzzle( 2, puzzleMan.DIFF_HARD )
 		newPuz.puzzleMan = puzzleMan
 		puzzle.otherPuzzle.puzzleMan = puzzleMan
-		gridMan.set_puzzle(newPuz)
+		#gridMan.set_puzzle(newPuz)
 	elif ID == REMOTE_FINISH:
 		#again, do ending stuff
 		print("remote_finish: " + str(dataArray[1]))

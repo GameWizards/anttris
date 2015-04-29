@@ -55,13 +55,16 @@ func _ready():
 	if Network != null:
 		Network.proxy.set_process(Network.isClient or Network.isHost)
 
-
-	
+	#check if this is the first puzzle created iin this instance
+	if (Globals.get("PuzzleTick")):
+		Globals.set("PuzzleTick", false)
+		mainPuzzle = true
 
 
 
 	# make a new puzzle, embed using Viewport
 	if mainPuzzle:
+		print("generating as if this is the one and only puzzle")
 		# generate puzzle
 		puzzleMan = PuzzleManScript.new()
 		var puzzle
