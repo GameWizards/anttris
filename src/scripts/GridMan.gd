@@ -79,11 +79,9 @@ func set_puzzle(puzz):
 	if puzzle != null:
 		for pos in puzzle.shape:
 			remove_block(puzzle.shape[pos])
-	else:
-		puzzle = get_parent().get_parent().puzzleMan.Puzzle.new()
 	puzzleLoaded = false
 	#print( puzzDict.type() )
-	print("This is puzz: ", puzzDict )
+	print("This is puzz: ", puzz )
 	
 	puzzle = puzz
 
