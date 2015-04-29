@@ -46,8 +46,6 @@ func activate(justFly = false):
 		var selBlock = gridMan.get_node( gridMan.selectedBlocks[0] )
 
 		if selBlock.getBlockType() == BLOCK_WILD:
-			print( selBlock.textureName )
-			print( textureName.substr( 0, selBlock.textureName.length() ) )
 			if selBlock.textureName == textureName.substr( 0, selBlock.textureName.length() ):
 				if calcBlockLayerVec( selBlock.blockPos ) == calcBlockLayerVec( blockPos ):
 					gridMan.clearSelection()
