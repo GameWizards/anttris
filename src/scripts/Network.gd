@@ -130,7 +130,6 @@ func disconnect():
 		connection.put_var([REMOTE_QUIT])
 		stream.disconnect()
 		print("Closing connection to remote player...")
-		gotoMenu()
 	elif !isHost and !isNetwork:
 		stream.disconnect()
 		print("Halting connection request...")
@@ -138,7 +137,6 @@ func disconnect():
 		#connected to server already
 		stream.disconnect()
 		print("Disconnecting from server...")
-		gotoMenu()
 
 	#no matter where we wre before disconnect, set network to false and return to beginning screen!
 	isNetwork = false;
@@ -147,6 +145,8 @@ func disconnect():
 
 	proxy.set_process(false)
 
+
+	gotoMenu()
 
 
 func ProcessServerData(dataArray):
@@ -172,7 +172,6 @@ func ProcessServerData(dataArray):
 		print("remote_block")
 	elif ID == REMOTE_PUZZLE_TRANSFORM:
 		#sent block information
-		#var scale = dataArray[1]
 		var translation = dataArray[1]
 		thisPuzzle.otherPuzzle.set_transform(Transform( translation ))
 # better measurements!!!!		thisPuzzle.otherPuzzle.set_translation(Vector3(20, 12, -40))
@@ -212,7 +211,8 @@ func sendTransform(translation):
 	if !isNetwork:
 		print("Cannot send transformation over an unitialized network!")
 		return
-	connection.put_var([REMOTE_BLOCK_TRANSFORM, translation])
+	connection.put_var([REMOTE_PUZZLE_TRANSFORM, translation])
+	print("it got here")
 
 
 func gotoMenu():
