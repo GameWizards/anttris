@@ -16,6 +16,8 @@ var puzzle
 var puzzleLoaded = false
 var blockNodes = {}
 
+var puzzleScn
+
 # Beam stuff.
 const beamScn = preload( "res://blocks/block.scn" )
 const Beam = preload("res://scripts/Blocks/Beam.gd")
@@ -126,13 +128,13 @@ func calcBlockLayerVec( pos ):
 func beatenWithScore(othersScore):
 	print( "BEATEN!" )
 	var pauseMenu = get_tree().get_root().get_node( "Spatial" ).get_node( "Camera" ).pauseMenu
-	pauseMenu.set_text("GAME OVER\nYou've been beaten with time: " + othersScore)
+	pauseMenu.set_text("GAME OVER\nYou've been beaten with time: " + puzzleScn.formatTime(othersScore))
 	pauseMenu.popup_centered()
 
 func win():
 	print( "GAME OVER!" )
 	var pauseMenu = get_tree().get_root().get_node( "Spatial" ).get_node( "Camera" ).pauseMenu
-	pauseMenu.set_text("GAME OVER\nYou win with time: " + get_parent().get_parent().time.val)
+	pauseMenu.set_text("GAME OVER\nYou win with time: " + puzzleScn.formatTime(get_parent().get_parent().time.val))
 	pauseMenu.popup_centered()
 
 
@@ -177,6 +179,9 @@ func _init():
 
 func _ready():
 	setupCam()
+	
+	puzzleScn = get_parent().get_parent()
+
 
 func setupCam():
 	var cam = get_tree().get_root().get_node( "Spatial/Camera" )
