@@ -47,7 +47,6 @@ func forceClick(click_normal=null):
 	var network = Globals.get("Network")
 	if (not network == null and get_node("../../../../Puzzle").mainPuzzle and network.isNetwork):
 			network.sendBlockUpdate(blockPos)
-			print("sending click!")
 
 	if click_normal != null and editor != null:
 		if editor.shouldAddNeighbor():
