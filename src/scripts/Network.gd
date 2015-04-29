@@ -130,7 +130,6 @@ func disconnect():
 		connection.put_var([REMOTE_QUIT])
 		stream.disconnect()
 		print("Closing connection to remote player...")
-		gotoMenu()
 	elif !isHost and !isNetwork:
 		stream.disconnect()
 		print("Halting connection request...")
@@ -138,7 +137,6 @@ func disconnect():
 		#connected to server already
 		stream.disconnect()
 		print("Disconnecting from server...")
-		gotoMenu()
 
 	#no matter where we wre before disconnect, set network to false and return to beginning screen!
 	isNetwork = false;
@@ -147,6 +145,8 @@ func disconnect():
 
 	proxy.set_process(false)
 
+
+	gotoMenu()
 
 
 func ProcessServerData(dataArray):
@@ -158,7 +158,7 @@ func ProcessServerData(dataArray):
 	if ID == REMOTE_START:
 		#read other person's puzzle
 		print("remote_stuff")
-		gridMan.set_puzzle(dataArray[1])
+		gridMan.set_puzzle(dict2inst(dataArray[1]))
 	elif ID == REMOTE_FINISH:
 		#again, do ending stuff
 		print("remote_finish: " + str(dataArray[1]))
@@ -172,7 +172,6 @@ func ProcessServerData(dataArray):
 		print("remote_block")
 	elif ID == REMOTE_PUZZLE_TRANSFORM:
 		#sent block information
-		#var scale = dataArray[1]
 		var translation = dataArray[1]
 		thisPuzzle.otherPuzzle.set_transform(Transform( translation ))
 # better measurements!!!!		thisPuzzle.otherPuzzle.set_translation(Vector3(20, 12, -40))
@@ -192,7 +191,9 @@ func sendStart(puzzle):
 	if !isNetwork:
 		print("Error sending start packet: not connected!")
 		return
-	var er = connection.put_var([REMOTE_START, puzzle])
+	var er = connection.put_var([REMOTE_START, inst2dict(puzzle)])
+	print("sent: ")
+	print(puzzle)
 
 func sendBlockUpdate(pos):
 	if !isNetwork:

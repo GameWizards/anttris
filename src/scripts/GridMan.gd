@@ -80,9 +80,13 @@ func set_puzzle(puzz):
 		for pos in puzzle.shape:
 			remove_block(puzzle.shape[pos])
 	puzzleLoaded = false
-
-	# Store the puzzle.
+	#print( puzzDict.type() )
+	print("This is puzz: ", puzz )
+	
 	puzzle = puzz
+
+	# Load in the puzzle from dictionary
+	#puzzle.fromDict(puzzDict)
 
 		# # I can do my own counting!
 	# needed for adding blocks in the editor
