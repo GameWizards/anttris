@@ -12,7 +12,7 @@ const BLOCK_BLOCK   = 4
 const SOLVER_ERROR_NONE				= 0
 const SOLVER_ERROR_MISSING_PAIR		= 1
 
-const blockColors = ["Blue", "Orange", "Red", "Yellow", "Purple", "Green"]
+const blockColors = ["Blue", "Orange", "Red", "Gray", "Purple", "Green"]
 
 # Preload paired blocks
 const blockScn = preload( "res://blocks/block.scn" )
@@ -38,19 +38,21 @@ class Puzzle:
 	var puzzleName			# The name of the puzzle.
 	var puzzleLayers		# The amount of layers the puzzle has.
 	var pairCount = []		# The amount of pair blocks on each layer.
-	var blocks = []			# Information on all of the blocks in the puzzle.
+	var shape = {}			# All blocks indexed by position
 	var lasers = []			# Laser connections.
 	var puzzleMan			# Stores the puzzle manager for making pickled blocks.
 
 	# Converts a puzzle to a dictionary.
 	func toDict():
-		var blockArr = []
-		for b in range( blocks.size() ):
-			blockArr.append( blocks[b].toDict() )
+		var blocksArray = []
+		for k in shape.keys():
+			if shape[k] == null:
+				continue
+			blocksArray.append(shape[k].toDict())
 
 		var di = { pN = puzzleName
 		 	     , pL = puzzleLayers
-				 , bL = blockArr
+				 , bL = blocksArray
 				 , pC = pairCount
 				 , lS = lasers
 			     }
@@ -63,10 +65,10 @@ class Puzzle:
 		pairCount = di.pC
 		lasers = di.lS
 
-		for b in range( di.bL.size() ):
+		for block in di.bL:
 			var nb = puzzleMan.PickledBlock.new()
-			nb.fromDict( di.bL[b] )
-			blocks.append( nb )
+			nb.fromDict( block )
+			shape[nb.blockPos] = nb
 		return
 
 	# Class that stores a solution or the errors in a puzzle.
@@ -99,7 +101,8 @@ class Puzzle:
 			pairs.append( {} )
 
 		# Gather paired blocks from the puzzle.
-		for b in blocks:
+		for k in shape.keys():
+			var b = shape[k]
 			if b.blockClass == BLOCK_PAIR:
 				b.solverFlag = false
 				pairs[calcBlockLayerVec(b.blockPos)][b.name] = b
@@ -179,6 +182,10 @@ func generatePuzzle( layers, difficulty ):
 	var puzzle = Puzzle.new()
 	puzzle.puzzleName = "RANDOM PUZZLE"
 	puzzle.puzzleLayers = layers
+	
+	var glyphOn = []
+	for g in range( blockColors.size() ):
+		glyphOn.append( 0 )
 
 	# Create all possible positions.
 	var layeredblocks = []
@@ -189,7 +196,6 @@ func generatePuzzle( layers, difficulty ):
 		for y in range( -layers, layers + 1 ):
 			for z in range( -layers, layers + 1 ):
 				layeredblocks[calcBlockLayer( x, y, z )].append(Vector3(x,y,z))
-				shape[Vector3(x,y,z)] = null
 
 	# Generate laser lines.
 	for l in range( 1, layers + 1 ):
@@ -231,7 +237,7 @@ func generatePuzzle( layers, difficulty ):
 			b.name = blockID
 
 			blockID += 1
-			puzzle.blocks.append( b )
+			puzzle.shape[pos] = b
 
 			if t == BLOCK_LASER:
 				b.setBlockClass(BLOCK_LASER)\
@@ -247,14 +253,17 @@ func generatePuzzle( layers, difficulty ):
 				# Count this pair.
 				puzzle.pairCount[l] += 1
 
-				var randColor = blockColors[randi() % blockColors.size()]
+				var randColor = ( randi() % blockColors.size() )
+				var randMaterial = blockColors[randColor] + str( glyphOn[randColor] + 1 )
+				glyphOn[randColor] += 1
+				glyphOn[randColor] %= 3
 				b.setBlockClass(BLOCK_PAIR) \
 					.setPairName(prevBlock.name) \
-					.setTextureName(randColor)
+					.setTextureName(randMaterial)
 
 				prevBlock.setBlockClass(BLOCK_PAIR) \
 					.setPairName(b.name) \
-					.setTextureName(randColor)
+					.setTextureName(randMaterial)
 			even = not even
 			prevBlock = b
 
@@ -305,7 +314,7 @@ class PickledBlock:
 		n.set_translation(blockPos * 2)
 		n.blockPos = blockPos
 
-		n.setName(str(name)).setTexture()
+		n.setName(str(name)).setTexture( "Red1" )
 
 		n.setBlockType( blockClass )
 

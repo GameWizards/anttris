@@ -2,6 +2,7 @@
 # catch InputEventScreenDrag, InputEventScreenTouch
 #   write two-finger zoom
 
+
 # camera function that uses the mouse wheel to zoom
 extends Camera
 
@@ -23,21 +24,42 @@ var target_move_rate = 1.0      # the rate the target look at point moves
 # Pause menu GUI item.
 var pauseMenu
 
+func toMenu():
+	var root = get_tree().get_root()
+	var menus = preload( "res://menus.scn" ).instance()
+	menus.skipTitle(true)
+	for child in root.get_children():
+		child.queue_free()
+	root.add_child(menus)
 
 # called once after node is setup
 func _ready():
 	set_process_input(true)      # process user input events here
 	# Input.set_mouse_mode(2)      # mouse mode captured
-	
+
 	# Setup the pause menu.
 	pauseMenu = preload( "res://dialog.scn" ).instance()
 	get_tree().get_root().add_child( pauseMenu )
 	pauseMenu.hide()
-	pauseMenu.get_ok().connect("pressed", self, "_on_ok_button_pressed")
-	
-	# Add the puzzle.
-	get_tree().get_root().add_child( preload( "res://puzzle.scn" ).instance() )
-	print( get_parent() )
+
+	pauseMenu.set_pause_mode(PAUSE_MODE_PROCESS)
+	pauseMenu.set_text("PAUSE")
+
+	pauseMenu.get_ok().connect("pressed", self, "toMenu")
+	pauseMenu.get_cancel().connect("pressed", pauseMenu, "hide")
+
+	pauseMenu.get_ok().set_text("Menu")
+	pauseMenu.get_cancel().set_text("Return to game")
+
+	pauseMenu.get_ok().set_pause_mode(PAUSE_MODE_PROCESS)
+	pauseMenu.get_cancel().set_pause_mode(PAUSE_MODE_PROCESS)
+
+	# pause when shown
+	pauseMenu.connect("about_to_show", get_tree(), "set_pause", [true])
+	# unpause when gone
+	pauseMenu.connect("popup_hide", get_tree(), "set_pause", [false])
+	pauseMenu.connect("hide", get_tree(), "set_pause", [false])
+
 
 # Repositions the camera based on the zoom level.
 func recalculate_camera():
@@ -59,11 +81,8 @@ func _input(ev):
    # if a cancel action is input close the application
 	elif (ev.is_action("ui_cancel")):
 		#OS.get_main_loop().quit()
-		pauseMenu.show()
+		pauseMenu.popup_centered()
 	else:
 		return
 
 	recalculate_camera()
-
-func _on_ok_button_pressed():
-	OS.get_main_loop().quit()

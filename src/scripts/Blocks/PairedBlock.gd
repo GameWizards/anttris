@@ -12,10 +12,10 @@ var textureName
 func setTexture(textureName="Red"):
 	var img = Image()
 	self.textureName = textureName
-
-	var mat = load("res://materials/block_" + textureName + ".mtl")
-
-	self.get_node("MeshInstance").set_material_override(mat)
+	print( self.textureName )
+	#var mat = load("res://materials/block_" + textureName + ".mtl")
+	print( Globals.get( "MaterialMaker" ) )
+	self.get_node("MeshInstance").set_material_override( Globals.get( "MaterialMaker" ).blockMats[textureName] )
 	return self
 
 # Animate the removal of this block and its pair.

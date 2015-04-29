@@ -48,9 +48,14 @@ func forceClick(click_normal):
 		if editor.shouldAddNeighbor():
 			addNeighbor(editor, click_normal)
 			return
-		if editor.shouldReplaceSelf():
-			addNeighbor(editor, 0 * click_normal)
 		if editor.shouldReplaceSelf() or editor.shouldRemoveSelf():
+			# lasers cannot be removed by the editor
+			if blockType == get_parent().get_parent().get_parent().puzzleMan.BLOCK_LASER:
+				return
+
+			# maybe replace self
+			if editor.shouldReplaceSelf():
+				addNeighbor(editor, 0 * click_normal)
 			if pairName != null:
 				var pair = get_parent().get_node(pairName)
 				if pair != null:
@@ -78,7 +83,7 @@ func pairActivate():
 	selected = true
 
 	# is my pair Nil?
-	if pairName == null or get_parent() == null or not get_parent().has_node(pairName):
+	if not get_parent().has_node(str(pairName)):
 		scaleTweenNode(0.9, 0.2, Tween.TRANS_EXPO).start()
 		return null
 
@@ -108,8 +113,11 @@ func newTweenNode():
 	return tween
 
 func request_remove(node=null, key=null):
-	get_parent().remove_block(self)
+	var n = scaleTweenNode(0.001, 0.25, Tween.TRANS_QUART)
+	n.start()
+	n.connect("tween_complete", get_parent(), "remove_block", [self])
 
 func _ready():
-	editor = get_tree().get_root().get_node("EditorSpatial")
+	if get_tree().get_root().has_node("EditorSpatial"):
+		editor = get_tree().get_root().get_node("EditorSpatial")
 	set_ray_pickable(true)

@@ -6,8 +6,10 @@ var DataMan = preload( "res://scripts/DataManager.gd" ).new()
 var PuzzleManScript = preload( "res://scripts/PuzzleManager.gd" )
 var PuzzleScn = preload("res://puzzle.scn")
 var puzzleMan
+var seed
 var otherPuzzle
-var mainPuzzle = true
+var generateRandom = true
+var mainPuzzle = false
 
 var time = {
 		on = true,
@@ -44,40 +46,39 @@ func _process(dTime):
 func _ready():
 	if time.on:
 		set_process(true) # needed for time keeping
-	puzzleMan = PuzzleManScript.new()
-	var puzzle = puzzleMan.generatePuzzle( 2, puzzleMan.DIFF_EASY )
-	puzzle.puzzleMan = puzzleMan
-	
+	addTimer()
+
 	#set up network stuffs
 	add_child(load("res://networkProxy.scn").instance())
 	var Network = Globals.get("Network")
 	if Network != null:
 		Network.proxy.set_process(Network.isClient or Network.isHost)
 
-	print("Generated ", puzzle.blocks.size(), " blocks." )
 
-	print( "Saving..." )
-	DataMan.savePuzzle( "TestPuzzle.pzl", puzzle )
+	# generate puzzle
+	puzzleMan = PuzzleManScript.new()
 
-	puzzle = 0
+	if generateRandom:
+		seed = OS.get_unix_time() # unix time
+		seed *= OS.get_ticks_msec() # initial time
+		seed *= 1 + OS.get_time().second
+		seed *= 1 + OS.get_date().weekday
+		seed = abs(seed) % 7919 # 1000th prime
 
-	puzzle = DataMan.loadPuzzle( "TestPuzzle.pzl" )
+		var puzzle = puzzleMan.generatePuzzle( 1, puzzleMan.DIFF_EASY )
+		puzzle.puzzleMan = puzzleMan
+		var steps = puzzle.solvePuzzleSteps()
+		print("Generated ", puzzle.shape.size(), " blocks." )
+		print( "PUZZLE IS SOLVEABLE?: ", steps.solveable )
 
-	var steps = puzzle.solvePuzzleSteps()
-	print( "PUZZLE IS SOLVEABLE?: ", steps.solveable )
-
-	addTimer()
-
-	# Place the blocks in the puzzle.
-	var gridMan = get_node( "GridView/GridMan" )
-	gridMan.shape = puzzleMan.shape
-	gridMan.set_puzzle(puzzle)
+		var gridMan = get_node( "GridView/GridMan" )
+		DataMan.savePuzzle("test.pzl", puzzle)
+		var pCopy = DataMan.loadPuzzle("test.pzl")
+		gridMan.set_puzzle(puzzle)
 
 	# make a new puzzle, embed using Viewport
 	if mainPuzzle:
 		var p = PuzzleScn.instance()
-		#p.remove_and_delete_child(p.get_node("Lights"))
-		#.remove_and_delete_child(p.get_node("Camera"))
 		p.get_node("GridView").active = false
 		p.mainPuzzle = false
 		p.set_scale(Vector3(0.5, 0.5, 0.5))
@@ -89,11 +90,10 @@ func _ready():
 		v.set_world(p.get_world())
 		v.set_rect(Rect2(0, 0, 100, 100))
 		v.set_physics_object_picking(false)
-		get_tree().get_root().get_node( "Spatial" ).get_node( "Camera" ).add_child(p)
+		add_child(p)
 		v.add_child(p)
 		add_child(c)
 		c.add_child(v)
 		otherPuzzle = p #for use with network
-# child of control? easier input
 
 
