@@ -28,4 +28,7 @@ Additionally, Godot's source code is available from their [Github repository](ht
 ## Exporting a Standalone App
 As Godot is still in beta, this is currently buggy, and we don't recommend trying it for now. For the adventurous, however, it works best on Windows. OS X exports seem to never work on the computer they were exported on. [More at the wiki](https://github.com/okamstudio/godot/wiki/export).
 
+## Licensing
+We believe in being able to do what you want with open source software; to that end, we've placed Anttris under the MIT license. Please read `LICENSE` for the particular terms. 
+
 
