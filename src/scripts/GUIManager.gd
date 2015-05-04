@@ -93,8 +93,7 @@ func _ready():
 	network.port = config.portnumber
 
 	# Prepare puzzle loader dialog
-	saveDir = OS.get_data_dir() + "/PuzzleSaves"
-	fileDialog = preload("Editor.gd").initLoadSaveDialog(self, get_tree(), saveDir)
+	fileDialog = preload("Editor.gd").initLoadSaveDialog(self, get_tree(),  load("res://scripts/DataManager.gd").new().saveDir)
 
 	# Main Menu Theme
 	Globals.set("StreamPlayer", samplePlayer)
@@ -286,4 +285,6 @@ func puzzleLoad():
 	if f == null or f == "":
 		return
 	print("LOADING FROM ", f)
-	_on_RandomPuzzle_pressed(preload("DataManager.gd").loadPuzzle( f ))
+	var pzl = preload("DataManager.gd").loadPuzzle( f )
+	print("LOADING PUZZLE ", f)
+	_on_RandomPuzzle_pressed(pzl)

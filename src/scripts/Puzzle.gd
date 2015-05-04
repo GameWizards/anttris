@@ -73,9 +73,9 @@ func _ready():
 		print( "PUZZLE IS SOLVEABLE?: ", steps.solveable )
 
 		var gridMan = get_node( "GridView/GridMan" )
-		DataMan.savePuzzle("test.pzl", puzzle)
-		var pCopy = DataMan.loadPuzzle("test.pzl")
-		gridMan.set_puzzle(puzzle)
+		DataMan.savePuzzle(DataMan.saveDir + "test.pzl", puzzle)
+		var pCopy = DataMan.loadPuzzle(DataMan.saveDir + "test.pzl")
+		gridMan.set_puzzle(pCopy)
 
 		var Network = Globals.get("Network")
 		if Network != null:
