@@ -130,6 +130,7 @@ func disconnect():
 		connection.put_var([REMOTE_QUIT])
 		stream.disconnect()
 		print("Closing connection to remote player...")
+		gotoMenu()
 	elif !isHost and !isNetwork:
 		stream.disconnect()
 		print("Halting connection request...")
@@ -137,6 +138,7 @@ func disconnect():
 		#connected to server already
 		stream.disconnect()
 		print("Disconnecting from server...")
+		gotoMenu()
 
 	#no matter where we wre before disconnect, set network to false and return to beginning screen!
 	isNetwork = false;
@@ -145,8 +147,6 @@ func disconnect():
 
 	proxy.set_process(false)
 
-
-	gotoMenu()
 
 
 func ProcessServerData(dataArray):
