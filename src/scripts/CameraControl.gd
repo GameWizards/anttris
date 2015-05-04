@@ -61,7 +61,6 @@ func _ready():
 	pauseMenu.connect("hide", get_tree(), "set_pause", [false])
 
 const easter_eggs = ["There are no cheat codes for this game", "Get as much sleep as you can",
-	 "Get out while you still can",
 	 "You are one of a kind, to a certain extent",
 	 "All block abusers report to the incinarator",
 	 "learnyouahaskell.com good for you, promise",
@@ -69,7 +68,8 @@ const easter_eggs = ["There are no cheat codes for this game", "Get as much slee
 	 ]
 
 func preparePauseMenu(arg0=null, arg1=null, arg2=null):
-	pauseMenu.set_text(easter_eggs[randi() % easter_eggs.size()])
+	var txt = easter_eggs[randi() % easter_eggs.size()]
+	pauseMenu.set_text(txt)
 	get_tree().set_pause(true)
 
 
