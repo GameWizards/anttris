@@ -17,8 +17,8 @@ var fd
 var gui = [
 	["save_pzl", Button.new()],
 	["load_pzl", Button.new()],
-	["remove_layer", Button.new()],
-	["random_layer", Button.new()],
+	# ["remove_layer", Button.new()],
+	# ["random_layer", Button.new()],
 	["class_toggle", {
 		optionButt=OptionButton.new(),
 		values=["WILD", "PAIR"],
